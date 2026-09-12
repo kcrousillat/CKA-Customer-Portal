@@ -255,6 +255,16 @@ img{max-width:100%}
   font-family:var(--data); font-size:12px; color:var(--crit); margin:8px 0 0;
 }
 .busy{opacity:.55; pointer-events:none}
+.waits{
+  border:1px solid var(--rule-strong); border-left:3px solid var(--accent);
+  background:var(--surface); border-radius:5px; padding:12px 14px;
+  display:flex; flex-direction:column; gap:4px; font-size:13.5px; color:var(--ink-2);
+}
+.waits .h{
+  font-family:var(--data); font-size:10.5px; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--accent); font-weight:600;
+}
+.waits b{color:var(--ink); font-weight:600}
 .opt-body{padding:9px 11px 11px; display:flex; flex-direction:column; gap:3px}
 .opt-body .on{font-weight:600; font-size:13.5px; line-height:1.3}
 .opt-body .od{font-family:var(--data); font-size:11px; color:var(--muted); line-height:1.45}
@@ -742,7 +752,17 @@ function panelMarkup(row){
   }
 
   if (row.status === "On hold") {
-    out += '<p class="note">On hold. We will reopen this as soon as the item it depends on is settled.</p>';
+    if (row.dependsOn) {
+      var parentDone = row.dependsOn.status === "Approved" || row.dependsOn.status === "Released for order";
+      out += '<div class="waits"><span class="h">Waiting on another decision</span>' +
+        '<span><b>' + esc(row.dependsOn.item) + '</b> \u2014 ' + esc(row.dependsOn.status) + '</span>' +
+        '<span>' + (parentDone
+          ? "That one is settled. We are putting your options together now and will email you when they are here."
+          : "Nothing to do here yet. This opens up as soon as that is approved.") +
+        '</span></div>';
+    } else {
+      out += '<p class="note">On hold. We will reopen this as soon as the item it depends on is settled.</p>';
+    }
     return out + '</div>';
   }
 
@@ -759,6 +779,7 @@ function panelMarkup(row){
         '<span class="opt-card">' + swatchMarkup(o) +
         '<span class="opt-body"><span class="on">' + esc(o.name) + '</span>' +
         '<span class="od">' + esc([o.supplier, o.model, o.finish].filter(Boolean).join(" · ")) + '</span>' +
+        (o.code ? '<span class="od">Code ' + esc(o.code) + '</span>' : "") +
         (o.note ? '<span class="od">' + esc(o.note) + '</span>' : "") +
         (o.link ? '<a class="od" href="' + esc(o.link) + '" target="_blank" rel="noopener">See the product</a>' : "") +
         '</span></span></label></li>';

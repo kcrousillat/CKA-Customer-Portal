@@ -130,6 +130,10 @@ async function getProject(env, key) {
   const spaceById = {};
   for (const s of spaces) spaceById[s.id] = s;
 
+  // A held selection should name what it is waiting for, not just sit there.
+  const selectionById = {};
+  for (const r of selections) selectionById[r.id] = r;
+
   return {
     project: {
       name: project.fields["Project name"] || "",
@@ -174,6 +178,16 @@ async function getProject(env, key) {
           submittedBy: r.fields["Submitted by"] || null,
           submittedOn: r.fields["Submitted on"] || null,
           supersedes: (r.fields["Supersedes"] || [])[0] || null,
+          dependsOn: (() => {
+            const id = (r.fields["Depends on"] || [])[0];
+            const parent = id && selectionById[id];
+            if (!parent) return null;
+            return {
+              id,
+              item: parent.fields["Item"] || "another selection",
+              status: parent.fields["Status"] || "Not started",
+            };
+          })(),
           ownerEntry: {
             supplier: r.fields["Owner supplier"] || "",
             model: r.fields["Owner model"] || "",
@@ -191,6 +205,7 @@ async function getProject(env, key) {
               note: o.fields["Note"] || "",
               link: o.fields["Product link"] || "",
               swatch: o.fields["Swatch color"] || "",
+              code: o.fields["Color code"] || "",
               photos: attachments(o.fields["Photo"]),
               order: num(o.fields["Sort order"], 999),
             }))
