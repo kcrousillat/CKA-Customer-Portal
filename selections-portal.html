@@ -1,0 +1,1075 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CKA Selections Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Libre+Franklin:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --paper:#FAF9F6; --surface:#FFFFFF; --surface-2:#F3F1EC; --surface-3:#EDEAE3;
+  --ink:#1B1F24; --ink-2:#474E55; --muted:#767C83;
+  --rule:#E2DFD8; --rule-strong:#CDC8BE;
+  --accent:#1F4E79; --accent-ink:#FFFFFF; --accent-soft:#E7EEF5;
+  --crit:#9E2B21; --crit-soft:#F8E8E6;
+  --warn:#8E6209; --warn-soft:#FAF0D9;
+  --good:#2C6A4B; --good-soft:#E5F0E9;
+  --shadow:0 1px 2px rgba(27,31,36,.05), 0 8px 24px -16px rgba(27,31,36,.28);
+  --display:"Fraunces",Georgia,"Times New Roman",serif;
+  --ui:"Libre Franklin",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --data:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#131619; --surface:#1A1E22; --surface-2:#21262B; --surface-3:#282E34;
+    --ink:#ECEAE5; --ink-2:#C2C7CC; --muted:#8D949B;
+    --rule:#2B3137; --rule-strong:#3D454C;
+    --accent:#82B3DE; --accent-ink:#0F1519; --accent-soft:#1B2A38;
+    --crit:#E79389; --crit-soft:#361F1C;
+    --warn:#DDB463; --warn-soft:#322916;
+    --good:#7DC5A0; --good-soft:#16291F;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#131619; --surface:#1A1E22; --surface-2:#21262B; --surface-3:#282E34;
+  --ink:#ECEAE5; --ink-2:#C2C7CC; --muted:#8D949B;
+  --rule:#2B3137; --rule-strong:#3D454C;
+  --accent:#82B3DE; --accent-ink:#0F1519; --accent-soft:#1B2A38;
+  --crit:#E79389; --crit-soft:#361F1C;
+  --warn:#DDB463; --warn-soft:#322916;
+  --good:#7DC5A0; --good-soft:#16291F;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--ui); font-size:15px; line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%}
+[hidden]{display:none !important}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:2px}
+@media (prefers-reduced-motion: reduce){*{animation:none !important; transition:none !important}}
+
+.wrap{max-width:1080px; margin:0 auto; padding-inline:20px}
+
+/* ---------- masthead ---------- */
+.bar{
+  position:sticky; top:0; z-index:20; background:var(--surface);
+  border-bottom:1px solid var(--rule);
+}
+.bar .wrap{display:flex; align-items:center; gap:16px; padding-block:10px; flex-wrap:wrap}
+.mark{display:flex; align-items:baseline; gap:9px; margin-right:auto}
+.mark b{
+  font-family:var(--ui); font-weight:700; font-size:13px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--ink);
+}
+.mark span{font-family:var(--data); font-size:11px; color:var(--muted); letter-spacing:.04em}
+.bar-actions{display:flex; gap:8px; flex-wrap:wrap}
+
+.btn{
+  font:inherit; font-size:13px; font-weight:600; cursor:pointer;
+  border:1px solid var(--rule-strong); background:var(--surface); color:var(--ink);
+  padding:7px 13px; border-radius:4px;
+}
+.btn:hover{background:var(--surface-2)}
+.btn-primary{background:var(--accent); border-color:var(--accent); color:var(--accent-ink)}
+.btn-primary:hover{filter:brightness(1.08); background:var(--accent)}
+.btn-primary:disabled{opacity:.42; cursor:not-allowed; filter:none}
+.btn-quiet{border-color:transparent; background:transparent; color:var(--ink-2); padding-inline:8px}
+.btn-quiet:hover{background:var(--surface-2); color:var(--ink)}
+
+/* ---------- job header ---------- */
+.job{padding-block:34px 26px; border-bottom:1px solid var(--rule)}
+.eyebrow{
+  font-family:var(--data); font-size:11px; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--muted); margin:0 0 10px;
+}
+.job h1{
+  font-family:var(--display); font-weight:600; font-size:clamp(28px,4.6vw,42px);
+  line-height:1.12; letter-spacing:-.012em; margin:0; text-wrap:balance;
+}
+.job-meta{
+  display:flex; flex-wrap:wrap; gap:6px 26px; margin-top:16px;
+  font-family:var(--data); font-size:12.5px; color:var(--ink-2);
+}
+.job-meta i{font-style:normal; color:var(--muted)}
+
+/* ---------- state tiles ---------- */
+.tiles{
+  display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
+  background:var(--rule); border:1px solid var(--rule); border-radius:6px;
+  overflow:hidden; margin:26px 0 0;
+}
+.tile{background:var(--surface); padding:14px 16px 15px; display:flex; flex-direction:column; gap:2px}
+.tile .n{font-family:var(--data); font-weight:600; font-size:27px; line-height:1.1; font-variant-numeric:tabular-nums}
+.tile .l{font-size:12px; color:var(--muted); line-height:1.35}
+.tile.is-crit .n{color:var(--crit)} .tile.is-warn .n{color:var(--warn)} .tile.is-good .n{color:var(--good)}
+@media (max-width:640px){.tiles{grid-template-columns:repeat(2,1fr)}}
+
+/* ---------- views ---------- */
+.views{
+  display:flex; gap:2px; margin:30px 0 0; border-bottom:1px solid var(--rule);
+  overflow-x:auto; scrollbar-width:thin;
+}
+.view-tab{
+  font:inherit; font-size:13.5px; font-weight:600; white-space:nowrap; cursor:pointer;
+  background:none; border:0; border-bottom:2px solid transparent; color:var(--muted);
+  padding:9px 13px 8px;
+}
+.view-tab:hover{color:var(--ink)}
+.view-tab[aria-selected="true"]{color:var(--ink); border-bottom-color:var(--accent)}
+.view-note{
+  font-size:13px; color:var(--muted); margin:14px 0 18px; max-width:62ch;
+}
+
+/* ---------- groups + rows ---------- */
+.group{margin:0 0 26px}
+.group-head{
+  display:flex; align-items:baseline; gap:10px; padding:0 0 8px;
+  border-bottom:1px solid var(--rule-strong); margin-bottom:10px;
+}
+.group-head h2{
+  font-family:var(--ui); font-size:12px; font-weight:700; letter-spacing:.11em;
+  text-transform:uppercase; margin:0;
+}
+.group-head .count{font-family:var(--data); font-size:11.5px; color:var(--muted)}
+
+.rows{display:flex; flex-direction:column; gap:8px; list-style:none; margin:0; padding:0}
+.row{
+  background:var(--surface); border:1px solid var(--rule); border-radius:5px;
+  border-left:3px solid var(--rule-strong); overflow:hidden;
+}
+.row.u-past{border-left-color:var(--crit)}
+.row.u-soon{border-left-color:var(--warn)}
+.row.u-done{border-left-color:var(--good)}
+.row.is-open{box-shadow:var(--shadow); border-color:var(--rule-strong)}
+.row.is-superseded{opacity:.62}
+
+.row-btn{
+  width:100%; text-align:left; font:inherit; color:inherit; cursor:pointer;
+  background:none; border:0; padding:11px 14px;
+  display:grid; gap:4px 16px; align-items:center;
+  grid-template-columns:minmax(0,1fr) auto auto 16px;
+}
+.row-btn:hover{background:var(--surface-2)}
+.row-title{min-width:0}
+.row-title .n{font-weight:600; font-size:15px; display:block; line-height:1.3}
+.row-title .s{
+  font-family:var(--data); font-size:11.5px; color:var(--muted);
+  display:block; margin-top:2px;
+}
+.due{font-family:var(--data); font-size:12px; text-align:right; font-variant-numeric:tabular-nums; color:var(--ink-2)}
+.due b{display:block; font-weight:600}
+.due i{font-style:normal; font-size:10.5px; letter-spacing:.04em; text-transform:uppercase}
+.due.u-past{color:var(--crit)} .due.u-soon{color:var(--warn)}
+.chev{color:var(--muted); transition:transform .15s ease; justify-self:end}
+.row.is-open .chev{transform:rotate(90deg)}
+
+.pill{
+  font-family:var(--data); font-size:10.5px; font-weight:600; letter-spacing:.05em;
+  text-transform:uppercase; padding:3px 8px; border-radius:100px; white-space:nowrap;
+  background:var(--surface-3); color:var(--ink-2);
+}
+.pill.p-presented{background:var(--accent-soft); color:var(--accent)}
+.pill.p-selected{background:var(--warn-soft); color:var(--warn)}
+.pill.p-approved{background:var(--good-soft); color:var(--good)}
+.pill.p-released{background:var(--good-soft); color:var(--good)}
+.pill.p-hold{background:var(--crit-soft); color:var(--crit)}
+
+@media (max-width:720px){
+  .row-btn{grid-template-columns:minmax(0,1fr) 16px}
+  .due{text-align:left; grid-column:1}
+  .pill{justify-self:start; grid-column:1}
+  .chev{grid-row:1; grid-column:2}
+}
+
+/* ---------- decision panel ---------- */
+.panel{border-top:1px solid var(--rule); padding:16px 14px 18px; background:var(--surface-2)}
+.desc{margin:0 0 16px; font-size:14px; color:var(--ink-2); max-width:66ch}
+.facts{
+  display:flex; flex-wrap:wrap; gap:4px 24px; margin:0 0 16px;
+  font-family:var(--data); font-size:11.5px; color:var(--muted);
+}
+.facts b{color:var(--ink-2); font-weight:500}
+
+.opts{
+  list-style:none; margin:0 0 18px; padding:0; display:grid; gap:10px;
+  grid-template-columns:repeat(auto-fit,minmax(168px,1fr));
+}
+.opt{display:block; cursor:pointer}
+.opt input{position:absolute; opacity:0; width:0; height:0}
+.opt-card{
+  border:1px solid var(--rule-strong); border-radius:5px; background:var(--surface);
+  overflow:hidden; height:100%; display:flex; flex-direction:column;
+}
+.opt input:focus-visible + .opt-card{outline:2px solid var(--accent); outline-offset:2px}
+.opt input:checked + .opt-card{border-color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent)}
+.swatch{aspect-ratio:5/4; max-width:100%; max-height:132px; border-bottom:1px solid var(--rule); position:relative}
+.swatch::after{
+  content:"Sample"; position:absolute; right:5px; bottom:5px;
+  font-family:var(--data); font-size:9px; letter-spacing:.08em; text-transform:uppercase;
+  background:rgba(255,255,255,.82); color:#1B1F24; padding:1px 5px; border-radius:2px;
+}
+.opt-body{padding:9px 11px 11px; display:flex; flex-direction:column; gap:3px}
+.opt-body .on{font-weight:600; font-size:13.5px; line-height:1.3}
+.opt-body .od{font-family:var(--data); font-size:11px; color:var(--muted); line-height:1.45}
+.opt input:checked + .opt-card .on::after{content:" ✓"; color:var(--accent)}
+
+/* forms */
+.fields{display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); margin:0 0 16px}
+.field{display:flex; flex-direction:column; gap:4px}
+.field label, .sign label{
+  font-family:var(--data); font-size:10.5px; letter-spacing:.09em;
+  text-transform:uppercase; color:var(--muted);
+}
+.field input, .field textarea, .sign input{
+  font:inherit; font-size:14px; color:var(--ink); background:var(--surface);
+  border:1px solid var(--rule-strong); border-radius:4px; padding:8px 10px; width:100%;
+}
+.field textarea{min-height:64px; resize:vertical}
+.field.wide{grid-column:1/-1}
+
+.sign{
+  border:1px solid var(--rule-strong); border-radius:5px; background:var(--surface);
+  padding:14px; display:flex; flex-direction:column; gap:11px;
+}
+.sign h3{
+  font-family:var(--ui); font-size:12px; font-weight:700; letter-spacing:.1em;
+  text-transform:uppercase; margin:0;
+}
+.sign p{margin:0; font-size:13px; color:var(--ink-2); max-width:62ch}
+.sign-row{display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap}
+.sign-row .grow{flex:1 1 240px; display:flex; flex-direction:column; gap:4px}
+
+.stamp{
+  border:1px solid var(--good); background:var(--good-soft); border-radius:5px;
+  padding:12px 14px; font-family:var(--data); font-size:12.5px; color:var(--ink);
+  display:flex; flex-direction:column; gap:3px; line-height:1.6;
+}
+.stamp .h{font-weight:600; letter-spacing:.06em; text-transform:uppercase; font-size:10.5px; color:var(--good)}
+.note{
+  font-family:var(--data); font-size:11.5px; color:var(--muted); margin:10px 0 0; line-height:1.6;
+}
+.panel-actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; align-items:center}
+.staff{
+  font-family:var(--data); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase;
+  border:1px dashed var(--rule-strong); color:var(--muted); padding:2px 6px; border-radius:3px;
+}
+
+.empty{
+  border:1px dashed var(--rule-strong); border-radius:5px; padding:26px 18px;
+  text-align:center; color:var(--muted); font-size:13.5px;
+}
+
+/* ---------- footer ---------- */
+.foot{
+  border-top:1px solid var(--rule); margin-top:36px; padding-block:22px 40px;
+  font-family:var(--data); font-size:11.5px; color:var(--muted); line-height:1.7;
+}
+.foot a{color:var(--accent)}
+.foot .demo{
+  border:1px solid var(--rule); background:var(--surface-2); border-radius:5px;
+  padding:10px 12px; margin-bottom:16px; color:var(--ink-2);
+}
+
+/* ---------- print documents ---------- */
+.doc{display:none}
+.doc h1{font-family:var(--display); font-size:19pt; margin:0 0 2pt; font-weight:600}
+.doc .dmeta{font-family:var(--data); font-size:8pt; color:#444; margin:0 0 10pt}
+.doc table{width:100%; border-collapse:collapse; font-size:8.5pt}
+.doc th{
+  text-align:left; font-family:var(--ui); font-size:7pt; letter-spacing:.09em;
+  text-transform:uppercase; border-bottom:1pt solid #333; padding:4pt 6pt 3pt; color:#000;
+}
+.doc td{padding:5pt 6pt; border-bottom:.5pt solid #bbb; vertical-align:top; color:#000}
+.doc tr{break-inside:avoid; page-break-inside:avoid}
+.doc .gh td{
+  background:#eee; font-family:var(--ui); font-weight:700; font-size:7.5pt;
+  letter-spacing:.09em; text-transform:uppercase; border-bottom:.5pt solid #666;
+}
+.doc .sw{width:54pt; height:40pt; border:.5pt solid #999; display:block}
+.doc .mono{font-family:var(--data); font-variant-numeric:tabular-nums; white-space:nowrap}
+
+@media print{
+  :root{
+    --paper:#fff; --surface:#fff; --surface-2:#fff; --surface-3:#eee;
+    --ink:#000; --ink-2:#222; --muted:#555; --rule:#bbb; --rule-strong:#888;
+  }
+  body{background:#fff; color:#000; font-size:9pt}
+  .bar, .job, .tiles, .views, .view-note, .list, .foot, .no-print{display:none !important}
+  .wrap{max-width:none; padding-inline:0}
+  body.print-working #doc-working{display:block}
+  body.print-record #doc-record{display:block}
+  @page{size:landscape; margin:12mm 10mm 14mm}
+  thead{display:table-header-group}
+}
+</style>
+</head>
+<body>
+
+<header class="bar no-print">
+  <div class="wrap">
+    <div class="mark">
+      <b>CKA Construction</b>
+      <span>Selections Portal</span>
+    </div>
+    <div class="bar-actions">
+      <button class="btn" type="button" data-print="working">Print working copy</button>
+      <button class="btn" type="button" data-print="record">Print approved record</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="job wrap">
+    <p class="eyebrow">Project 26-114 &middot; Owner selections</p>
+    <h1 id="job-address">1442 Sunset Isle Terrace</h1>
+    <div class="job-meta">
+      <span><i>Owners</i> Marisol &amp; Daniel Reyes</span>
+      <span><i>Construction start</i> Nov 2, 2026</span>
+      <span><i>Dry-in target</i> Apr 16, 2027</span>
+      <span><i>Project manager</i> Kevin Crousillat</span>
+      <span><i>Updated</i> <span id="generated-on"></span></span>
+    </div>
+
+    <div class="tiles" id="tiles"></div>
+  </section>
+
+  <div class="wrap">
+    <div class="views" role="tablist" aria-label="Selection views">
+      <button class="view-tab" type="button" role="tab" id="tab-blocking" data-view="blocking" aria-selected="true">Holding up the job</button>
+      <button class="view-tab" type="button" role="tab" id="tab-room" data-view="room" aria-selected="false">By room</button>
+      <button class="view-tab" type="button" role="tab" id="tab-trade" data-view="trade" aria-selected="false">By trade</button>
+      <button class="view-tab" type="button" role="tab" id="tab-record" data-view="record" aria-selected="false">Approved record</button>
+    </div>
+    <p class="view-note" id="view-note"></p>
+    <div class="list" id="list"></div>
+  </div>
+
+  <div class="wrap foot no-print">
+    <div class="demo">
+      <strong>Demo project.</strong> 1442 Sunset Isle Terrace is an example job with sample selections, and the
+      option images are generated color samples, not real product photography. Your picks are saved in this
+      browser only &mdash; nothing is emailed and no order is placed. Buttons marked
+      <span class="staff">CKA only</span> stand in for the office side of the workflow.
+      <button class="btn btn-quiet" type="button" id="reset" style="margin-top:8px">Reset demo data</button>
+    </div>
+    Questions on any item: <a href="mailto:selections@ckaconstruction.com">selections@ckaconstruction.com</a> &middot; (954) 555-0142<br>
+    Approvals are confirmed by email to both owners and to CKA. An approved selection is released for order and
+    is priced as shown on the contract allowance schedule.
+  </div>
+</main>
+
+<!-- Working copy: everything, grouped by trade, sorted by blocking date -->
+<section class="doc" id="doc-working">
+  <h1>Selections &mdash; working copy</h1>
+  <p class="dmeta" id="doc-working-meta"></p>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:20%">Item</th><th style="width:13%">Space</th><th style="width:11%">Status</th>
+        <th style="width:9%">Needed by</th><th style="width:6%">Lead</th><th>Selection of record</th>
+      </tr>
+    </thead>
+    <tbody id="doc-working-body"></tbody>
+  </table>
+</section>
+
+<!-- Record copy: approved only, grouped by room, in space order -->
+<section class="doc" id="doc-record">
+  <h1>Approved selections &mdash; record copy</h1>
+  <p class="dmeta" id="doc-record-meta"></p>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:60pt">Sample</th><th style="width:20%">Item</th><th style="width:12%">Trade</th>
+        <th>Supplier / model / finish</th><th style="width:22%">Approved by</th>
+      </tr>
+    </thead>
+    <tbody id="doc-record-body"></tbody>
+  </table>
+</section>
+
+<script>
+/* ------------------------------------------------------------------
+   CKA Selections Portal
+   Front end for the six-table model: Space Types, Item Templates,
+   Projects, Spaces, Selections, Options. SEED below stands in for the
+   rows an Airtable read would return for one project.
+-------------------------------------------------------------------*/
+
+var PROJECT = {
+  code: "26-114",
+  address: "1442 Sunset Isle Terrace",
+  owners: [
+    { name: "Marisol Reyes", email: "marisol.reyes@example.com" },
+    { name: "Daniel Reyes",  email: "daniel.reyes@example.com" }
+  ],
+  start: "2026-11-02",
+  dryIn: "2027-04-16"
+};
+
+/* Spaces in turnover order. type points at a Space Type row. */
+var SPACES = [
+  { id:"sp-wh",  name:"Whole house",    type:"whole house",     order:1 },
+  { id:"sp-kit", name:"Kitchen",        type:"kitchen",         order:2 },
+  { id:"sp-mbr", name:"Morning bar",    type:"bar",             order:3 },
+  { id:"sp-pbt", name:"Primary bath",   type:"bath",            order:4 },
+  { id:"sp-cbt", name:"Cabana bath",    type:"bath",            order:5 },
+  { id:"sp-pwd", name:"Powder",         type:"powder",          order:6 },
+  { id:"sp-lnd", name:"Laundry",        type:"laundry",         order:7 },
+  { id:"sp-elv", name:"Elevator",       type:"elevator",        order:8 },
+  { id:"sp-sk",  name:"Summer kitchen", type:"outdoor kitchen", order:9 }
+];
+
+/* Generated color samples stand in for product photography. */
+function sw(a, b, ang){ return "linear-gradient(" + (ang||145) + "deg," + a + " 0%," + b + " 100%)"; }
+function grain(a, b){
+  return "repeating-linear-gradient(90deg," + a + " 0 6px," + b + " 6px 12px)";
+}
+
+var SEED = [
+  /* ---------------- whole house ---------------- */
+  { id:"s01", space:"sp-elv", item:"Elevator cab interior package", trade:"Elevator", lead:20, needed:"2026-09-18",
+    mode:"curated", status:"Options presented",
+    desc:"Cab walls, ceiling, handrail and fixture finish. Longest lead item on the job and the state inspection is scheduled off the cab order, so this one moves the certificate of occupancy, not just the finish date.",
+    options:[
+      { id:"a", name:"Brushed stainless, oak rail", detail:"Savaria · SS #4 panel · white oak rail", sw:grain("#B9BDC1","#A9AEB3") },
+      { id:"b", name:"Bronze mirror, leather rail", detail:"Savaria · antique bronze · saddle leather", sw:sw("#7A5C3A","#4A3521") },
+      { id:"c", name:"White lacquer, satin nickel", detail:"Savaria · lacquer panel · nickel rail", sw:sw("#F2F0EB","#D8D5CE") }
+    ] },
+  { id:"s02", space:"sp-wh", item:"Impact window &amp; door frame color", trade:"Glazing", lead:14, needed:"2026-09-25",
+    mode:"curated", status:"Options presented",
+    desc:"Factory finish on all impact-rated windows and exterior doors. Frames are powder-coated before shipping and cannot be changed on site, so the color is locked when the package is released.",
+    options:[
+      { id:"a", name:"Anodized bronze", detail:"PGT · dark bronze anodized", sw:sw("#4A3A28","#2E2318") },
+      { id:"b", name:"Architectural black", detail:"PGT · matte black", sw:sw("#2A2C2E","#131415") },
+      { id:"c", name:"Satin white", detail:"PGT · white powder coat", sw:sw("#F6F5F2","#E1DFDA") }
+    ] },
+  { id:"s03", space:"sp-wh", item:"Roof tile profile &amp; color", trade:"Roofing", lead:10, needed:"2026-10-09",
+    mode:"curated", status:"Not started",
+    desc:"Concrete tile profile and color blend. Drives the fascia and gutter color and is visible in every elevation the ARB reviews.",
+    options:[
+      { id:"a", name:"Flat slate, smoke blend", detail:"Eagle Roofing · Malibu flat · smoke", sw:sw("#6E747A","#4B5157") },
+      { id:"b", name:"Barrel, sand dune", detail:"Eagle Roofing · Capistrano · sand", sw:sw("#D6C3A3","#B69C77") },
+      { id:"c", name:"Flat slate, charcoal", detail:"Eagle Roofing · Malibu flat · charcoal", sw:sw("#3E4145","#24272A") }
+    ] },
+  { id:"s04", space:"sp-wh", item:"Front entry door", trade:"Millwork", lead:16, needed:"2026-10-02",
+    mode:"open", status:"Not started",
+    desc:"Pivot or swing, impact rated, with glazing and hardware. Tell us the maker and model you want and we will confirm the rough opening and the structural header before it is ordered." },
+  { id:"s05", space:"sp-wh", item:"Garage doors", trade:"Doors", lead:8, needed:"2026-12-04",
+    mode:"curated", status:"Not started",
+    desc:"Two 9&#39; x 8&#39; impact-rated doors on the motor court elevation.",
+    options:[
+      { id:"a", name:"Flush panel, bronze", detail:"Clopay · flush steel · bronze", sw:sw("#5A4732","#3A2C1E") },
+      { id:"b", name:"Full-view aluminum &amp; frosted glass", detail:"Clopay Avante · clear anodized", sw:grain("#C6CBCF","#B2B8BD") },
+      { id:"c", name:"Wood-look composite", detail:"Clopay Canyon Ridge · walnut", sw:sw("#6B4A2E","#42291A") }
+    ] },
+  { id:"s06", space:"sp-wh", item:"Stucco texture", trade:"Stucco", lead:3, needed:"2027-01-15",
+    mode:"curated", status:"Not started",
+    desc:"Finish texture on all exterior walls. We will run a 4&#39; x 4&#39; sample board on site in your chosen texture before the crew starts.",
+    options:[
+      { id:"a", name:"Smooth sand", detail:"20/30 silica · hand troweled", sw:grain("#E8E3D9","#E2DDD2") },
+      { id:"b", name:"Light lace", detail:"Knockdown lace · medium", sw:sw("#E6E1D6","#D2CCBF") },
+      { id:"c", name:"Old-world skip trowel", detail:"Heavy skip · hand finished", sw:sw("#E9E2D4","#CFC6B4") }
+    ] },
+  { id:"s07", space:"sp-wh", item:"Exterior paint color", trade:"Paint", lead:2, needed:"2027-02-19",
+    mode:"open", status:"Not started",
+    desc:"Body, trim and soffit colors. Send the manufacturer and color numbers, or ask us to draw down samples on the sample board once the stucco texture is up." },
+
+  /* ---------------- kitchen ---------------- */
+  { id:"s08", space:"sp-kit", item:"Cabinet door style &amp; finish", trade:"Millwork", lead:12, needed:"2026-11-13",
+    mode:"curated", status:"Options presented",
+    desc:"Perimeter and island cabinetry. The island can differ from the perimeter &mdash; tell us in the notes if you want a second finish and we will price it.",
+    options:[
+      { id:"a", name:"Rift white oak, natural", detail:"Wood-Mode · slab · natural matte", sw:grain("#C9A87C","#BE9C6E") },
+      { id:"b", name:"Painted inset, alabaster", detail:"Wood-Mode · inset shaker · alabaster", sw:sw("#F4F1EA","#E3DFD5") },
+      { id:"c", name:"Walnut slab, clear", detail:"Wood-Mode · slab · clear coat", sw:sw("#6E4B30","#46301E") },
+      { id:"d", name:"Painted inset, deep olive", detail:"Wood-Mode · inset · olive", sw:sw("#4F5439","#343824") }
+    ] },
+  { id:"s09", space:"sp-kit", item:"Countertop slab", trade:"Stone", lead:6, needed:"2026-12-18",
+    mode:"open", status:"Not started",
+    desc:"Perimeter and island tops with a full-height backsplash at the range. Slabs are picked in person at the yard &mdash; we will book the walk and hold your slabs for 30 days. Enter the yard and slab name here once you have tagged them." },
+  { id:"s10", space:"sp-kit", item:"Plumbing fixtures", trade:"Plumbing", lead:8, needed:"2026-11-20",
+    mode:"curated", status:"Approved",
+    approvedBy:"Marisol Reyes", approvedAt:"2026-09-04T15:12:00-04:00", picked:"b",
+    desc:"Main sink faucet, prep sink faucet and pot filler. Finish carries through the cabinet hardware.",
+    options:[
+      { id:"a", name:"Polished chrome", detail:"Waterstone · Contemporary · chrome", sw:grain("#CDD2D6","#B7BDC2") },
+      { id:"b", name:"Unlacquered brass", detail:"Waterstone · Contemporary · unlacquered brass", sw:sw("#C8A254","#9A7734") },
+      { id:"c", name:"Matte black", detail:"Waterstone · Contemporary · matte black", sw:sw("#2C2D2F","#161718") }
+    ] },
+  { id:"s11", space:"sp-kit", item:"Appliance package", trade:"Appliances", lead:16, needed:"2026-10-16",
+    mode:"open", status:"Owner selected",
+    ownerEntry:{ supplier:"Monark Premium Appliance", model:"Sub-Zero 48\" built-in + Wolf 48\" dual fuel range", finish:"Stainless, panel-ready refrigeration", notes:"Adding the second dishwasher at the prep sink. Please confirm the panel sizes with the cabinet shop." },
+    submittedAt:"2026-09-09T10:41:00-04:00", submittedBy:"Daniel Reyes",
+    desc:"Refrigeration, range, ventilation, dishwashers and beverage units. Panel-ready units have to be confirmed with the cabinet shop before doors are cut." },
+
+  /* ---------------- morning bar ---------------- */
+  { id:"s12", space:"sp-mbr", item:"Backsplash tile", trade:"Tile", lead:6, needed:"2027-01-08",
+    mode:"curated", status:"Not started",
+    desc:"Full height behind the bar run, mitered at the returns.",
+    options:[
+      { id:"a", name:"Zellige, bone gloss", detail:"Clé · 4x4 zellige · bone", sw:grain("#EFE8DC","#E4DBCB") },
+      { id:"b", name:"Honed marble slab match", detail:"Match countertop slab · honed", sw:sw("#EDEAE4","#D3CFC6") },
+      { id:"c", name:"Glazed brick, deep green", detail:"Clé · 2x8 glazed · forest", sw:sw("#2E4A3A","#1B2E24") }
+    ] },
+
+  /* ---------------- primary bath ---------------- */
+  { id:"s13", space:"sp-pbt", item:"Plumbing trim finish", trade:"Plumbing", lead:8, needed:"2026-12-11",
+    mode:"curated", status:"Options presented",
+    desc:"Shower valves, tub filler, lavatory faucets and accessories. One finish for the whole room; the rough valves are already set so only the trim changes.",
+    options:[
+      { id:"a", name:"Brushed nickel", detail:"Waterworks · .25 · brushed nickel", sw:grain("#C4C7C9","#AFB3B6") },
+      { id:"b", name:"Unlacquered brass", detail:"Waterworks · .25 · unlacquered brass", sw:sw("#C29B4E","#8F6E2E") },
+      { id:"c", name:"Matte black", detail:"Waterworks · .25 · matte black", sw:sw("#292A2C","#131415") }
+    ] },
+  { id:"s14", space:"sp-pbt", item:"Floor tile", trade:"Tile", lead:6, needed:"2027-01-08",
+    mode:"curated", status:"Not started",
+    desc:"Field tile for the bath floor, running into the shower with a linear drain.",
+    options:[
+      { id:"a", name:"Limestone, 12x24 honed", detail:"Artistic Tile · Moleanos · honed", sw:sw("#DCD5C6","#C4BCAA") },
+      { id:"b", name:"Marble hex mosaic", detail:"Artistic Tile · 2\" hex · Calacatta", sw:grain("#F0EDE7","#E2DED6") },
+      { id:"c", name:"Porcelain, sand matte", detail:"Florim · 24x48 · sand", sw:sw("#E3DCCF","#CFC6B6") }
+    ] },
+  { id:"s15", space:"sp-pbt", item:"Shower wall tile", trade:"Tile", lead:6, needed:"2027-01-08",
+    mode:"curated", status:"Not started",
+    desc:"Wet wall and niche. Tell us in the notes if you want the niche in a contrasting material.",
+    options:[
+      { id:"a", name:"Marble slab, book-matched", detail:"Calacatta Gold · honed slab", sw:sw("#F2EFE9","#DAD5CA") },
+      { id:"b", name:"Vertical stack, bone", detail:"Clé · 3x12 · bone gloss", sw:grain("#EFEAE0","#E6E0D3") },
+      { id:"c", name:"Limestone, 12x24 honed", detail:"Moleanos · honed", sw:sw("#DBD4C5","#C2BAA8") }
+    ] },
+  { id:"s16", space:"sp-pbt", item:"Vanity top", trade:"Stone", lead:6, needed:"2027-01-15",
+    mode:"open", status:"Not started",
+    desc:"Double vanity top with an integral or undermount basin. Enter the yard and slab name, or ask us to bring samples that work with the floor tile once that is picked." },
+  { id:"s17", space:"sp-pbt", item:"Shower enclosure", trade:"Glazing", lead:8, needed:"2027-01-22",
+    mode:"curated", status:"On hold",
+    desc:"On hold until the shower wall tile is chosen &mdash; the header detail changes with the tile thickness. Nothing to do here yet.",
+    options:[
+      { id:"a", name:"Frameless clear, bronze hardware", detail:"3/8\" low-iron · bronze", sw:sw("#DCE4E6","#B9C6C9") },
+      { id:"b", name:"Frameless clear, nickel hardware", detail:"3/8\" low-iron · nickel", sw:sw("#E1E7E9","#C2CDD0") }
+    ] },
+
+  /* ---------------- cabana bath ---------------- */
+  { id:"s18", space:"sp-cbt", item:"Floor &amp; wall tile", trade:"Tile", lead:6, needed:"2027-01-22",
+    mode:"curated", status:"Not started",
+    desc:"Pool-facing bath. One tile used on the floor and the wet wall keeps the room reading larger.",
+    options:[
+      { id:"a", name:"Terracotta, square", detail:"Clé · 6x6 terracotta · sealed", sw:sw("#C97F55","#9E5C39") },
+      { id:"b", name:"Coral stone, tumbled", detail:"Keys coral · 12x12 tumbled", sw:grain("#E4DCCB","#D6CCB7") },
+      { id:"c", name:"Porcelain, ocean matte", detail:"Florim · 12x24 · ocean", sw:sw("#A9BEC0","#7D999C") }
+    ] },
+
+  /* ---------------- powder ---------------- */
+  { id:"s19", space:"sp-pwd", item:"Vanity &amp; mirror", trade:"Millwork", lead:10, needed:"2026-12-18",
+    mode:"open", status:"Not started",
+    desc:"Freestanding or wall-hung vanity with a mirror. This is the one room where a piece with real personality reads well &mdash; send us anything you have saved and we will confirm it fits the plumbing rough." },
+
+  /* ---------------- laundry ---------------- */
+  { id:"s20", space:"sp-lnd", item:"Cabinet finish &amp; counter", trade:"Millwork", lead:10, needed:"2026-12-18",
+    mode:"curated", status:"Not started",
+    desc:"Cabinet color and a durable counter over the washer and dryer.",
+    options:[
+      { id:"a", name:"Painted white, quartz top", detail:"Alabaster cabinet · Caesarstone Pure White", sw:sw("#F5F3EE","#E2DFD7") },
+      { id:"b", name:"Painted blue-grey, quartz top", detail:"Blue-grey cabinet · Caesarstone Cloudburst", sw:sw("#7C8B96","#56646E") }
+    ] },
+
+  /* ---------------- summer kitchen ---------------- */
+  { id:"s21", space:"sp-sk", item:"Grill &amp; hood package", trade:"Appliances", lead:12, needed:"2026-11-27",
+    mode:"curated", status:"Not started",
+    desc:"Built-in grill, vent hood, refrigeration and storage on the covered terrace. All units are 304 stainless for coastal exposure.",
+    options:[
+      { id:"a", name:"Lynx 42\" package", detail:"Lynx · 42\" grill, hood, 2 drawers", sw:grain("#C0C5C9","#AEB4B8") },
+      { id:"b", name:"Hestan 42\" package", detail:"Hestan · 42\" grill, hood, fridge", sw:grain("#B6BCC1","#A3A9AE") }
+    ] },
+  { id:"s22", space:"sp-sk", item:"Countertop", trade:"Stone", lead:6, needed:"2027-01-15",
+    mode:"open", status:"Not started",
+    desc:"Counter and bar top on the terrace. Material has to hold up to UV and salt air &mdash; porcelain and granite both work here, marble does not." }
+];
+
+/* ---------- status vocabulary ---------- */
+var STATUS = {
+  "Not started":       { cls:"", owner:"Waiting on you" },
+  "Options presented": { cls:"p-presented", owner:"Waiting on you" },
+  "Owner selected":    { cls:"p-selected", owner:"With CKA" },
+  "Approved":          { cls:"p-approved", owner:"Approved" },
+  "Released for order":{ cls:"p-released", owner:"Approved" },
+  "On hold":           { cls:"p-hold", owner:"On hold" },
+  "Superseded":        { cls:"", owner:"Superseded" }
+};
+
+/* ---------- state ---------- */
+var STORE_KEY = "cka-selections-26-114-v1";
+var state = { view:"blocking", open:null, rows:[], draft:{} };
+
+function load(){
+  var saved = null;
+  try { saved = JSON.parse(localStorage.getItem(STORE_KEY) || "null"); } catch(e){ saved = null; }
+  state.rows = SEED.map(function(r){ return Object.assign({}, r); });
+  if (saved && saved.rows) {
+    saved.rows.forEach(function(sv){
+      var row = state.rows.filter(function(r){ return r.id === sv.id; })[0];
+      if (row) { Object.assign(row, sv); }
+      else if (sv.item) { state.rows.push(sv); }
+    });
+  }
+}
+function save(){
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify({ rows: state.rows.map(function(r){
+      return { id:r.id, space:r.space, item:r.item, trade:r.trade, lead:r.lead, needed:r.needed,
+               mode:r.mode, status:r.status, desc:r.desc, options:r.options, picked:r.picked,
+               approvedBy:r.approvedBy, approvedAt:r.approvedAt, ownerEntry:r.ownerEntry,
+               submittedAt:r.submittedAt, submittedBy:r.submittedBy, supersedes:r.supersedes,
+               supersededBy:r.supersededBy };
+    }) }));
+  } catch(e){ /* private window or blocked storage: the page still works for this visit */ }
+}
+
+/* ---------- helpers ---------- */
+var TODAY = new Date();
+function parseDate(s){ var p = s.split("-"); return new Date(+p[0], +p[1]-1, +p[2]); }
+function fmt(d){
+  return d.toLocaleDateString("en-US", { month:"short", day:"numeric", year:"numeric" });
+}
+function fmtStamp(iso){
+  var d = new Date(iso);
+  return d.toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"}) + " at " +
+         d.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"});
+}
+function daysOut(row){
+  return Math.round((parseDate(row.needed) - TODAY) / 86400000);
+}
+function isDone(row){ return row.status === "Approved" || row.status === "Released for order"; }
+function isClosed(row){ return isDone(row) || row.status === "Superseded"; }
+function urgency(row){
+  if (isDone(row)) return "done";
+  if (row.status === "Superseded") return "";
+  var d = daysOut(row);
+  if (d < 0) return "past";
+  if (d <= 21) return "soon";
+  return "";
+}
+function spaceOf(id){
+  return SPACES.filter(function(s){ return s.id === id; })[0] || { name:"Unassigned", order:99 };
+}
+function stripTags(s){ return String(s).replace(/<[^>]*>/g, ""); }
+function decode(s){
+  var t = document.createElement("textarea"); t.innerHTML = s; return t.value;
+}
+function plain(s){ return decode(stripTags(s)); }
+function pickOf(row){
+  if (!row.options || !row.picked) return null;
+  return row.options.filter(function(o){ return o.id === row.picked; })[0] || null;
+}
+function recordLine(row){
+  var p = pickOf(row);
+  if (p) return plain(p.name) + " — " + plain(p.detail);
+  if (row.ownerEntry) {
+    return [row.ownerEntry.supplier, row.ownerEntry.model, row.ownerEntry.finish]
+      .filter(Boolean).join(" · ");
+  }
+  return "—";
+}
+
+/* ---------- summary tiles ---------- */
+function renderTiles(){
+  var live = state.rows.filter(function(r){ return r.status !== "Superseded"; });
+  var waiting = live.filter(function(r){ return STATUS[r.status].owner === "Waiting on you"; });
+  var withCka = live.filter(function(r){ return STATUS[r.status].owner === "With CKA"; });
+  var done    = live.filter(isDone);
+  var late    = waiting.filter(function(r){ return daysOut(r) < 0; });
+
+  var tiles = [
+    { n: waiting.length, l: "Waiting on your decision", cls: waiting.length ? "" : "is-good" },
+    { n: late.length,    l: "Past the date we need them", cls: late.length ? "is-crit" : "" },
+    { n: withCka.length, l: "With CKA for review", cls: withCka.length ? "is-warn" : "" },
+    { n: done.length + " / " + live.length, l: "Approved and released", cls: "is-good" }
+  ];
+  document.getElementById("tiles").innerHTML = tiles.map(function(t){
+    return '<div class="tile ' + t.cls + '"><span class="n">' + t.n + '</span><span class="l">' + t.l + '</span></div>';
+  }).join("");
+}
+
+/* ---------- list ---------- */
+var VIEW_NOTES = {
+  blocking: "Sorted by the date we need the decision, not by room. The date is the lead time counted back from when the trade is scheduled — an item at the top is holding up work, however small the decision looks.",
+  room:     "Every open and approved selection grouped the way you walk the house. This is the order the turnover finish schedule is built in.",
+  trade:    "The same selections grouped by who installs them. Useful when you are talking to one vendor about several rooms at once.",
+  record:   "Approved selections only, with who approved each one and when. This is the record that goes in your turnover package."
+};
+
+function groupsFor(view){
+  var live = state.rows.filter(function(r){ return r.status !== "Superseded"; });
+
+  if (view === "blocking") {
+    var open = live.filter(function(r){ return !isDone(r); })
+      .sort(function(a,b){ return parseDate(a.needed) - parseDate(b.needed); });
+    var closed = live.filter(isDone)
+      .sort(function(a,b){ return parseDate(a.needed) - parseDate(b.needed); });
+    var g = [];
+    if (open.length)   g.push({ title:"Open decisions, soonest first", rows:open });
+    if (closed.length) g.push({ title:"Settled", rows:closed });
+    return g;
+  }
+
+  if (view === "record") {
+    var approved = live.filter(isDone);
+    return SPACES.map(function(sp){
+      return { title: sp.name, rows: approved.filter(function(r){ return r.space === sp.id; }) };
+    }).filter(function(g){ return g.rows.length; });
+  }
+
+  if (view === "room") {
+    return SPACES.map(function(sp){
+      return { title: sp.name, rows: live.filter(function(r){ return r.space === sp.id; })
+        .sort(function(a,b){ return parseDate(a.needed) - parseDate(b.needed); }) };
+    }).filter(function(g){ return g.rows.length; });
+  }
+
+  var trades = [];
+  live.forEach(function(r){ if (trades.indexOf(r.trade) < 0) trades.push(r.trade); });
+  trades.sort();
+  return trades.map(function(t){
+    return { title:t, rows: live.filter(function(r){ return r.trade === t; })
+      .sort(function(a,b){ return parseDate(a.needed) - parseDate(b.needed); }) };
+  });
+}
+
+function dueMarkup(row){
+  var u = urgency(row);
+  var d = daysOut(row);
+  var label;
+  if (isDone(row)) label = "Released for order";
+  else if (row.status === "Superseded") label = "Replaced";
+  else if (d < 0) label = Math.abs(d) + " days past";
+  else if (d === 0) label = "Due today";
+  else label = "in " + d + " days";
+  return '<span class="due ' + (u === "done" ? "" : "u-" + u) + '">' +
+    '<b>' + fmt(parseDate(row.needed)) + '</b><i>' + label + '</i></span>';
+}
+
+function rowMarkup(row){
+  var sp = spaceOf(row.space);
+  var st = STATUS[row.status];
+  var open = state.open === row.id;
+  return '<li class="row u-' + urgency(row) + (open ? " is-open" : "") + '" data-row="' + row.id + '">' +
+    '<button class="row-btn" type="button" data-toggle="' + row.id + '" aria-expanded="' + open + '">' +
+      '<span class="row-title"><span class="n">' + row.item + '</span>' +
+      '<span class="s">' + sp.name + " · " + row.trade + " · " + row.lead + '-week lead</span></span>' +
+      dueMarkup(row) +
+      '<span class="pill ' + st.cls + '">' + row.status + '</span>' +
+      '<svg class="chev" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">' +
+        '<path d="M6 3.5L10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+    '</button>' +
+    (open ? panelMarkup(row) : "") +
+  '</li>';
+}
+
+function panelMarkup(row){
+  var d = state.draft[row.id] || {};
+  var out = '<div class="panel">';
+  out += '<p class="desc">' + row.desc + '</p>';
+  out += '<p class="facts">' +
+    '<span><b>Trade</b> ' + row.trade + '</span>' +
+    '<span><b>Lead time</b> ' + row.lead + ' weeks</span>' +
+    '<span><b>Needed by</b> ' + fmt(parseDate(row.needed)) + '</span>' +
+    '<span><b>Decision</b> ' + (row.mode === "curated" ? "Choose from CKA options" : "You specify") + '</span>' +
+    '</p>';
+
+  if (row.supersedes) {
+    out += '<p class="note">Replaces an earlier approved selection. The original stays in the record.</p>';
+  }
+
+  /* ---- approved: locked record ---- */
+  if (isDone(row)) {
+    out += '<div class="stamp"><span class="h">Approved and released for order</span>' +
+      '<span>' + recordLine(row) + '</span>' +
+      '<span>Approved by ' + row.approvedBy + ' on ' + fmtStamp(row.approvedAt) + '</span>' +
+      '<span>Confirmation sent to both owners and to CKA.</span></div>';
+    out += '<p class="note">Approved selections are locked. If something has to change, we write a new selection that ' +
+      'replaces this one &mdash; this record stays exactly as it is.</p>';
+    out += '<div class="panel-actions"><button class="btn" type="button" data-change="' + row.id + '">Request a change</button></div>';
+    return out + '</div>';
+  }
+
+  if (row.status === "On hold") {
+    out += '<p class="note">On hold. We will reopen this as soon as the item it depends on is settled.</p>';
+    return out + '</div>';
+  }
+
+  /* ---- curated ---- */
+  if (row.mode === "curated") {
+    if (!row.options || !row.options.length) {
+      out += '<p class="note">CKA is putting options together for this item.</p>';
+      return out + '</div>';
+    }
+    out += '<ul class="opts">' + row.options.map(function(o){
+      var checked = (d.pick || row.picked) === o.id;
+      return '<li><label class="opt">' +
+        '<input type="radio" name="pick-' + row.id + '" value="' + o.id + '" data-pick="' + row.id + '"' +
+        (checked ? " checked" : "") + '>' +
+        '<span class="opt-card"><span class="swatch" style="background:' + o.sw + '"></span>' +
+        '<span class="opt-body"><span class="on">' + o.name + '</span>' +
+        '<span class="od">' + o.detail + '</span></span></span></label></li>';
+    }).join("") + '</ul>';
+
+    var picked = d.pick || row.picked;
+    out += '<div class="sign"><h3>Approve this selection</h3>' +
+      '<p>Typing your name approves ' + (picked ? "the option above" : "your choice") +
+      ' and releases it for order. Both owners get the confirmation email; whoever types their name is the approver of record.</p>' +
+      '<div class="sign-row"><span class="grow">' +
+        '<label for="name-' + row.id + '">Type your full name</label>' +
+        '<input id="name-' + row.id + '" type="text" autocomplete="name" placeholder="' +
+          PROJECT.owners[0].name + '" value="' + (d.name || "") + '" data-name="' + row.id + '">' +
+      '</span>' +
+      '<button class="btn btn-primary" type="button" data-approve="' + row.id + '"' +
+        (picked && (d.name || "").trim().length >= 3 ? "" : " disabled") + '>Approve selection</button>' +
+      '</div></div>';
+    return out + '</div>';
+  }
+
+  /* ---- open (owner specifies) ---- */
+  var e = row.ownerEntry || {};
+  if (row.status === "Owner selected") {
+    out += '<div class="stamp" style="border-color:var(--warn); background:var(--warn-soft)">' +
+      '<span class="h" style="color:var(--warn)">With CKA for review</span>' +
+      '<span>' + recordLine(row) + '</span>' +
+      (e.notes ? '<span>Your note: ' + e.notes + '</span>' : "") +
+      '<span>Submitted by ' + row.submittedBy + ' on ' + fmtStamp(row.submittedAt) + '</span></div>';
+    out += '<p class="note">We are confirming availability, lead time and that it works with what is already built. ' +
+      'You will get a confirmation email when it is released for order.</p>';
+    out += '<div class="panel-actions"><span class="staff">CKA only</span>' +
+      '<button class="btn" type="button" data-confirm="' + row.id + '">Confirm and release for order</button></div>';
+    return out + '</div>';
+  }
+
+  out += '<div class="fields">' +
+    field(row.id, "supplier", "Supplier or showroom", d.supplier !== undefined ? d.supplier : (e.supplier || "")) +
+    field(row.id, "model", "Product or model", d.model !== undefined ? d.model : (e.model || "")) +
+    field(row.id, "finish", "Color or finish", d.finish !== undefined ? d.finish : (e.finish || "")) +
+    '<span class="field wide"><label for="notes-' + row.id + '">Anything we should know</label>' +
+    '<textarea id="notes-' + row.id + '" data-entry="notes" data-row-id="' + row.id + '" ' +
+    'placeholder="Link to a photo, a second choice, a question for us">' +
+    (d.notes !== undefined ? d.notes : (e.notes || "")) + '</textarea></span>' +
+    '</div>';
+  out += '<div class="panel-actions">' +
+    '<button class="btn btn-primary" type="button" data-submit="' + row.id + '"' +
+      ((d.supplier || e.supplier) && (d.model || e.model) ? "" : " disabled") + '>Send to CKA</button>' +
+    '<span class="note" style="margin:0">CKA confirms it is buildable and priced, then it is released for order.</span>' +
+    '</div>';
+  return out + '</div>';
+}
+
+function field(id, key, label, val){
+  return '<span class="field"><label for="' + key + '-' + id + '">' + label + '</label>' +
+    '<input id="' + key + '-' + id + '" type="text" data-entry="' + key + '" data-row-id="' + id + '" ' +
+    'value="' + String(val).replace(/"/g,"&quot;") + '"></span>';
+}
+
+function render(){
+  renderTiles();
+  document.getElementById("view-note").textContent = VIEW_NOTES[state.view];
+  var groups = groupsFor(state.view);
+  var host = document.getElementById("list");
+
+  if (!groups.length) {
+    host.innerHTML = '<p class="empty">' + (state.view === "record"
+      ? "Nothing approved yet. Approved selections land here with the name and date attached."
+      : "Nothing here yet.") + '</p>';
+  } else {
+    host.innerHTML = groups.map(function(g){
+      return '<section class="group"><div class="group-head"><h2>' + g.title + '</h2>' +
+        '<span class="count">' + g.rows.length + ' item' + (g.rows.length === 1 ? "" : "s") + '</span></div>' +
+        '<ul class="rows">' + g.rows.map(rowMarkup).join("") + '</ul></section>';
+    }).join("");
+  }
+  renderDocs();
+}
+
+/* ---------- printable documents ---------- */
+function renderDocs(){
+  var head = PROJECT.address + " · Project " + PROJECT.code + " · Generated " +
+    TODAY.toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"});
+  document.getElementById("doc-working-meta").textContent =
+    head + " · Grouped by trade, sorted by the date the decision is needed";
+  document.getElementById("doc-record-meta").textContent =
+    head + " · Approved items only, in room order";
+
+  var live = state.rows.filter(function(r){ return r.status !== "Superseded"; });
+
+  var trades = [];
+  live.forEach(function(r){ if (trades.indexOf(r.trade) < 0) trades.push(r.trade); });
+  trades.sort();
+  document.getElementById("doc-working-body").innerHTML = trades.map(function(t){
+    var rows = live.filter(function(r){ return r.trade === t; })
+      .sort(function(a,b){ return parseDate(a.needed) - parseDate(b.needed); });
+    return '<tr class="gh"><td colspan="6">' + t + '</td></tr>' + rows.map(function(r){
+      return '<tr><td>' + r.item + '</td><td>' + spaceOf(r.space).name + '</td><td>' + r.status + '</td>' +
+        '<td class="mono">' + fmt(parseDate(r.needed)) + '</td><td class="mono">' + r.lead + ' wk</td>' +
+        '<td>' + recordLine(r) + '</td></tr>';
+    }).join("");
+  }).join("");
+
+  var approved = live.filter(isDone);
+  document.getElementById("doc-record-body").innerHTML = SPACES.map(function(sp){
+    var rows = approved.filter(function(r){ return r.space === sp.id; });
+    if (!rows.length) return "";
+    return '<tr class="gh"><td colspan="5">' + sp.name + '</td></tr>' + rows.map(function(r){
+      var p = pickOf(r);
+      return '<tr><td>' + (p ? '<span class="sw" style="background:' + p.sw + '"></span>' : "") + '</td>' +
+        '<td>' + r.item + '</td><td>' + r.trade + '</td><td>' + recordLine(r) + '</td>' +
+        '<td class="mono">' + r.approvedBy + '<br>' + fmtStamp(r.approvedAt) + '</td></tr>';
+    }).join("");
+  }).join("") || '<tr><td colspan="5">No approved selections yet.</td></tr>';
+}
+
+/* ---------- actions ---------- */
+function draft(id){ return (state.draft[id] = state.draft[id] || {}); }
+
+function approve(id){
+  var row = state.rows.filter(function(r){ return r.id === id; })[0];
+  var d = draft(id);
+  var pick = d.pick || row.picked;
+  var name = (d.name || "").trim();
+  if (!pick || name.length < 3) return;
+  row.picked = pick;
+  row.approvedBy = name;
+  row.approvedAt = new Date().toISOString();
+  row.status = "Approved";
+  delete state.draft[id];
+  save(); render();
+}
+
+function submitOpen(id){
+  var row = state.rows.filter(function(r){ return r.id === id; })[0];
+  var d = draft(id);
+  var e = row.ownerEntry || {};
+  row.ownerEntry = {
+    supplier: (d.supplier !== undefined ? d.supplier : e.supplier) || "",
+    model:    (d.model    !== undefined ? d.model    : e.model)    || "",
+    finish:   (d.finish   !== undefined ? d.finish   : e.finish)   || "",
+    notes:    (d.notes    !== undefined ? d.notes    : e.notes)    || ""
+  };
+  if (!row.ownerEntry.supplier || !row.ownerEntry.model) return;
+  row.status = "Owner selected";
+  row.submittedAt = new Date().toISOString();
+  row.submittedBy = PROJECT.owners[0].name;
+  delete state.draft[id];
+  save(); render();
+}
+
+function ckaConfirm(id){
+  var row = state.rows.filter(function(r){ return r.id === id; })[0];
+  row.status = "Approved";
+  row.approvedBy = row.submittedBy + " (confirmed by CKA)";
+  row.approvedAt = new Date().toISOString();
+  save(); render();
+}
+
+/* A change to an approved item never edits the record. It writes a new
+   selection that supersedes it; both stay in history. */
+function requestChange(id){
+  var row = state.rows.filter(function(r){ return r.id === id; })[0];
+  var copy = Object.assign({}, row);
+  copy.id = id + "-r" + Date.now().toString(36);
+  copy.status = row.mode === "curated" ? "Options presented" : "Not started";
+  copy.supersedes = row.id;
+  delete copy.picked; delete copy.approvedBy; delete copy.approvedAt;
+  delete copy.ownerEntry; delete copy.submittedAt; delete copy.submittedBy;
+  row.status = "Superseded";
+  row.supersededBy = copy.id;
+  state.rows.push(copy);
+  state.open = copy.id;
+  save(); render();
+  var el = document.querySelector('[data-row="' + copy.id + '"]');
+  if (el) el.scrollIntoView({ behavior:"smooth", block:"center" });
+}
+
+/* ---------- events ---------- */
+document.addEventListener("click", function(ev){
+  var t = ev.target.closest("[data-toggle],[data-approve],[data-submit],[data-confirm],[data-change],[data-view],[data-print],#reset");
+  if (!t) return;
+
+  if (t.hasAttribute("data-toggle")) {
+    var id = t.getAttribute("data-toggle");
+    state.open = state.open === id ? null : id;
+    render();
+    if (state.open) {
+      var el = document.querySelector('[data-row="' + state.open + '"] .row-btn');
+      if (el) el.focus();
+    }
+    return;
+  }
+  if (t.hasAttribute("data-view")) {
+    state.view = t.getAttribute("data-view");
+    Array.prototype.forEach.call(document.querySelectorAll(".view-tab"), function(b){
+      b.setAttribute("aria-selected", String(b === t));
+    });
+    render(); return;
+  }
+  if (t.hasAttribute("data-print")) {
+    var mode = t.getAttribute("data-print");
+    document.body.classList.add("print-" + mode);
+    window.print();
+    setTimeout(function(){ document.body.classList.remove("print-" + mode); }, 400);
+    return;
+  }
+  if (t.hasAttribute("data-approve")) return approve(t.getAttribute("data-approve"));
+  if (t.hasAttribute("data-submit"))  return submitOpen(t.getAttribute("data-submit"));
+  if (t.hasAttribute("data-confirm")) return ckaConfirm(t.getAttribute("data-confirm"));
+  if (t.hasAttribute("data-change"))  return requestChange(t.getAttribute("data-change"));
+  if (t.id === "reset") {
+    try { localStorage.removeItem(STORE_KEY); } catch(e){}
+    state.open = null; state.draft = {}; load(); render();
+  }
+});
+
+/* Live field updates keep the approve button honest without a re-render. */
+document.addEventListener("input", function(ev){
+  var el = ev.target;
+  if (el.hasAttribute && el.hasAttribute("data-name")) {
+    var id = el.getAttribute("data-name");
+    draft(id).name = el.value;
+    var btn = document.querySelector('[data-approve="' + id + '"]');
+    var row = state.rows.filter(function(r){ return r.id === id; })[0];
+    if (btn) btn.disabled = !((draft(id).pick || row.picked) && el.value.trim().length >= 3);
+    return;
+  }
+  if (el.hasAttribute && el.hasAttribute("data-entry")) {
+    var rid = el.getAttribute("data-row-id");
+    draft(rid)[el.getAttribute("data-entry")] = el.value;
+    var sbtn = document.querySelector('[data-submit="' + rid + '"]');
+    var r2 = state.rows.filter(function(r){ return r.id === rid; })[0];
+    var e2 = r2.ownerEntry || {};
+    var d2 = draft(rid);
+    if (sbtn) sbtn.disabled = !(((d2.supplier !== undefined ? d2.supplier : e2.supplier) || "").trim() &&
+                                ((d2.model    !== undefined ? d2.model    : e2.model)    || "").trim());
+  }
+});
+
+document.addEventListener("change", function(ev){
+  var el = ev.target;
+  if (el.hasAttribute && el.hasAttribute("data-pick")) {
+    var id = el.getAttribute("data-pick");
+    draft(id).pick = el.value;
+    var btn = document.querySelector('[data-approve="' + id + '"]');
+    if (btn) btn.disabled = (draft(id).name || "").trim().length < 3;
+  }
+});
+
+/* ---------- boot ---------- */
+document.getElementById("generated-on").textContent =
+  TODAY.toLocaleDateString("en-US", { month:"long", day:"numeric", year:"numeric" });
+load();
+render();
+</script>
+</body>
+</html>
