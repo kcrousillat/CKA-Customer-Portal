@@ -265,6 +265,24 @@ img{max-width:100%}
   color:var(--accent); font-weight:600;
 }
 .waits b{color:var(--ink); font-weight:600}
+.finishes{
+  border:1px solid var(--accent); border-radius:5px; background:var(--accent-soft);
+  padding:12px 14px; margin:0 0 16px; display:flex; flex-direction:column; gap:9px;
+}
+.finishes .h{
+  font-family:var(--data); font-size:10.5px; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--accent); font-weight:600;
+}
+.finishes .picks{display:flex; flex-wrap:wrap; gap:7px}
+.fin{cursor:pointer}
+.fin input{position:absolute; opacity:0; width:0; height:0}
+.fin span{
+  display:inline-block; font-size:13.5px; padding:6px 12px; border-radius:100px;
+  border:1px solid var(--rule-strong); background:var(--surface); color:var(--ink);
+}
+.fin input:focus-visible + span{outline:2px solid var(--accent); outline-offset:2px}
+.fin input:checked + span{background:var(--accent); border-color:var(--accent); color:var(--accent-ink); font-weight:600}
+.od.variants{color:var(--accent)}
 .opt-body{padding:9px 11px 11px; display:flex; flex-direction:column; gap:3px}
 .opt-body .on{font-weight:600; font-size:13.5px; line-height:1.3}
 .opt-body .od{font-family:var(--data); font-size:11px; color:var(--muted); line-height:1.45}
@@ -591,7 +609,10 @@ function optionOf(row){
 }
 function recordLine(row){
   var o = optionOf(row);
-  if (o) return [o.name, o.supplier, o.model, o.finish].filter(Boolean).join(" · ");
+  if (o) {
+    var picked = row.ownerEntry || {};
+    return [o.name, picked.finish || o.finish, o.supplier, o.model].filter(Boolean).join(" · ");
+  }
   var e = row.ownerEntry || {};
   var line = [e.supplier, e.model, e.finish].filter(Boolean).join(" · ");
   return line || "—";
@@ -780,10 +801,24 @@ function panelMarkup(row){
         '<span class="opt-body"><span class="on">' + esc(o.name) + '</span>' +
         '<span class="od">' + esc([o.supplier, o.model, o.finish].filter(Boolean).join(" · ")) + '</span>' +
         (o.code ? '<span class="od">Code ' + esc(o.code) + '</span>' : "") +
+        ((o.finishChoices && o.finishChoices.length)
+          ? '<span class="od variants">' + o.finishChoices.length + ' finishes</span>' : "") +
         (o.note ? '<span class="od">' + esc(o.note) + '</span>' : "") +
         (o.link ? '<a class="od" href="' + esc(o.link) + '" target="_blank" rel="noopener">See the product</a>' : "") +
         '</span></span></label></li>';
     }).join("") + '</ul>';
+
+    var chosen = row.options.filter(function(o){ return o.id === d.pick; })[0];
+    if (chosen && chosen.finishChoices && chosen.finishChoices.length) {
+      out += '<div class="finishes"><span class="h">Finish for ' + esc(chosen.name) + '</span>' +
+        '<div class="picks">' + chosen.finishChoices.map(function(f){
+          return '<label class="fin"><input type="radio" name="fin-' + row.id + '" value="' + esc(f) + '"' +
+            ' data-finish="' + row.id + '"' + (d.finish === f ? " checked" : "") + '>' +
+            '<span>' + esc(f) + '</span></label>';
+        }).join("") + '</div>' +
+        '<p class="note" style="margin:0">Not every finish comes in every style, so this list changes with the style above.</p>' +
+        '</div>';
+    }
 
     out += '<div class="sign"><h3>Approve this selection</h3>' +
       '<p>Typing your name approves the option you picked and releases it for order. Both owners get the ' +
@@ -793,7 +828,7 @@ function panelMarkup(row){
         '<input id="name-' + row.id + '" type="text" autocomplete="name" value="' + esc(d.name || "") + '" data-name="' + row.id + '">' +
       '</span>' +
       '<button class="btn btn-primary" type="button" data-approve="' + row.id + '"' +
-        (d.pick && (d.name || "").trim().length >= 3 ? "" : " disabled") + '>Approve selection</button>' +
+        (approvable(row, d) ? "" : " disabled") + '>Approve selection</button>' +
       '</div></div>';
     return out + errSlot(row) + '</div>';
   }
@@ -829,6 +864,16 @@ function panelMarkup(row){
 }
 
 function pick(a, b){ return a !== undefined ? a : (b || ""); }
+
+/* An option that carries finishes is only half-chosen until one is picked. */
+function needsFinish(row, d){
+  var o = ((row && row.options) || []).filter(function(x){ return x.id === d.pick; })[0];
+  return !!(o && o.finishChoices && o.finishChoices.length);
+}
+function approvable(row, d){
+  if (!d.pick || (d.name || "").trim().length < 3) return false;
+  return needsFinish(row, d) ? !!d.finish : true;
+}
 function errSlot(row){ return '<p class="err" id="err-' + row.id + '"></p>'; }
 function field(id, key, label, val){
   return '<span class="field"><label for="' + key + '-' + id + '">' + label + '</label>' +
@@ -1016,7 +1061,7 @@ document.addEventListener("click", function(ev){
   if (t.hasAttribute("data-approve")) {
     rid = t.getAttribute("data-approve");
     var d = draft(rid);
-    return post(rid, "approve", { optionId: d.pick, name: (d.name || "").trim() });
+    return post(rid, "approve", { optionId: d.pick, finish: d.finish || "", name: (d.name || "").trim() });
   }
   if (t.hasAttribute("data-submit")) {
     rid = t.getAttribute("data-submit");
@@ -1043,8 +1088,9 @@ document.addEventListener("input", function(ev){
   if (el.hasAttribute("data-name")) {
     var id = el.getAttribute("data-name");
     draft(id).name = el.value;
+    var nrow = state.data.selections.filter(function(r){ return r.id === id; })[0];
     var btn = document.querySelector('[data-approve="' + id + '"]');
-    if (btn) btn.disabled = !(draft(id).pick && el.value.trim().length >= 3);
+    if (btn) btn.disabled = !approvable(nrow, draft(id));
     return;
   }
   if (el.hasAttribute("data-entry")) {
@@ -1062,9 +1108,21 @@ document.addEventListener("change", function(ev){
   var el = ev.target;
   if (el.hasAttribute && el.hasAttribute("data-pick")) {
     var id = el.getAttribute("data-pick");
-    draft(id).pick = el.value;
+    var d = draft(id);
+    if (d.pick !== el.value) { d.pick = el.value; delete d.finish; }
+    var row = state.data.selections.filter(function(r){ return r.id === id; })[0];
+    // The finish list belongs to the style, so the panel has to redraw.
+    if (needsFinish(row, d)) { render(); return; }
     var btn = document.querySelector('[data-approve="' + id + '"]');
-    if (btn) btn.disabled = (draft(id).name || "").trim().length < 3;
+    if (btn) btn.disabled = !approvable(row, d);
+    return;
+  }
+  if (el.hasAttribute && el.hasAttribute("data-finish")) {
+    var fid = el.getAttribute("data-finish");
+    draft(fid).finish = el.value;
+    var frow = state.data.selections.filter(function(r){ return r.id === fid; })[0];
+    var fbtn = document.querySelector('[data-approve="' + fid + '"]');
+    if (fbtn) fbtn.disabled = !approvable(frow, draft(fid));
   }
 });
 

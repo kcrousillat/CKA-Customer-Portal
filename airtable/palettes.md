@@ -23,6 +23,17 @@ palette means an owner choosing from the wrong brand's colors.
 A selection that already has options is left alone: it is only ever opened, never refilled. A
 selection with no palette to draw on stays On hold and the run history says so by name.
 
+## Options that carry a finish
+
+Some options are a style *and* a finish, and the finishes are not the same for every style —
+PGT's Curved sliding door handle comes in three finishes, Raised in five, and Modern only on the
+narrow-stile door. Put the offered finishes in **Finish options** as a comma-separated list and
+the portal shows them as a second choice under the style the owner picked, refusing to approve
+until both are answered. The chosen finish is written to the selection's **Owner finish** and
+appears in the approval stamp, the email and the record PDF.
+
+Leave **Finish options** empty for anything with no variants — a frame color is just a color.
+
 ## Attaching chips
 
 **Attach the chip once, here, on the Palettes row.** Every future job inherits it. Do not attach

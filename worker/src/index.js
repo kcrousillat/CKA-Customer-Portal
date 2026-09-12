@@ -206,6 +206,7 @@ async function getProject(env, key) {
               link: o.fields["Product link"] || "",
               swatch: o.fields["Swatch color"] || "",
               code: o.fields["Color code"] || "",
+              finishChoices: splitList(o.fields["Finish options"]),
               photos: attachments(o.fields["Photo"]),
               order: num(o.fields["Sort order"], 999),
             }))
@@ -247,17 +248,30 @@ async function approve(env, { record }, body) {
     throw httpError(400, "That option belongs to a different selection.");
   }
 
+  // Some options carry variants — a door handle style offers a set of finishes,
+  // and not the same set for every style. Approving one without the other would
+  // record half a decision.
+  const choices = splitList(option.fields["Finish options"]);
+  const fields = {
+    "Status": "Approved",
+    "Approved option": [optionId],
+    "Approved by": name,
+    "Approved on": new Date().toISOString(),
+  };
+  if (choices.length) {
+    const finish = text(body.finish, 200);
+    if (!finish) throw httpError(400, "Choose a finish as well as the style.");
+    const match = choices.find((c) => c.toLowerCase() === finish.toLowerCase());
+    if (!match) {
+      throw httpError(400, `${finish} is not offered on ${option.fields["Option name"]}. Offered: ${choices.join(", ")}.`);
+    }
+    fields["Owner finish"] = match;
+  }
+
   const updated = await at(env, T.selections, {
     recordId: record.id,
     method: "PATCH",
-    body: {
-      fields: {
-        "Status": "Approved",
-        "Approved option": [optionId],
-        "Approved by": name,
-        "Approved on": new Date().toISOString(),
-      },
-    },
+    body: { fields },
   });
   return { ok: true, status: updated.fields["Status"] };
 }
@@ -335,6 +349,12 @@ async function requestChange(env, { record }, body) {
 
 /* ------------------------------------------------------------------ */
 /* helpers                                                             */
+
+/** "White, Matte Black, Satin Nickel" -> ["White","Matte Black","Satin Nickel"] */
+function splitList(v) {
+  return String(v == null ? "" : v)
+    .split(",").map((x) => x.trim()).filter(Boolean);
+}
 
 function attachments(v) {
   if (!Array.isArray(v)) return [];
