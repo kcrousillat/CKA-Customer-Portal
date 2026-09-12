@@ -23,6 +23,8 @@ const templates  = base.getTable("Item Templates");
 const selections = base.getTable("Selections");
 const projects   = base.getTable("Projects");
 
+// Airtable's script runner has no top-level `return`, so failures throw and
+// success falls through to the bottom.
 const space = await spaces.selectRecordAsync(input_config.spaceId, {
   fields: ["Space name", "Space Type", "Project", "Sort order"],
 });
@@ -52,11 +54,8 @@ const applicable = templateRows.records.filter((t) => {
   const types = t.getCellValue("Space Type") || [];
   return types.some((x) => x.id === typeId);
 });
-
 if (!applicable.length) {
-  output.set("created", 0);
-  output.set("message", "No active templates for that space type. Add them to Item Templates.");
-  return;
+  throw new Error("No active Item Templates for that space type. Add them to the library.");
 }
 
 const spaceOrder = space.getCellValue("Sort order") || 0;
