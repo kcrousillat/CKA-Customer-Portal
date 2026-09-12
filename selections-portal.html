@@ -129,7 +129,31 @@ img{max-width:100%}
 }
 
 /* ---------- groups + rows ---------- */
-.group{margin:0 0 26px}
+.jump{
+  display:flex; flex-wrap:wrap; gap:6px; margin:0 0 22px; padding:0 0 16px;
+  border-bottom:1px solid var(--rule);
+}
+.jump a{
+  font-family:var(--data); font-size:11.5px; text-decoration:none; white-space:nowrap;
+  color:var(--ink-2); background:var(--surface); border:1px solid var(--rule);
+  padding:4px 9px; border-radius:100px; display:inline-flex; gap:6px; align-items:center;
+}
+.jump a:hover{border-color:var(--rule-strong); color:var(--ink)}
+.jump a b{font-weight:600; font-variant-numeric:tabular-nums}
+.jump a.has-open b{color:var(--accent)}
+.jump a.has-late b{color:var(--crit)}
+.jump a.all-done b{color:var(--good)}
+
+.group{margin:0 0 26px; scroll-margin-top:64px}
+.group-head .prog{
+  margin-left:auto; display:flex; align-items:center; gap:8px;
+  font-family:var(--data); font-size:11px; color:var(--muted); white-space:nowrap;
+}
+.bar{
+  width:54px; height:4px; border-radius:2px; background:var(--surface-3); overflow:hidden;
+}
+.bar span{display:block; height:100%; background:var(--good)}
+.group-head .late{color:var(--crit); font-weight:600}
 .group-head{
   display:flex; align-items:baseline; gap:10px; padding:0 0 8px;
   border-bottom:1px solid var(--rule-strong); margin-bottom:10px;
@@ -453,8 +477,8 @@ function statusOf(row){ return STATUS[row.status] || STATUS["Not started"]; }
 
 var VIEW_NOTES = {
   blocking: "Sorted by the date we need the decision, not by room. The date is the lead time counted back from when the trade is scheduled — an item at the top is holding up work, however small the decision looks.",
-  room:     "Every open and approved selection grouped the way you walk the house. This is the order the turnover finish schedule is built in.",
-  trade:    "The same selections grouped by who installs them. Useful when you are talking to one vendor about several rooms at once.",
+  room:     "Every open and approved selection grouped the way you walk the house. The number on each room is how many decisions it is waiting on you for.",
+  trade:    "The same selections grouped by who installs them, with the number each trade is waiting on. Useful when you are talking to one vendor about several rooms at once.",
   record:   "Approved selections only, with who approved each one and when. This is the record that goes in your turnover package."
 };
 
@@ -791,6 +815,41 @@ function field(id, key, label, val){
     'value="' + esc(val) + '"></span>';
 }
 
+function groupId(i){ return "g" + i; }
+
+function tally(rows){
+  var done = rows.filter(isDone).length;
+  var late = rows.filter(function(r){
+    return !isDone(r) && statusOf(r).owner === "Waiting on you" && daysOut(r) < 0;
+  }).length;
+  var waiting = rows.filter(function(r){ return statusOf(r).owner === "Waiting on you"; }).length;
+  return { done: done, late: late, waiting: waiting, total: rows.length };
+}
+
+/* A room with 14 open decisions and a room with one should not look alike. */
+function progressMarkup(rows){
+  var t = tally(rows);
+  var pct = t.total ? Math.round((t.done / t.total) * 100) : 0;
+  var label = t.done === t.total ? "all settled"
+            : t.done + " of " + t.total + " settled";
+  return '<span class="prog">' +
+    (t.late ? '<span class="late">' + t.late + ' past due</span>' : "") +
+    '<span>' + label + '</span>' +
+    '<span class="bar" aria-hidden="true"><span style="width:' + pct + '%"></span></span>' +
+    '</span>';
+}
+
+/* 19 rooms is too many to scroll blind. */
+function jumpBar(groups){
+  if (groups.length < 4) return "";
+  return '<nav class="jump" aria-label="Jump to a group">' + groups.map(function(g, i){
+    var t = tally(g.rows);
+    var cls = t.late ? "has-late" : (t.waiting ? "has-open" : "all-done");
+    var n = t.waiting ? t.waiting : (t.done === t.total ? "\u2713" : t.total);
+    return '<a class="' + cls + '" href="#' + groupId(i) + '">' + esc(g.title) + ' <b>' + n + '</b></a>';
+  }).join("") + '</nav>';
+}
+
 function render(){
   if (!state.data) return;
   renderHeader();
@@ -806,9 +865,12 @@ function render(){
       ? "Approved selections land here with the name and date attached."
       : "Your selections will appear as CKA sets them up.") + '</p>';
   } else {
-    host.innerHTML = groups.map(function(g){
-      return '<section class="group"><div class="group-head"><h2>' + esc(g.title) + '</h2>' +
-        '<span class="count">' + g.rows.length + ' item' + (g.rows.length === 1 ? "" : "s") + '</span></div>' +
+    var jump = (state.view === "room" || state.view === "trade") ? jumpBar(groups) : "";
+    host.innerHTML = jump + groups.map(function(g, i){
+      return '<section class="group" id="' + groupId(i) + '">' +
+        '<div class="group-head"><h2>' + esc(g.title) + '</h2>' +
+        '<span class="count">' + g.rows.length + ' item' + (g.rows.length === 1 ? "" : "s") + '</span>' +
+        progressMarkup(g.rows) + '</div>' +
         '<ul class="rows">' + g.rows.map(rowMarkup).join("") + '</ul></section>';
     }).join("");
   }
