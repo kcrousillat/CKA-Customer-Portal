@@ -313,6 +313,10 @@ async function requestChange(env, { record }, body) {
           "Needed by": f["Needed by"],
           "Description": f["Description"],
           "Sort order": f["Sort order"],
+          // A replacement inherits the original's place in the chain. Without
+          // these it would never unlock, and never load a brand palette.
+          "Depends on": f["Depends on"] || [],
+          "Palette category": f["Palette category"] || null,
           "Supersedes": [record.id],
           "Internal notes": `Change requested by ${cleanName(body.name || "owner")} on ${new Date().toISOString()}. ${text(body.reason, 1000)}`.trim(),
         },
