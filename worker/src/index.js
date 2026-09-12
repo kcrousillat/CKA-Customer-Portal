@@ -111,8 +111,8 @@ async function getProject(env, key) {
   const pid = project.id;
 
   const [spaces, selections] = await Promise.all([
-    allRecords(env, T.spaces, { filterByFormula: linkedTo(pid, "Project") }),
-    allRecords(env, T.selections, { filterByFormula: linkedTo(pid, "Project") }),
+    linkedRecords(env, T.spaces, project),
+    linkedRecords(env, T.selections, project),
   ]);
 
   const live = selections.filter((r) =>
@@ -328,9 +328,29 @@ function attachments(v) {
       height: a.height || null,
     }));
 }
-function linkedTo(recordId, field) {
-  // RECORD_ID() of a linked row is not directly filterable; compare the link's text value.
-  return `FIND(${quote(recordId)}, ARRAYJOIN({${field}})) > 0`;
+/**
+ * Fetch the rows of `table` linked to `project`.
+ *
+ * A linked-record field inside an Airtable formula evaluates to the linked
+ * rows' PRIMARY FIELD TEXT, not their record IDs — so filtering on the ID
+ * silently returns nothing. Narrow on the project name (cheap, and usually
+ * exact), then verify the actual link IDs here, which is the only comparison
+ * that cannot be fooled by two jobs sharing a name or a name being edited.
+ * If the name filter comes back empty, fall back to scanning: a wrong name
+ * must never look like a job with no selections.
+ */
+async function linkedRecords(env, table, project) {
+  const name = project.fields["Project name"] || "";
+  const matches = (r) => (r.fields["Project"] || []).includes(project.id);
+
+  if (name) {
+    const narrowed = await allRecords(env, table, {
+      filterByFormula: `FIND(${quote(name)}, ARRAYJOIN({Project})) > 0`,
+    });
+    const exact = narrowed.filter(matches);
+    if (exact.length) return exact;
+  }
+  return (await allRecords(env, table, {})).filter(matches);
 }
 function quote(s) { return `"${String(s).replace(/"/g, '\\"')}"`; }
 function num(v, d) { return typeof v === "number" ? v : d; }
