@@ -411,7 +411,7 @@ img{max-width:100%}
    The owner's link is then:  .../selections-portal.html?p=<Portal key>
 -------------------------------------------------------------------*/
 
-var API_BASE = "";   // e.g. "https://cka-selections-api.ckaconstruction.workers.dev"
+var API_BASE = "https://cka-selections-api.kevin-7c1.workers.dev";
 
 var PARAMS = new URLSearchParams(location.search);
 var PORTAL_KEY = PARAMS.get("p") || PARAMS.get("key") || "";
@@ -473,17 +473,44 @@ function api(path, opts){
 }
 
 function load(){
-  if (!API_BASE || !PORTAL_KEY) {
+  if (!API_BASE) {
     state.data = PREVIEW; state.preview = true;
     render();
     return Promise.resolve();
   }
+  if (!PORTAL_KEY) { askForKey(); return Promise.resolve(); }
   return api("/api/project?key=" + encodeURIComponent(PORTAL_KEY))
     .then(function(data){ state.data = data; state.preview = false; render(); })
     .catch(showLoadError);
 }
 
 function reload(){ return load(); }
+
+/* Owners always arrive on a ?p= link. This is for opening a job by hand. */
+function askForKey(){
+  document.getElementById("job-eyebrow").textContent = "CKA Selections";
+  document.getElementById("job-address").textContent = "Open a project";
+  document.getElementById("job-meta").innerHTML = "";
+  document.getElementById("list").innerHTML =
+    '<div class="sign" style="max-width:460px; margin:24px auto">' +
+    '<h3>Project link key</h3>' +
+    '<p>Paste the portal key from the project\'s row in Airtable. Owners get a link with the ' +
+    'key already in it and never see this.</p>' +
+    '<div class="sign-row"><span class="grow">' +
+    '<label for="keyin">Portal key</label>' +
+    '<input id="keyin" type="text" placeholder="sunset-isle-9f2c7a41" autocomplete="off">' +
+    '</span><button class="btn btn-primary" type="button" id="keygo">Open</button></div></div>';
+
+  var go = function(){
+    var v = document.getElementById("keyin").value.trim();
+    if (v) location.search = "?p=" + encodeURIComponent(v);
+  };
+  document.getElementById("keygo").addEventListener("click", go);
+  document.getElementById("keyin").addEventListener("keydown", function(e){
+    if (e.key === "Enter") go();
+  });
+  document.getElementById("keyin").focus();
+}
 
 function showLoadError(err){
   document.getElementById("job-address").textContent = "We could not open this page";
