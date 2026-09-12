@@ -2,9 +2,20 @@ name = "cka-selections-api"
 main = "src/index.js"
 compatibility_date = "2026-09-01"
 
+# The Worker serves the portal page itself. A request that matches a file in
+# public/ is served as that file; everything else falls through to the script,
+# so /api/... still reaches the code in src/. One deploy, one address, and the
+# page and the API share an origin.
+#
+# public/index.html is a copy of selections-portal.html at the repo root. The
+# updater script refreshes both, so they do not drift.
+[assets]
+directory = "./public"
+
 [vars]
 AIRTABLE_BASE = "appfRsDMRMX4sGSPK"
-# Lock this down to wherever the portal is served from once it has a home.
+# Same origin as the page now, so this could be tightened to the Worker's own
+# URL. Left open until the portal has settled on a final address.
 ALLOWED_ORIGIN = "*"
 
 # The Airtable token is a secret, never a var:

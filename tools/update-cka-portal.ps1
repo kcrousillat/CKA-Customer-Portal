@@ -51,6 +51,8 @@ Say "     Found: $workerDir" 'Green'
 
 # 3. Always download before deploying. Deploying without this step pushes
 #    whatever is already on disk, which is how a stale Worker went live once.
+#    The Worker now serves the portal page too, so public/index.html has to be
+#    refreshed in the same breath or the hosted page lags behind the Desktop one.
 Say ""
 Say "3/3  Downloading the Worker code and deploying..."
 try {
@@ -58,6 +60,10 @@ try {
   $b = (Get-Item "$workerDir\src\index.js").Length
   if ($b -lt 5000) { throw "index.js came back too small ($b bytes), so the download did not work." }
   Say "     Worker code downloaded ($b bytes)." 'Green'
+
+  New-Item -ItemType Directory -Force -Path "$workerDir\public" | Out-Null
+  Copy-Item "$desk\selections-portal.html" "$workerDir\public\index.html" -Force
+  Say "     Portal page staged for hosting." 'Green'
 } catch {
   Say "     FAILED to download the Worker code: $_" 'Red'
   Say "     Nothing was deployed. The portal page is still updated." 'Red'
@@ -70,6 +76,7 @@ try {
   if ($LASTEXITCODE -ne 0) { throw "wrangler exited with code $LASTEXITCODE" }
   Say ""
   Say "All done. The portal page and the Worker are both current." 'Green'
+  Say "Owners open it at:  https://cka-selections-api.kevin-7c1.workers.dev/?p=PORTALKEY" 'Cyan'
 } catch {
   Say ""
   Say "The deploy did not finish: $_" 'Red'
