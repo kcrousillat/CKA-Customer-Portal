@@ -73,7 +73,9 @@ img{max-width:100%}
   border-bottom:1px solid var(--rule);
 }
 .bar .wrap{display:flex; align-items:center; gap:16px; padding-block:10px; flex-wrap:wrap}
-.mark{display:flex; align-items:baseline; gap:9px; margin-right:auto}
+.mark{display:flex; align-items:center; gap:10px; margin-right:auto}
+.mark-logo{height:22px; width:auto; display:block}
+@media print{.mark-logo{height:26px}}
 .mark b{
   font-family:var(--ui); font-weight:700; font-size:13px; letter-spacing:.16em;
   text-transform:uppercase; color:var(--ink);
@@ -424,7 +426,15 @@ img{max-width:100%}
 <header class="bar no-print">
   <div class="wrap">
     <div class="mark">
-      <b>CKA Construction</b>
+      <!-- The logo lives in the repo so this file stays the only thing on a
+           desktop. If it is missing or the machine is offline the image
+           removes itself and the wordmark below carries the header instead —
+           an owner never sees a broken image. -->
+      <img class="mark-logo" alt="CKA Construction Group"
+           src="https://raw.githubusercontent.com/kcrousillat/CKA-Customer-Portal/refs/heads/claude/exciting-heisenberg-pqq69a/brand/cka-logo.png"
+           onload="var t=document.getElementById('mark-text'); if(t) t.hidden=true;"
+           onerror="this.remove()">
+      <b id="mark-text">CKA Construction</b>
       <span>Selections Portal</span>
     </div>
     <div class="bar-actions">
