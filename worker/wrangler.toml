@@ -1,0 +1,11 @@
+name = "cka-selections-api"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+[vars]
+AIRTABLE_BASE = "appfRsDMRMX4sGSPK"
+# Lock this down to wherever the portal is served from once it has a home.
+ALLOWED_ORIGIN = "*"
+
+# The Airtable token is a secret, never a var:
+#   npx wrangler secret put AIRTABLE_TOKEN
