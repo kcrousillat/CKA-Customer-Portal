@@ -19,6 +19,7 @@ const T = {
   selections:"Selections",
   options:   "Options",
   sections:  "Sections",
+  trades:    "Trades",
 };
 
 /**
@@ -62,37 +63,80 @@ const FALLBACK_TRADE_SECTION = {
 };
 
 /**
- * Reads the Sections table into { byTrade, order }. A trade listed on two
- * rows belongs to the first one — sections are sorted before they are walked,
- * so "first" means lowest Sort order, not whichever row Airtable handed back
- * first. Never throws: if the table is gone the portal still renders.
+ * A selection's Trade is a dropdown today and may become a link to the Trades
+ * table tomorrow. Airtable hands those back as a string and as an array of
+ * record IDs respectively, so everything downstream goes through here and the
+ * conversion is a non-event for this Worker.
  */
+function tradeName(v, tradeById) {
+  if (Array.isArray(v)) {
+    const row = tradeById[v[0]];
+    return row ? (row.fields["Trade name"] || "").trim() : "";
+  }
+  return (v || "").trim();
+}
+
+/**
+ * Builds { byTrade, order, tradeById }.
+ *
+ * The trade-to-heading mapping lives in the Trades table: one row per trade,
+ * linked to the Section it files under. Two older sources are kept behind it
+ * so no single deletion can strand every selection under "Other" — the
+ * "Trades — old list" column on Sections, and finally the map below, which is
+ * what the portal did before any of this was in Airtable.
+ */
+const FALLBACK_TRADE_SECTION_ORDER = [
+  "Appliances", "Plumbing", "Cabinetry & millwork", "Tile & stone", "Flooring",
+  "Lighting & electrical", "Glass & mirrors", "Hardware", "Doors",
+  "Paint & finishes", "Roof & exterior", "Pool & outdoor", "Metals & railings",
+  "Systems", "Other",
+];
+
 async function sectionMap(env) {
-  let rows = [];
+  let sectionRows = [], tradeRows = [];
   try {
-    rows = await allRecords(env, T.sections, {});
+    [sectionRows, tradeRows] = await Promise.all([
+      allRecords(env, T.sections, {}),
+      allRecords(env, T.trades, {}).catch(() => []),
+    ]);
   } catch {
-    return { byTrade: FALLBACK_TRADE_SECTION, order: [] };
+    return { byTrade: FALLBACK_TRADE_SECTION, order: FALLBACK_TRADE_SECTION_ORDER, tradeById: {} };
   }
 
-  const active = rows
-    // Airtable omits an unticked checkbox rather than sending false, so the
-    // flag has to read the other way round: a section is live unless Hidden
-    // is explicitly true. That also makes a freshly typed row work with no
-    // boxes ticked at all.
+  const tradeById = {};
+  for (const t of tradeRows) tradeById[t.id] = t;
+
+  const live = sectionRows
     .filter((r) => r.fields["Hidden"] !== true && (r.fields["Section name"] || "").trim())
     .sort((a, b) => num(a.fields["Sort order"], 999) - num(b.fields["Sort order"], 999));
 
-  if (!active.length) return { byTrade: FALLBACK_TRADE_SECTION, order: [] };
+  if (!live.length) {
+    return { byTrade: FALLBACK_TRADE_SECTION, order: FALLBACK_TRADE_SECTION_ORDER, tradeById };
+  }
 
+  const nameById = {};
+  for (const r of live) nameById[r.id] = r.fields["Section name"].trim();
+  const order = live.map((r) => nameById[r.id]);
+
+  // Preferred source: the Trades table.
   const byTrade = {};
-  for (const r of active) {
-    const name = r.fields["Section name"].trim();
-    for (const trade of r.fields["Trades"] || []) {
-      if (!byTrade[trade]) byTrade[trade] = name;
+  for (const t of tradeRows) {
+    if (t.fields["Hidden"] === true) continue;
+    const name = (t.fields["Trade name"] || "").trim();
+    const sectionId = (t.fields["Section"] || [])[0];
+    if (name && sectionId && nameById[sectionId]) byTrade[name] = nameById[sectionId];
+  }
+  if (Object.keys(byTrade).length) return { byTrade, order, tradeById };
+
+  // Nothing usable in Trades — fall back to the old column on Sections.
+  for (const r of live) {
+    for (const trade of r.fields["Trades — old list"] || []) {
+      if (!byTrade[trade]) byTrade[trade] = nameById[r.id];
     }
   }
-  return { byTrade, order: active.map((r) => r.fields["Section name"].trim()) };
+  if (Object.keys(byTrade).length) return { byTrade, order, tradeById };
+
+  return { byTrade: FALLBACK_TRADE_SECTION, order, tradeById };
 }
 
 const OWNER_VISIBLE_STATUSES = [
@@ -241,9 +285,9 @@ async function getProject(env, key) {
           spaceName: spaceId && spaceById[spaceId]
             ? spaceById[spaceId].fields["Space name"]
             : "Whole house",
-          trade: r.fields["Trade"] || "",
+          trade: tradeName(r.fields["Trade"], sections.tradeById),
           section: (r.fields["Section"] || "").trim() ||
-                   sections.byTrade[r.fields["Trade"]] ||
+                   sections.byTrade[tradeName(r.fields["Trade"], sections.tradeById)] ||
                    "Other",
           lead: num(r.fields["Lead time (weeks)"], 0),
           needed: r.fields["Needed by"] || null,
