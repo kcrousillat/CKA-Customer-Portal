@@ -1,6 +1,6 @@
 /**
  * Airtable automation: "Expand space into selections"
- * Trigger: Spaces — when Space Type and Project are both filled in.
+ * Trigger: Spaces - when Space Type and Project are both filled in.
  * Input variable: spaceId  ->  trigger record id
  *
  * This file is the record of what is running in Airtable. Airtable is the
@@ -20,35 +20,18 @@ let message = '';
 
 /**
  * Trade is a single-select today and may become a link to the Trades table.
- * Which one decides the shape this script has to WRITE, so it asks the target
- * field rather than assuming. Both shapes expose the same `name` — a select
- * option's label, or a linked row's primary field — so the name is the bridge
- * between them and the lookup below only runs when it is actually needed.
+ * The cell itself says which: a select reads back as one object, a link as an
+ * array of them, and a linked row's id is already the Trades record id. So
+ * the shape is read off the value rather than by interrogating the field,
+ * which keeps this to the two lines that actually differ.
+ *
+ * This assumes both Trade fields are converted together - Selections.Trade
+ * and Item Templates.Default trade. Convert only one and the shape written
+ * here will not match the field being written to.
  */
-const tradeIsLink = selections.getField('Trade').type === 'multipleRecordLinks';
-const tradeIdByName = {};
-if (tradeIsLink) {
-  const tradeRows = await base.getTable('Trades').selectRecordsAsync({ fields: ['Trade name'] });
-  for (const r of tradeRows.records) {
-    const n = (r.getCellValue('Trade name') || '').trim();
-    if (n) tradeIdByName[n] = r.id;
-  }
-}
-
-const unmatchedTrades = new Set();
-
 function tradeValue(cell) {
-  const first = Array.isArray(cell) ? cell[0] : cell;
-  if (!first || !first.name) return null;
-  if (!tradeIsLink) return { name: first.name };
-  const id = tradeIdByName[first.name.trim()];
-  if (!id) {
-    // No row in Trades by that name. Leave it empty rather than guess: the
-    // selection shows under "Other" and the message below says which.
-    unmatchedTrades.add(first.name);
-    return null;
-  }
-  return [{ id }];
+  if (Array.isArray(cell)) return cell.length ? [{ id: cell[0].id }] : null;
+  return cell ? { name: cell.name } : null;
 }
 
 const space = await spaces.selectRecordAsync(cfg.spaceId, {
@@ -104,6 +87,7 @@ if (!space) {
         neededBy = d.toISOString().slice(0, 10);
       }
       const mode = t.getCellValue('Default mode');
+      const trade = t.getCellValue('Default trade');
       const palette = t.getCellValue('Palette category');
       const section = t.getCellValue('Section');
 
@@ -115,7 +99,7 @@ if (!space) {
           'Item Template': [{ id: t.id }],
           'Status': { name: 'Not started' },
           'Mode': { name: mode ? mode.name : 'CKA presents options' },
-          'Trade': tradeValue(t.getCellValue('Default trade')),
+          'Trade': tradeValue(trade),
           'Palette category': palette ? { name: palette.name } : null,
           // Left empty, the portal files it under its trade's section.
           'Section': section ? { name: section.name } : null,
@@ -133,10 +117,6 @@ if (!space) {
       created += batch.length;
     }
     message = 'Created ' + created + ' selection rows for ' + space.getCellValue('Space name') + '.';
-    if (unmatchedTrades.size) {
-      message += ' Left the trade empty on some rows: no row in Trades named ' +
-                 Array.from(unmatchedTrades).join(', ') + '. Add it there and set those rows.';
-    }
   }
 }
 
