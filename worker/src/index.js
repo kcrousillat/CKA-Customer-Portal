@@ -207,6 +207,7 @@ async function getProject(env, key) {
               swatch: o.fields["Swatch color"] || "",
               code: o.fields["Color code"] || "",
               finishChoices: splitList(o.fields["Finish options"]),
+              msrp: typeof o.fields["MSRP"] === "number" ? o.fields["MSRP"] : null,
               photos: attachments(o.fields["Photo"]),
               order: num(o.fields["Sort order"], 999),
             }))

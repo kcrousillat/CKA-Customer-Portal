@@ -289,6 +289,11 @@ img{max-width:100%}
 .fin input:focus-visible + span{outline:2px solid var(--accent); outline-offset:2px}
 .fin input:checked + span{background:var(--accent); border-color:var(--accent); color:var(--accent-ink); font-weight:600}
 .od.variants{color:var(--accent)}
+.od.msrp{color:var(--ink-2); font-variant-numeric:tabular-nums}
+.msrp-note{
+  font-family:var(--data); font-size:11.5px; color:var(--muted);
+  margin:-8px 0 16px; line-height:1.6;
+}
 .opt-body{padding:9px 11px 11px; display:flex; flex-direction:column; gap:3px}
 .opt-body .on{font-weight:600; font-size:13.5px; line-height:1.3}
 .opt-body .od{font-family:var(--data); font-size:11px; color:var(--muted); line-height:1.45}
@@ -813,10 +818,17 @@ function panelMarkup(row){
         (o.code ? '<span class="od">Code ' + esc(o.code) + '</span>' : "") +
         ((o.finishChoices && o.finishChoices.length)
           ? '<span class="od variants">' + o.finishChoices.length + ' finishes</span>' : "") +
+        (o.msrp ? '<span class="od msrp">MSRP ' + money(o.msrp) + '</span>' : "") +
         (o.note ? '<span class="od">' + esc(o.note) + '</span>' : "") +
         (o.link ? '<a class="od" href="' + esc(o.link) + '" target="_blank" rel="noopener">See the product</a>' : "") +
         '</span></span></label></li>';
     }).join("") + '</ul>';
+
+    if (row.options.some(function(o){ return !!o.msrp; })) {
+      out += '<p class="msrp-note">MSRP is the manufacturer\u2019s list price, shown so you can see ' +
+        'roughly where each option sits. It does not include installation, and it is not the ' +
+        'number on your contract \u2014 we will give you the real cost before anything is ordered.</p>';
+    }
 
     var chosen = row.options.filter(function(o){ return o.id === d.pick; })[0];
     if (chosen && chosen.finishChoices && chosen.finishChoices.length) {
@@ -873,6 +885,9 @@ function panelMarkup(row){
   return out + errSlot(row) + '</div>';
 }
 
+function money(n){
+  return "$" + Number(n).toLocaleString("en-US", { maximumFractionDigits: 0 });
+}
 function pick(a, b){ return a !== undefined ? a : (b || ""); }
 
 /* An option that carries finishes is only half-chosen until one is picked. */
