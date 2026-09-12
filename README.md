@@ -66,6 +66,7 @@ The key is the only credential. Change it on the Projects row to revoke a link.
 | Present options | Add Options rows, set the Selection's Status to *Options presented* |
 | Add a one-off item | Add a Selections row by hand and link it to the Space |
 | Improve the library | Edit **Item Templates** — every future job inherits it |
+| Drop an item this room doesn't have | Status → *Not applicable*. The row stays in Airtable and in the schedule but disappears from the owner's portal and its progress counts — this is how a shower-only bath loses its Tub row |
 | Put something on hold | Status → *On hold*. The owner sees why and nothing to do |
 | Confirm an owner-specified item | Status → *Approved*, fill **Approved by** and **Approved on** |
 
