@@ -1,7 +1,12 @@
 /**
  * Airtable automation — "Expand space into selections"
  *
- * Trigger:  When a record is created in Spaces
+ * Trigger:  When a record matches conditions in Spaces —
+ *           Space Type is not empty AND Project is not empty.
+ *
+ *           NOT "when a record is created": a row added in the grid exists the
+ *           instant it appears, before anyone types a space type into it, so a
+ *           created-trigger fires against a blank row and generates nothing.
  * Action:   Run script, with one input variable:
  *             name  = spaceId
  *             value = Airtable record ID of the trigger record
@@ -26,9 +31,17 @@ const projects   = base.getTable("Projects");
 // Airtable's script runner has no top-level `return`, so failures throw and
 // success falls through to the bottom.
 const space = await spaces.selectRecordAsync(input_config.spaceId, {
-  fields: ["Space name", "Space Type", "Project", "Sort order"],
+  fields: ["Space name", "Space Type", "Project", "Sort order", "fld08DtEGCJNfw7Pq"],
 });
 if (!space) throw new Error("Space not found: " + input_config.spaceId);
+
+// Editing a space re-enters the trigger's condition, so this has to be
+// idempotent: if the rows exist, leave them alone.
+const alreadyExpanded = space.getCellValue("fld08DtEGCJNfw7Pq") || [];
+if (alreadyExpanded.length) {
+  throw new Error(space.getCellValue("Space name") + " already has " +
+    alreadyExpanded.length + " selections. Nothing changed.");
+}
 
 const spaceType = space.getCellValue("Space Type");
 const projectLink = space.getCellValue("Project");
