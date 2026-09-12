@@ -497,6 +497,11 @@ img{max-width:100%}
 
 var API_BASE = "https://cka-selections-api.kevin-7c1.workers.dev";
 
+/* Pre-filled in the "Open a project" box so Kevin never types it. This is the
+   EXAMPLE job only. Clear it before the first real client — this file is public
+   and a portal key is what guards a job. */
+var DEMO_KEY = "sunset-isle-9f2c7a41";
+
 var PARAMS = new URLSearchParams(location.search);
 var PORTAL_KEY = PARAMS.get("p") || PARAMS.get("key") || "";
 
@@ -582,7 +587,7 @@ function askForKey(){
     'key already in it and never see this.</p>' +
     '<div class="sign-row"><span class="grow">' +
     '<label for="keyin">Portal key</label>' +
-    '<input id="keyin" type="text" placeholder="sunset-isle-9f2c7a41" autocomplete="off">' +
+    '<input id="keyin" type="text" value="' + DEMO_KEY + '" placeholder="sunset-isle-9f2c7a41" autocomplete="off">' +
     '</span><button class="btn btn-primary" type="button" id="keygo">Open</button></div></div>';
 
   var go = function(){
