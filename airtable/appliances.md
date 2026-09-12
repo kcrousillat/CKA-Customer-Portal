@@ -61,3 +61,17 @@ CKA's own cost never goes in. The catalog's MSRP is the manufacturer's published
 Sub-Zero's and Thermador's sites are unreachable from the build environment, so catalog data comes
 from the manufacturer design guides and spec books — the same route the PGT and ES palettes took.
 Send the PDF and the models, specs, images and MSRP are extracted and loaded in bulk.
+
+## Sections inside a room
+
+A kitchen with every appliance slot runs to twenty-six decisions, which is a wall rather than a
+list. In the **By room** view, any room with six or more selections splits under headings —
+Appliances, Plumbing, Cabinetry & millwork, Tile & stone, Lighting & electrical — each collapsed
+with a count of what it is waiting on.
+
+The heading comes from the trade, so nothing needed backfilling and nothing needs maintaining.
+The **Section** field on a selection (or on an item template) overrides it, for the cases where
+the trade is not how an owner thinks about the item.
+
+Two rules keep it from hiding things: a section holding anything past due opens by itself, and a
+room with only one heading never collapses at all.

@@ -20,6 +20,37 @@ const T = {
   options:   "Options",
 };
 
+/**
+ * A room can carry twenty-six decisions. Grouping them under a heading the
+ * owner already thinks in — appliances, plumbing, cabinetry — is the
+ * difference between a list and a wall. Derived from the trade so nothing
+ * needs backfilling; the Section field on a selection overrides it.
+ */
+const TRADE_SECTION = {
+  "Appliances": "Appliances",
+  "Plumbing": "Plumbing",
+  "Millwork": "Cabinetry & millwork",
+  "Closets": "Cabinetry & millwork",
+  "Tile": "Tile & stone",
+  "Stone": "Tile & stone",
+  "Flooring": "Flooring",
+  "Lighting": "Lighting & electrical",
+  "Electrical": "Lighting & electrical",
+  "Low voltage / AV": "Lighting & electrical",
+  "Glazing": "Glass & mirrors",
+  "Hardware": "Hardware",
+  "Doors": "Doors",
+  "Paint": "Paint & finishes",
+  "Stucco": "Paint & finishes",
+  "Window treatments": "Paint & finishes",
+  "Roofing": "Roof & exterior",
+  "Landscape / hardscape": "Roof & exterior",
+  "Pool": "Pool & outdoor",
+  "Metals / railings": "Metals & railings",
+  "HVAC": "Systems",
+  "Elevator": "Systems",
+};
+
 const OWNER_VISIBLE_STATUSES = [
   "Not started", "Options presented", "Owner selected",
   "Approved", "Released for order", "On hold",
@@ -166,6 +197,9 @@ async function getProject(env, key) {
             ? spaceById[spaceId].fields["Space name"]
             : "Whole house",
           trade: r.fields["Trade"] || "",
+          section: r.fields["Section"] ||
+                   TRADE_SECTION[r.fields["Trade"]] ||
+                   "Other",
           lead: num(r.fields["Lead time (weeks)"], 0),
           needed: r.fields["Needed by"] || null,
           status: r.fields["Status"] || "Not started",

@@ -145,6 +145,27 @@ img{max-width:100%}
 .jump a.all-done b{color:var(--good)}
 
 .group{margin:0 0 26px; scroll-margin-top:64px}
+
+.sect{margin:0 0 8px}
+.sect-head{
+  width:100%; font:inherit; text-align:left; cursor:pointer;
+  background:var(--surface-2); border:1px solid var(--rule); border-radius:5px;
+  padding:9px 12px; display:flex; align-items:center; gap:10px; color:inherit;
+}
+.sect-head:hover{border-color:var(--rule-strong)}
+.sect.is-open .sect-head{border-radius:5px 5px 0 0; border-bottom-color:transparent}
+.sect-head .nm{font-weight:600; font-size:14px}
+.sect-head .ct{font-family:var(--data); font-size:11.5px; color:var(--muted)}
+.sect-head .late{font-family:var(--data); font-size:11.5px; color:var(--crit); font-weight:600}
+.sect-head .waiting{font-family:var(--data); font-size:11.5px; color:var(--accent); font-weight:600}
+.sect-head .done{font-family:var(--data); font-size:11.5px; color:var(--good)}
+.sect-head .spacer{margin-left:auto}
+.sect-head .caret{transition:transform .15s ease; color:var(--muted)}
+.sect.is-open .sect-head .caret{transform:rotate(90deg)}
+.sect-body{
+  border:1px solid var(--rule-strong); border-top:0; border-radius:0 0 5px 5px;
+  padding:10px; background:var(--paper);
+}
 .group-head .prog{
   margin-left:auto; display:flex; align-items:center; gap:8px;
   font-family:var(--data); font-size:11px; color:var(--muted); white-space:nowrap;
@@ -521,7 +542,7 @@ var VIEW_NOTES = {
   record:   "Approved selections only, with who approved each one and when. This is the record that goes in your turnover package."
 };
 
-var state = { view:"blocking", open:null, draft:{}, data:null, preview:false, busy:false };
+var state = { view:"blocking", open:null, draft:{}, sections:{}, data:null, preview:false, busy:false };
 var TODAY = new Date();
 
 /* ---------------- data ---------------- */
@@ -907,6 +928,31 @@ function field(id, key, label, val){
 }
 
 function groupId(i){ return "g" + i; }
+function sectionId(gi, si){ return "g" + gi + "s" + si; }
+
+/* Rooms carry up to twenty-six decisions. Split them under headings an owner
+   already thinks in, ordered so the ones waiting on them come first. */
+function sectionsOf(rows){
+  var order = [], byName = {};
+  rows.forEach(function(r){
+    var n = r.section || "Other";
+    if (!byName[n]) { byName[n] = []; order.push(n); }
+    byName[n].push(r);
+  });
+  return order.map(function(n){ return { name: n, rows: byName[n] }; })
+    .sort(function(a, b){
+      var ta = tally(a.rows), tb = tally(b.rows);
+      return (tb.late - ta.late) || (tb.waiting - ta.waiting) || a.name.localeCompare(b.name);
+    });
+}
+
+/* Collapsed by default — but never collapse something that is late, and never
+   collapse a room that only has one heading in it. */
+function sectionOpen(key, sec, only){
+  if (state.sections[key] !== undefined) return state.sections[key];
+  if (only) return true;
+  return tally(sec.rows).late > 0;
+}
 
 function tally(rows){
   var done = rows.filter(isDone).length;
@@ -957,12 +1003,39 @@ function render(){
       : "Your selections will appear as CKA sets them up.") + '</p>';
   } else {
     var jump = (state.view === "room" || state.view === "trade") ? jumpBar(groups) : "";
+    var sectioned = state.view === "room";
     host.innerHTML = jump + groups.map(function(g, i){
-      return '<section class="group" id="' + groupId(i) + '">' +
+      var head = '<section class="group" id="' + groupId(i) + '">' +
         '<div class="group-head"><h2>' + esc(g.title) + '</h2>' +
         '<span class="count">' + g.rows.length + ' item' + (g.rows.length === 1 ? "" : "s") + '</span>' +
-        progressMarkup(g.rows) + '</div>' +
-        '<ul class="rows">' + g.rows.map(rowMarkup).join("") + '</ul></section>';
+        progressMarkup(g.rows) + '</div>';
+
+      if (!sectioned || g.rows.length < 6) {
+        return head + '<ul class="rows">' + g.rows.map(rowMarkup).join("") + '</ul></section>';
+      }
+
+      var secs = sectionsOf(g.rows);
+      var only = secs.length === 1;
+      return head + secs.map(function(sec, si){
+        var key = sectionId(i, si);
+        var open = sectionOpen(key, sec, only);
+        var t = tally(sec.rows);
+        return '<div class="sect' + (open ? " is-open" : "") + '">' +
+          '<button class="sect-head" type="button" data-sect="' + key + '" aria-expanded="' + open + '">' +
+            '<svg class="caret" width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">' +
+              '<path d="M6 3.5L10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.7" ' +
+              'stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+            '<span class="nm">' + esc(sec.name) + '</span>' +
+            '<span class="ct">' + sec.rows.length + '</span>' +
+            '<span class="spacer"></span>' +
+            (t.late ? '<span class="late">' + t.late + ' past due</span>' : "") +
+            (t.waiting ? '<span class="waiting">' + t.waiting + ' waiting on you</span>'
+                       : '<span class="done">nothing waiting</span>') +
+          '</button>' +
+          (open ? '<div class="sect-body"><ul class="rows">' +
+                  sec.rows.map(rowMarkup).join("") + '</ul></div>' : "") +
+          '</div>';
+      }).join("") + '</section>';
     }).join("");
   }
 
@@ -1054,8 +1127,17 @@ function post(id, action, payload){
 /* ---------------- events ---------------- */
 
 document.addEventListener("click", function(ev){
-  var t = ev.target.closest("[data-toggle],[data-approve],[data-submit],[data-change],[data-view],[data-print]");
+  var t = ev.target.closest("[data-toggle],[data-approve],[data-submit],[data-change],[data-view],[data-print],[data-sect]");
   if (!t) return;
+
+  if (t.hasAttribute("data-sect")) {
+    var sk = t.getAttribute("data-sect");
+    state.sections[sk] = !(t.getAttribute("aria-expanded") === "true");
+    render();
+    var re = document.querySelector('[data-sect="' + sk + '"]');
+    if (re) re.focus();
+    return;
+  }
 
   if (t.hasAttribute("data-toggle")) {
     var id = t.getAttribute("data-toggle");
