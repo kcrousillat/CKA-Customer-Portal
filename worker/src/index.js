@@ -18,15 +18,25 @@ const T = {
   spaces:    "Spaces",
   selections:"Selections",
   options:   "Options",
+  sections:  "Sections",
 };
 
 /**
  * A room can carry twenty-six decisions. Grouping them under a heading the
  * owner already thinks in — appliances, plumbing, cabinetry — is the
- * difference between a list and a wall. Derived from the trade so nothing
- * needs backfilling; the Section field on a selection overrides it.
+ * difference between a list and a wall.
+ *
+ * The headings live in the Sections table so they can be renamed, reordered
+ * and re-pointed from Airtable without a deploy. Each row there claims one or
+ * more trades; a selection files itself under whichever section claims its
+ * trade. The Section field on the selection itself still overrides that.
+ *
+ * FALLBACK below is what the portal looked like before the table existed. It
+ * is used only if the Sections table is missing or empty, so a fat-fingered
+ * delete degrades to the old behaviour instead of dumping every room's rows
+ * under "Other".
  */
-const TRADE_SECTION = {
+const FALLBACK_TRADE_SECTION = {
   "Appliances": "Appliances",
   "Plumbing": "Plumbing",
   "Millwork": "Cabinetry & millwork",
@@ -50,6 +60,40 @@ const TRADE_SECTION = {
   "HVAC": "Systems",
   "Elevator": "Systems",
 };
+
+/**
+ * Reads the Sections table into { byTrade, order }. A trade listed on two
+ * rows belongs to the first one — sections are sorted before they are walked,
+ * so "first" means lowest Sort order, not whichever row Airtable handed back
+ * first. Never throws: if the table is gone the portal still renders.
+ */
+async function sectionMap(env) {
+  let rows = [];
+  try {
+    rows = await allRecords(env, T.sections, {});
+  } catch {
+    return { byTrade: FALLBACK_TRADE_SECTION, order: [] };
+  }
+
+  const active = rows
+    // Airtable omits an unticked checkbox rather than sending false, so the
+    // flag has to read the other way round: a section is live unless Hidden
+    // is explicitly true. That also makes a freshly typed row work with no
+    // boxes ticked at all.
+    .filter((r) => r.fields["Hidden"] !== true && (r.fields["Section name"] || "").trim())
+    .sort((a, b) => num(a.fields["Sort order"], 999) - num(b.fields["Sort order"], 999));
+
+  if (!active.length) return { byTrade: FALLBACK_TRADE_SECTION, order: [] };
+
+  const byTrade = {};
+  for (const r of active) {
+    const name = r.fields["Section name"].trim();
+    for (const trade of r.fields["Trades"] || []) {
+      if (!byTrade[trade]) byTrade[trade] = name;
+    }
+  }
+  return { byTrade, order: active.map((r) => r.fields["Section name"].trim()) };
+}
 
 const OWNER_VISIBLE_STATUSES = [
   "Not started", "Options presented", "Owner selected",
@@ -141,9 +185,10 @@ async function getProject(env, key) {
   const project = await findProject(env, key);
   const pid = project.id;
 
-  const [spaces, selections] = await Promise.all([
+  const [spaces, selections, sections] = await Promise.all([
     linkedRecords(env, T.spaces, project),
     linkedRecords(env, T.selections, project),
+    sectionMap(env),
   ]);
 
   const live = selections.filter((r) =>
@@ -197,8 +242,8 @@ async function getProject(env, key) {
             ? spaceById[spaceId].fields["Space name"]
             : "Whole house",
           trade: r.fields["Trade"] || "",
-          section: r.fields["Section"] ||
-                   TRADE_SECTION[r.fields["Trade"]] ||
+          section: (r.fields["Section"] || "").trim() ||
+                   sections.byTrade[r.fields["Trade"]] ||
                    "Other",
           lead: num(r.fields["Lead time (weeks)"], 0),
           needed: r.fields["Needed by"] || null,
@@ -249,6 +294,10 @@ async function getProject(env, key) {
         };
       })
       .sort((a, b) => a.order - b.order),
+    // The order Kevin put the Sections table in. The portal still leads with
+    // whatever is late, then whatever is waiting on the owner; this only
+    // settles the ties, so headings do not shuffle alphabetically.
+    sectionOrder: sections.order,
     generatedAt: new Date().toISOString(),
   };
 }

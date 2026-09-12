@@ -935,6 +935,14 @@ function field(id, key, label, val){
 function groupId(i){ return "g" + i; }
 function sectionId(gi, si){ return "g" + gi + "s" + si; }
 
+/* Where a heading sits in the Sections table. Anything the table does not
+   name — a Section override typed by hand, or "Other" — sorts to the end. */
+function sectionRank(name){
+  var list = (state.data && state.data.sectionOrder) || [];
+  var i = list.indexOf(name);
+  return i === -1 ? 9999 : i;
+}
+
 /* Rooms carry up to twenty-six decisions. Split them under headings an owner
    already thinks in, ordered so the ones waiting on them come first. */
 function sectionsOf(rows){
@@ -947,7 +955,7 @@ function sectionsOf(rows){
   return order.map(function(n){ return { name: n, rows: byName[n] }; })
     .sort(function(a, b){
       var ta = tally(a.rows), tb = tally(b.rows);
-      return (tb.late - ta.late) || (tb.waiting - ta.waiting) || a.name.localeCompare(b.name);
+      return (tb.late - ta.late) || (tb.waiting - ta.waiting) || (sectionRank(a.name) - sectionRank(b.name)) || a.name.localeCompare(b.name);
     });
 }
 

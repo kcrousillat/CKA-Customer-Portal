@@ -65,6 +65,8 @@ The key is the only credential. Change it on the Projects row to revoke a link.
 | Change a photo | Drag a new image into **Photo** on the Options row. The portal shows the newest on next load |
 | Present options | Add Options rows, set the Selection's Status to *Options presented* |
 | Add a one-off item | Add a Selections row by hand and link it to the Space |
+| Rename or reorder a heading | Edit the **Sections** table. Rename a row and every room's heading changes on the next portal load. If any selection's own **Section** cell names the old heading, change those too — an override is taken literally |
+| Move a trade to a different heading | In **Sections**, take the trade off one row's **Trades** and put it on another. A trade on two rows belongs to whichever has the lower Sort order |
 | Improve the library | Edit **Item Templates** — every future job inherits it |
 | Drop an item this room doesn't have | Status → *Not applicable*. The row stays in Airtable and in the schedule but disappears from the owner's portal and its progress counts — this is how a shower-only bath loses its Tub row |
 | Put something on hold | Status → *On hold*. The owner sees why and nothing to do |
