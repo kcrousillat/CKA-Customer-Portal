@@ -68,10 +68,6 @@ if (!sel) {
     return null;
   };
 
-  // 'Internal note' is deliberately NOT read. It is the one field on a catalog
-  // row that must never reach a job: it holds which bid a model came from and
-  // which client's house it was first specified for. Note is the owner-facing
-  // one, and it is the only one copied onto the option.
   const catalog = await palettes.selectRecordsAsync({
     fields: ['Name', 'Brand', 'Category', 'Supplier', 'Model', 'Finish', 'Code',
              'Photo', 'Note', 'Product link', 'Swatch color', 'Sort order',

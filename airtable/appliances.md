@@ -63,6 +63,38 @@ Two things that are *not* MSRP and never go in that column: a vendor's **net/tra
 bid, and a retailer's **street or sale price**. Both are lower than list, both move, and the first
 is effectively CKA's cost. CKA's own cost never goes in at all.
 
+## Two notes on a catalog row, and only one reaches the owner
+
+**Note** is copied onto the option when the row is loaded into a job, and the
+portal shows it to the owner. Owner-facing text only: what the thing is, what
+panel-ready means, which way the door swings.
+
+**Internal note** is never read by the loader and never leaves the catalog.
+Everything else goes here - which bid a model came from, which client's house
+it was first specified for, the rep's name, what still needs confirming.
+
+The rule: **if it names another client, a bid, or a price, it goes in Internal
+note.** This is not hypothetical. The first eight appliance rows were written
+with bid numbers and another client's job name in Note, and loading one into a
+real job would have put that in front of an owner.
+
+Same split elsewhere on the row: **Model** is the manufacturer's model number,
+because that is what an owner sees and what gets ordered. A vendor SKU is not a
+model - it belongs in Internal note. **Rough-in notes** never reach the option
+either; the loader summarises them into the selection's Internal notes, for the
+MEP rough and the cabinet shop.
+
+## Hinge
+
+Set **Hinge** on any row with a door that swings. On most undercounter and
+column units the hinge is part of the model number - a left-hand unit and a
+right-hand unit are two different products, and it cannot be changed on site.
+So a catalog row is one hinge, not both; if you stock both, that is two rows.
+
+It carries into the job and the portal shows it, with a standing line telling
+the owner the swing is fixed once the order goes in. That is what makes the
+approval cover the hinge as well as the appliance.
+
 ## Getting the catalog in
 
 Sub-Zero's and Thermador's sites are unreachable from the build environment, so catalog data comes
