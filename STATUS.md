@@ -50,6 +50,16 @@ pot filler and second dishwasher.
 
 ## Recently fixed
 
+**Baseboard and casing are two decisions, not one.** Whole house carried a
+single "Interior trim & baseboard profile" row covering both. It is now
+**Baseboard profile** and **Door & window casing**, side by side under
+Cabinetry & millwork, both trade Millwork, both 4-week lead. Added to the
+library and backfilled onto both existing jobs.
+
+Two new palette categories, **Baseboard profile** and **Casing profile**, are
+waiting to be filled - see below.
+
+
 **Mirrors and shower enclosures have their own heading.** There is one Glazing
 trade and it points at Exterior Doors & Windows, so a shower door was filing
 under the same heading as the window package. New section **Glass & mirrors**
@@ -179,6 +189,17 @@ wrong before the actual message settled it in one line.
 Both tested end to end and the test rooms cleaned up.
 
 ## Waiting on Kevin
+
+**Trim profiles to load into the catalog.** Send the trim supplier's profile
+sheet - a PDF, or photos of the profiles with their part numbers. Profile
+drawings and part numbers are supplier data and are not being invented here;
+the catalog stays empty until a real sheet arrives.
+
+Once it does, loading it is one pass: the profiles go into Palettes under
+category "Baseboard profile" or "Casing profile" with their drawing attached,
+and from then on any job's baseboard or casing row fills with them by ticking
+Load catalog options. Done once, reused on every house.
+
 
 - **Sub-Zero / Wolf / Cove Design Guide** and the **Thermador spec book**, as
   PDFs. Their sites are blocked from Claude's sandbox. These fill the
