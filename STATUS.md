@@ -16,8 +16,8 @@ Then open the demo job below and click around it.
 
 ## The demo job
 
-**DEMO - Practice job** is built and waiting. Twenty rooms, 199 selections,
-15 paint lines. Status **Example**, so it is unmistakably not a client.
+**DEMO - Practice job** is built and waiting. Eighteen rooms, 203 selections,
+13 paint lines. Status **Example**, so it is unmistakably not a client.
 Nothing in it gets ordered from; delete the Project row whenever it has served
 its purpose and its rooms and selections go with it.
 
@@ -32,14 +32,15 @@ done and nothing real belongs behind this key yet.
     https://cka-selections-api.kevin-7c1.workers.dev/?p=demo-practice-7k4m2q
 
 The house it describes: kitchen, bar, 3 baths, powder, laundry, 3 bedrooms,
-primary bedroom, 2 walk-in closets, stair, outdoor kitchen, pool, garage,
-two floor levels. No elevator. Change any count on the Room Plan and tick
+primary bedroom (with its second closet switched on), stair, outdoor kitchen,
+pool, garage, two floor levels. No elevator. Change any count on the Room Plan and tick
 **Build rooms** again - it only ever adds, so nothing already there is
 disturbed.
 
 Still to do on it if you want the full picture: open **Project setup ->
 Optional items** and switch on the tubs, prep sink, pot filler and second
-dishwasher this imaginary house has. They are generated but hidden until
+dishwasher this imaginary house has - and the second closets, if a bedroom
+other than the primary has one. They are generated but hidden until
 somebody says so.
 
 ## Project setup, step by step
@@ -91,7 +92,7 @@ away from being lost.
 
 Space Types gets a **Paint row** checkbox, ticked for the ten types that get
 painted: Kitchen, Bar, Bath, Powder, Laundry, Bedroom, Primary bedroom,
-Walk-in closet, Stair, Garage. Build a room of a ticked type and the build
+Stair, Garage. Build a room of a ticked type and the build
 also creates a "<room> paint" line under Whole house - Owner specifies, so the
 client fills in manufacturer, product, colour and sheen in the four fields.
 **Ceilings** is a normal Whole house item alongside it.
@@ -149,25 +150,32 @@ gap again: a template's Section is copied onto a selection when it is
 generated, so changing the template alone would have fixed only future rooms.
 
 
-**A bedroom closet belongs to the bedroom, and the primary gets its own room
-type.** The two closet lines - closet system layout, closet hardware and
-lighting - hang off Bedroom, so every secondary bedroom carries its own closet
-and no separate room is needed for it.
+**Every bedroom carries its own closet, and a second one is optional.** The
+first go at this made **Walk-in closet** a room type of its own, counted like
+bedrooms. It read badly in the portal: a heading saying WALK-IN CLOSET 2 with
+no way to tell whose closet it was. A closet is not a room an owner thinks
+about on its own - it belongs to a bedroom.
 
-The primary is different: it nearly always has a walk-in that is its own room,
-sometimes two. So **Primary bedroom** is now its own room type - everything a
-bedroom has except the closet lines - and the old Closet type is renamed
-**Walk-in closet**, counted by how many walk-ins there are.
+So there is no closet room type any more. Both closet lines - closet system
+layout & finish, closet hardware & lighting - hang off **Bedroom** and
+**Primary bedroom**, so every bedroom gets one closet by default and it
+appears under that bedroom's heading.
 
-Three room types now, and nobody is asked about a closet twice:
+Two new **Optional** templates, **Second closet system layout & finish** and
+**Second closet hardware & lighting**, cover the room with two - usually his
+and hers off a primary suite. Like every Optional item they generate on every
+job as "Not applicable" and are switched on per job from Project setup ->
+Optional items. Nobody is asked about a closet twice, and nobody has to
+remember a second one is possible.
 
-  - **Bedroom** - secondary. 7 room items plus its 2 closet lines.
-  - **Primary bedroom** - the same 7 room items, no closet lines.
-  - **Walk-in closet** - the 2 closet lines. How many = number of walk-ins.
+Two bedroom types now:
 
-No template was duplicated to do this: a template can belong to several room
-types, so the seven bedroom items simply claim both bedroom types.
+  - **Bedroom** - secondary. 7 room items, 2 closet lines, 2 optional second-closet lines.
+  - **Primary bedroom** - the same, minus nothing. Identical list.
 
+The two differ only in that the primary is numbered separately and named
+"Primary bedroom" rather than "Bedroom 4". No template is duplicated - a
+template can claim several room types.
 
 **Build rooms no longer stops at six.** It used to cap each run at six rooms
 on the theory that a room might be slow. Measured: six rooms and 83 selections
