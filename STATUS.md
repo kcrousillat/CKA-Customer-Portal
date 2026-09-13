@@ -12,6 +12,36 @@ pre-filled in it and that job no longer exists, so the box is empty now.
 Three green numbered steps, then "All done." It downloads the current portal
 and Worker from GitHub before deploying, so a stale local copy cannot go live.
 
+Then open the demo job below and click around it.
+
+## The demo job
+
+**DEMO - Practice job** is built and waiting. Twenty rooms, 199 selections,
+15 paint lines. Status **Example**, so it is unmistakably not a client.
+Nothing in it gets ordered from; delete the Project row whenever it has served
+its purpose and its rooms and selections go with it.
+
+Construction start is 1 Mar 2027 on purpose - far enough out that the
+needed-by dates land in the future, so the portal does not open with
+everything red.
+
+Portal key `demo-practice-7k4m2q`. It is a throwaway, and it should stay one:
+`ALLOWED_ORIGIN` on the Worker is still `*`, so the pre-client hardening is not
+done and nothing real belongs behind this key yet.
+
+    https://cka-selections-api.kevin-7c1.workers.dev/?p=demo-practice-7k4m2q
+
+The house it describes: kitchen, bar, 3 baths, powder, laundry, 3 bedrooms,
+primary bedroom, 2 walk-in closets, stair, outdoor kitchen, pool, garage,
+two floor levels. No elevator. Change any count on the Room Plan and tick
+**Build rooms** again - it only ever adds, so nothing already there is
+disturbed.
+
+Still to do on it if you want the full picture: open **Project setup ->
+Optional items** and switch on the tubs, prep sink, pot filler and second
+dishwasher this imaginary house has. They are generated but hidden until
+somebody says so.
+
 ## Project setup, step by step
 
 1. On the Project, tick **Load starter plan**. The Room Plan fills with one
@@ -40,6 +70,14 @@ options, 46 rooms, 30 Room Plan lines and the two projects, deleted after the
 review below. What survived is everything that should: the 131-item library,
 15 room types, the 36-row window catalog, the Sections and Trades maps, and
 all four automations.
+
+**Fifty orphaned selections were still in the base.** Deleting the two sample
+jobs cleared their Projects, Spaces and most of their rows, but 50 selections
+survived with their Project link emptied rather than being deleted - invisible
+on every screen that filters by job, and they would have turned up in any
+count. Gone now, and Options and Spaces were checked the same way and were
+clean. Worth repeating the check after any bulk delete: filter Selections on
+Project is empty.
 
 **DEMO_KEY is cleared.** The example job's key was pre-filled in the portal
 page, which is a public file. That was on the pre-client list; the job it
