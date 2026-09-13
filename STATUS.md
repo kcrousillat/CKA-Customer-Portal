@@ -66,9 +66,10 @@ pot filler and second dishwasher.
 
 ## Waiting on you: two hinge sides, and one button to click
 
-**Click Update on the "Load catalog options" automation.** It is sitting as a
-draft. Airtable > Automations > Load catalog options into a selection > the
-orange **Update** button. Nothing happens until you do.
+**Click Update on the "Load catalog options" automation, once more.** It is
+tested and working, but there is a hardening change sitting as a draft - see
+below. Airtable > Automations > Load catalog options into a selection > the
+orange **Update** button.
 
 **Which way do the two Sub-Zero columns hinge?** The beverage center is set to
 Left - the quote says so, "CUST PNL LH". The refrigerator column DEC3650RIDR
@@ -95,17 +96,36 @@ Leave it empty for anything without a door that swings.
 
 ## The catalog loader was broken, and is fixed
 
-Worth knowing, because it means "Load catalog options" has never actually
+Worth knowing, because it means "Load catalog options" had never actually
 worked. The automation was carrying the wrong script entirely - a copy of the
 space expander - so it read a `spaceId` that was never passed to it. It had
 run once, on 12 Sep, and done nothing. Airtable recorded that run as a success,
 because the script did not throw; it just quietly did not do its job.
 
-It now has the script it was always described as having, and that script lives
-in the repo at `airtable/load-catalog.js` like the other three, so this cannot
-happen silently again. It carries hinge and MSRP through, and it puts the
-rough-in notes and a hinge summary into Internal notes rather than in front of
-the owner.
+It now has the script it was always described as having, that script lives in
+the repo at `airtable/load-catalog.js` like the other three, and it is
+**tested**: ticking the box on the demo's Second dishwasher loaded the Cove
+row, unticked itself and wrote the rough-in into Internal notes. Ticking it on
+the Beverage center carried the hinge through as Left.
+
+Two things the test caught that no amount of reading would have:
+
+**Single-selects have to agree across tables.** Palettes had learned Sub-Zero,
+Wolf, Sharp and Cove; Options still only knew PGT and ES Windows. The scripting
+API has no typecast, so writing an unknown choice throws and takes the whole
+load down. Both lists match now, and the script asks the field what it accepts
+rather than assuming - an unknown choice is left empty and named in the log
+instead of killing the run. That is the draft waiting on the Update button.
+
+**A catalog note is owner-facing.** Palettes.Note is copied onto the option and
+shown in the portal, and mine held bid numbers, a trade rep's name and another
+client's house. New **Internal note** field on Palettes for exactly that, and
+the loader does not read it. Rule: if it names another client, a bid, or a
+price, it goes in Internal note, never Note.
+
+Also corrected while in there: catalog **Model** now holds the manufacturer's
+model number and the Ferguson SKU lives in Internal note. It was the other way
+round, which would have shown an owner a vendor SKU as the model.
 
 ## Decoding a Ferguson SKU
 

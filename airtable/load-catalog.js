@@ -41,6 +41,37 @@ if (!sel) {
   // appliance package mixes brands, so "all" is usually what you want.
   const wantBrands = brandCell.map((b) => b.name);
 
+  /**
+   * Brand and Hinge are single-selects in both tables, and the scripting API
+   * has no typecast: writing a choice the target field does not have throws,
+   * and takes the whole load down with it. That is exactly what happened the
+   * first time this ran - Palettes had learned Sub-Zero, Wolf, Sharp and Cove
+   * while Options still only knew PGT and ES Windows.
+   *
+   * So ask the field what it accepts. An unknown choice is left empty and
+   * named in the log, which costs one cell rather than the whole run.
+   */
+  const choicesOf = (table, fieldName) => {
+    const f = table.getField(fieldName);
+    const known = {};
+    for (const c of (f.options && f.options.choices) || []) known[c.name] = true;
+    return known;
+  };
+  const brandChoices = choicesOf(options, 'Brand');
+  const hingeChoices = choicesOf(options, 'Hinge');
+  const unknownChoices = new Set();
+
+  const pick = (cell, known, label) => {
+    if (!cell || !cell.name) return null;
+    if (known[cell.name]) return { name: cell.name };
+    unknownChoices.add(label + ' "' + cell.name + '"');
+    return null;
+  };
+
+  // 'Internal note' is deliberately NOT read. It is the one field on a catalog
+  // row that must never reach a job: it holds which bid a model came from and
+  // which client's house it was first specified for. Note is the owner-facing
+  // one, and it is the only one copied onto the option.
   const catalog = await palettes.selectRecordsAsync({
     fields: ['Name', 'Brand', 'Category', 'Supplier', 'Model', 'Finish', 'Code',
              'Photo', 'Note', 'Product link', 'Swatch color', 'Sort order',
@@ -81,7 +112,7 @@ if (!sel) {
         fields: {
           'Option name': p.getCellValue('Name') || 'Option',
           'Selection': [{ id: sel.id }],
-          'Brand': brand ? { name: brand.name } : null,
+          'Brand': pick(brand, brandChoices, 'Brand'),
           'Supplier': p.getCellValue('Supplier') || '',
           'Model': p.getCellValue('Model') || '',
           'Finish': p.getCellValue('Finish') || '',
@@ -90,7 +121,7 @@ if (!sel) {
           // column units, so it travels with the product rather than being a
           // separate question. Carrying it here is what puts it in front of
           // the owner before it is ordered.
-          'Hinge': hinge ? { name: hinge.name } : null,
+          'Hinge': pick(hinge, hingeChoices, 'Hinge'),
           'Color code': p.getCellValue('Code') || '',
           'Note': p.getCellValue('Note') || '',
           'Product link': p.getCellValue('Product link') || '',
@@ -136,6 +167,11 @@ if (!sel) {
     }
     if (roughs.length) {
       message += '\n\nRough-in:\n' + roughs.join('\n');
+    }
+    if (unknownChoices.size) {
+      message += '\n\nLeft empty because the Options table has no such choice yet: ' +
+                 Array.from(unknownChoices).join(', ') +
+                 '. Add it to that field in Options and tick again.';
     }
   }
 
