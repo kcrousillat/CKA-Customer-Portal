@@ -336,7 +336,8 @@ img{max-width:100%}
 .fin input:checked + span{background:var(--accent); border-color:var(--accent); color:var(--accent-ink); font-weight:600}
 .od.variants{color:var(--accent)}
 .od.msrp{color:var(--ink-2); font-variant-numeric:tabular-nums}
-.msrp-note{
+.od.hinge{color:var(--accent); font-weight:600}
+.msrp-note,.hinge-note{
   font-family:var(--data); font-size:11.5px; color:var(--muted);
   margin:-8px 0 16px; line-height:1.6;
 }
@@ -878,6 +879,7 @@ function panelMarkup(row){
         (o.code ? '<span class="od">Code ' + esc(o.code) + '</span>' : "") +
         ((o.finishChoices && o.finishChoices.length)
           ? '<span class="od variants">' + o.finishChoices.length + ' finishes</span>' : "") +
+        (o.hinge ? '<span class="od hinge">Hinged ' + esc(o.hinge.toLowerCase()) + '</span>' : "") +
         /* Arrives null while the Worker's SHOW_MSRP is off, so this and the
            note below simply do not render. Left in place deliberately: the
            decision was "not yet", not "never". */
@@ -886,6 +888,15 @@ function panelMarkup(row){
         (o.link ? '<a class="od" href="' + esc(o.link) + '" target="_blank" rel="noopener">See the product</a>' : "") +
         '</span></span></label></li>';
     }).join("") + '</ul>';
+
+    /* The swing is part of the model number on most of these, so it is decided
+       when the order goes in and cannot be changed on site. Saying so here is
+       what makes the approval cover it. */
+    if (row.options.some(function(o){ return !!o.hinge; })) {
+      out += '<p class="hinge-note">Where a door is hinged is part of the model we order, ' +
+        'so it is fixed once the order goes in \u2014 it cannot be swapped on site. ' +
+        'If a door should open the other way, tell us before you approve.</p>';
+    }
 
     if (row.options.some(function(o){ return !!o.msrp; })) {
       out += '<p class="msrp-note">MSRP is the manufacturer\u2019s list price, shown so you can see ' +

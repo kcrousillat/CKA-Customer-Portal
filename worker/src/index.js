@@ -346,6 +346,10 @@ async function getProject(env, key) {
               swatch: o.fields["Swatch color"] || "",
               code: o.fields["Color code"] || "",
               finishChoices: splitList(o.fields["Finish options"]),
+              // On most undercounter and column units the hinge is part of the
+              // model number, so it is fixed at order. The owner has to see it
+              // before they approve, not at delivery.
+              hinge: (o.fields["Hinge"] && o.fields["Hinge"].name) || o.fields["Hinge"] || "",
               msrp: SHOW_MSRP && typeof o.fields["MSRP"] === "number" ? o.fields["MSRP"] : null,
               photos: attachments(o.fields["Photo"]),
               order: num(o.fields["Sort order"], 999),

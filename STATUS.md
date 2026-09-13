@@ -64,6 +64,49 @@ pot filler and second dishwasher.
 
     https://airtable.com/appfRsDMRMX4sGSPK/pagl5l9DF1uWwbixg
 
+## Waiting on you: two hinge sides, and one button to click
+
+**Click Update on the "Load catalog options" automation.** It is sitting as a
+draft. Airtable > Automations > Load catalog options into a selection > the
+orange **Update** button. Nothing happens until you do.
+
+**Which way do the two Sub-Zero columns hinge?** The beverage center is set to
+Left - the quote says so, "CUST PNL LH". The refrigerator column DEC3650RIDR
+and the freezer column DEC3650FIL are blank, because the bid does not say and
+I am not guessing at something that gets ordered. The Sub-Zero spec sheet or
+Steven will have it. Two words and they are filled in.
+
+## Hinge side is recorded and shown
+
+Doors on undercounter and column appliances are hinged left or right, and on
+most of them the hinge is part of the model number - a left-hand unit and a
+right-hand unit are two different products. It cannot be swapped on site. So
+an owner who never saw which way the door opens has a fair complaint, and CKA
+has no record they agreed to it.
+
+New **Hinge** field on both Options and Palettes: Left, Right, Reversible,
+French / double. Set it once on the catalog row and it follows into every job.
+The portal shows it on the option card, and any room with a hinged option
+carries a standing line: the swing is fixed once the order goes in, so say
+something before approving. Approving the option is then a record that the
+hinge was approved too.
+
+Leave it empty for anything without a door that swings.
+
+## The catalog loader was broken, and is fixed
+
+Worth knowing, because it means "Load catalog options" has never actually
+worked. The automation was carrying the wrong script entirely - a copy of the
+space expander - so it read a `spaceId` that was never passed to it. It had
+run once, on 12 Sep, and done nothing. Airtable recorded that run as a success,
+because the script did not throw; it just quietly did not do its job.
+
+It now has the script it was always described as having, and that script lives
+in the repo at `airtable/load-catalog.js` like the other three, so this cannot
+happen silently again. It carries hinge and MSRP through, and it puts the
+rough-in notes and a hinge summary into Internal notes rather than in front of
+the owner.
+
 ## Decoding a Ferguson SKU
 
 Ferguson's item numbers are the manufacturer's model number with the brand's
