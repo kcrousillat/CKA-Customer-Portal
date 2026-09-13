@@ -48,6 +48,24 @@ pot filler and second dishwasher.
 
 ## Recently fixed
 
+**The example job's dates were in the past**, which made Appliances look
+broken. It was not: the portal deliberately refuses to collapse a section
+holding anything past its needed-by date, and the example's appliances were two
+months overdue. Paint had nothing late, so Paint collapsed and Appliances did
+not.
+
+The dates come from construction start minus lead time, so the whole example
+had drifted. Construction start moved to 15 Feb 2027 (dry-in 30 Jul 2027) and
+all 204 selections were re-dated off it. Nothing reads as overdue now; the
+20-week window and door package still lands inside the 21-day window, so the
+"due soon" styling is still visible on the demo.
+
+Worth knowing: **needed-by is written once, when the row is generated.**
+Changing a project's construction start later does NOT re-date its existing
+selections. If a real job's start moves, the dates have to be recalculated -
+there is no automation for that yet. Add one if start dates start moving often.
+
+
 **Nine appliance templates had the appliance name in the wrong column** -
 Dishwasher, Ice maker, Beverage center, Wine storage, Steam oven, Warming
 drawer, Coffee system, Microwave / speed oven, Undercounter refrigeration all
