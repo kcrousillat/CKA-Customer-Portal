@@ -20,19 +20,21 @@ That makes the Worker serve the portal page, so it opens on a phone at
 A file on a Desktop cannot do that: opening it from OneDrive on a phone lands
 in a preview sandbox with no network and no address bar for the ?p= key.
 
-## Broken, needs fixing
+## Recently fixed
 
-**Adding a new room does not generate its selections.** The expand-space
-automation fails on every run with a script error. Existing rooms and the
-portal are unaffected; only newly added Spaces are.
+**The room generator works again**, and so does the new Room Plan build. Both
+were failing for the same reason and it was not the scripts: writing an
+automation through the API put the input-variable setting in the wrong place,
+Airtable accepted it silently and dropped it, and the scripts then ran with no
+trigger record. "recordId should be a string, not undefined."
 
-Airtable does not expose the error text through the API, so the next step is
-to read it from the UI: open the automation, click **Test step**, and send the
-error. Two blind fixes have already been tried and neither was it — no third
-guess without the message.
+The lesson for next time: when writing an automation through the API, inputObj
+belongs INSIDE inputs, alongside script. Check a hand-built automation for the
+shape before trusting a rewrite, and read the Execution log in the UI early
+rather than reasoning about what a script error might be. Three theories were
+wrong before the actual message settled it in one line.
 
-Workaround in the meantime: Claude can generate a new room's selections
-directly, which is how the baths and powder were built.
+Both tested end to end and the test rooms cleaned up.
 
 ## Waiting on Kevin
 
