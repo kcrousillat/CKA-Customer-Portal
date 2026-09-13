@@ -21,18 +21,15 @@ let message = '';
 /**
  * Trade is a single-select today and may become a link to the Trades table.
  * The cell itself says which: a select reads back as one object, a link as an
- * array of them, and a linked row's id is already the Trades record id. So
- * the shape is read off the value rather than by interrogating the field,
- * which keeps this to the two lines that actually differ.
+ * array of them, and a linked row's id is already the Trades record id.
  *
  * This assumes both Trade fields are converted together - Selections.Trade
- * and Item Templates.Default trade. Convert only one and the shape written
- * here will not match the field being written to.
+ * and Item Templates.Default trade.
  */
-function tradeValue(cell) {
+const tradeValue = (cell) => {
   if (Array.isArray(cell)) return cell.length ? [{ id: cell[0].id }] : null;
   return cell ? { name: cell.name } : null;
-}
+};
 
 const space = await spaces.selectRecordAsync(cfg.spaceId, {
   fields: ['Space name', 'Space Type', 'Project', 'Sort order', 'fld08DtEGCJNfw7Pq'],
@@ -62,7 +59,7 @@ if (!space) {
 
   const query = await templates.selectRecordsAsync({
     fields: ['Item name', 'Space Type', 'Default trade', 'Default lead time (weeks)',
-             'Default mode', 'Description', 'Sort order', 'Active',
+             'Default mode', 'Description', 'Sort order', 'Active', 'Optional',
              'Palette category', 'Section'],
   });
 
@@ -97,7 +94,11 @@ if (!space) {
           'Project': [{ id: projectId }],
           'Space': [{ id: space.id }],
           'Item Template': [{ id: t.id }],
-          'Status': { name: 'Not started' },
+          // An Optional item still generates, so nobody has to remember it
+          // exists, but it arrives hidden. Someone sets it to Not started
+          // on the jobs that have one. That is one click to add a prep sink,
+          // against having to notice a missing row on every other job.
+          'Status': { name: t.getCellValue('Optional') ? 'Not applicable' : 'Not started' },
           'Mode': { name: mode ? mode.name : 'CKA presents options' },
           'Trade': tradeValue(trade),
           'Palette category': palette ? { name: palette.name } : null,

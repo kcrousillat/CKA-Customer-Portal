@@ -26,10 +26,10 @@ let log = [];
 let roomsMade = 0;
 let rowsMade = 0;
 
-function tradeValue(cell) {
+const tradeValue = (cell) => {
   if (Array.isArray(cell)) return cell.length ? [{ id: cell[0].id }] : null;
   return cell ? { name: cell.name } : null;
-}
+};
 
 const project = await projects.selectRecordAsync(cfg.projectId, {
   fields: ['Project name', 'Construction start'],
@@ -65,7 +65,7 @@ if (!project) {
 
   const templateQuery = await templates.selectRecordsAsync({
     fields: ['Item name', 'Space Type', 'Default trade', 'Default lead time (weeks)',
-             'Default mode', 'Description', 'Sort order', 'Active',
+             'Default mode', 'Description', 'Sort order', 'Active', 'Optional',
              'Palette category', 'Section'],
   });
 
@@ -134,7 +134,11 @@ if (!project) {
             'Project': [{ id: cfg.projectId }],
             'Space': [{ id: spaceId }],
             'Item Template': [{ id: t.id }],
-            'Status': { name: 'Not started' },
+            // An Optional item still generates, so nobody has to remember it
+            // exists, but it arrives hidden. Someone sets it to Not started
+            // on the jobs that have one. That is one click to add a prep sink,
+            // against having to notice a missing row on every other job.
+            'Status': { name: t.getCellValue('Optional') ? 'Not applicable' : 'Not started' },
             'Mode': { name: mode ? mode.name : 'CKA presents options' },
             'Trade': tradeValue(t.getCellValue('Default trade')),
             'Palette category': palette ? { name: palette.name } : null,

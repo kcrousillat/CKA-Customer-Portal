@@ -1,19 +1,28 @@
 # Where things stand
 
-Kept here rather than in chat so it survives. Updated 12 Sep 2026.
+Kept here rather than in chat so it survives. Updated 13 Sep 2026.
 
 ## Next time at a computer
 
-Three commands in PowerShell, in order. The first two are one-offs; the third
-is the one to use from then on.
+**Two automations have unapplied drafts.** Open each in Airtable and click
+Update, or nothing changes:
 
-    curl.exe -o "$([Environment]::GetFolderPath('Desktop'))\update-cka-portal.ps1" https://raw.githubusercontent.com/kcrousillat/CKA-Customer-Portal/1adfa6c9749568640856286706281ced0a5387bd/tools/update-cka-portal.ps1
+  - Expand space into selections
+  - Build rooms from the Room Plan
 
-    curl.exe -o "$([Environment]::GetFolderPath('Desktop'))\CKA-Customer-Portal-claude-exciting-heisenberg-pqq69a\worker\wrangler.toml" https://raw.githubusercontent.com/kcrousillat/CKA-Customer-Portal/1adfa6c9749568640856286706281ced0a5387bd/worker/wrangler.toml
+Both got the same one-line change: an Item Template ticked **Optional** now
+generates as "Not applicable" instead of "Not started".
+
+### Then, the usual update
+
+One command in PowerShell (Windows key, type powershell, Enter):
 
     powershell -ExecutionPolicy Bypass -File "$([Environment]::GetFolderPath('Desktop'))\update-cka-portal.ps1"
 
-That makes the Worker serve the portal page, so it opens on a phone at
+Three green numbered steps, then "All done." It downloads the current portal
+and Worker from GitHub before deploying, so a stale local copy cannot go live.
+
+The portal then opens on a phone at
 
     https://cka-selections-api.kevin-7c1.workers.dev/?p=sunset-isle-9f2c7a41
 
@@ -21,6 +30,24 @@ A file on a Desktop cannot do that: opening it from OneDrive on a phone lands
 in a preview sandbox with no network and no address bar for the ?p= key.
 
 ## Recently fixed
+
+**Optional items have a home.** Some rooms have a thing and some do not - a
+prep sink, a pot filler, a tub. There is now an **Optional** checkbox on Item
+Templates. A ticked item still generates on every job, so nobody has to
+remember it exists, but it arrives as "Not applicable" and the owner never
+sees it. Someone sets its Status to "Not started" on the jobs that have one.
+One click to add, against having to notice a missing row on every other job.
+
+The kitchen was the first case. It used to carry two rows covering five
+products - "Sink" meant main and prep, "Plumbing fixtures" meant main faucet,
+prep faucet and pot filler in one approval, which is not something an order
+desk can key. It is now Sink, Faucet, and three Optional rows: Prep sink,
+Prep faucet, Pot filler.
+
+The tub was deliberately left alone: it still generates visible and is turned
+off for a shower-only bath. Missing a tub selection is worse than carrying a
+spare row. Tick Optional on it if that turns out to be the wrong way round.
+
 
 **The room generator works again**, and so does the new Room Plan build. Both
 were failing for the same reason and it was not the scripts: writing an
