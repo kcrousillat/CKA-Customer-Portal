@@ -60,6 +60,12 @@ Two new palette categories, **Baseboard profile** and **Casing profile**, are
 waiting to be filled - see below.
 
 
+**Front entry door files with the windows.** Its trade is Millwork, which put
+it under Cabinetry & millwork next to the interior doors. An owner thinks of
+the front door with the exterior openings, so it now carries a Section override
+to Exterior Doors & Windows. The example job already had that override set by
+hand; the library carries it now, so every future job inherits it.
+
 **Mirrors and shower enclosures have their own heading.** There is one Glazing
 trade and it points at Exterior Doors & Windows, so a shower door was filing
 under the same heading as the window package. New section **Glass & mirrors**
