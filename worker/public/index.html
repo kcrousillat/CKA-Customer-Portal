@@ -530,10 +530,11 @@ img{max-width:100%}
 
 var API_BASE = "https://cka-selections-api.kevin-7c1.workers.dev";
 
-/* Pre-filled in the "Open a project" box so Kevin never types it. This is the
-   EXAMPLE job only. Clear it before the first real client — this file is public
-   and a portal key is what guards a job. */
-var DEMO_KEY = "sunset-isle-9f2c7a41";
+/* Deliberately empty. This file is public, and a project's key is the only
+   thing guarding that job, so no real key belongs here. It held the example
+   job's key while there was an example job; that job is gone. Open a project
+   by pasting its key, or follow a ?p= link. */
+var DEMO_KEY = "";
 
 var PARAMS = new URLSearchParams(location.search);
 var PORTAL_KEY = PARAMS.get("p") || PARAMS.get("key") || "";
@@ -620,7 +621,7 @@ function askForKey(){
     'key already in it and never see this.</p>' +
     '<div class="sign-row"><span class="grow">' +
     '<label for="keyin">Portal key</label>' +
-    '<input id="keyin" type="text" value="' + DEMO_KEY + '" placeholder="sunset-isle-9f2c7a41" autocomplete="off">' +
+    '<input id="keyin" type="text" value="' + DEMO_KEY + '" placeholder="paste the key from your email" autocomplete="off">' +
     '</span><button class="btn btn-primary" type="button" id="keygo">Open</button></div></div>';
 
   var go = function(){

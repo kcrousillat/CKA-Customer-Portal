@@ -4,28 +4,13 @@ Kept here rather than in chat so it survives. Updated 13 Sep 2026.
 
 ## Next time at a computer
 
-**"Build rooms from the Room Plan" has an unapplied draft.** Open it in
-Airtable and click Update, or the six-room cap stays:
-
-    https://airtable.com/appfRsDMRMX4sGSPK/wflpTbwWN5yXdTExh
-
-Nothing else is pending.
-
-### Then, the usual update
-
-One command in PowerShell (Windows key, type powershell, Enter):
+**Run the updater.** The portal page changed - the example job's key was
+pre-filled in it and that job no longer exists, so the box is empty now.
 
     powershell -ExecutionPolicy Bypass -File "$([Environment]::GetFolderPath('Desktop'))\update-cka-portal.ps1"
 
 Three green numbered steps, then "All done." It downloads the current portal
 and Worker from GitHub before deploying, so a stale local copy cannot go live.
-
-The portal then opens on a phone at
-
-    https://cka-selections-api.kevin-7c1.workers.dev/?p=sunset-isle-9f2c7a41
-
-A file on a Desktop cannot do that: opening it from OneDrive on a phone lands
-in a preview sandbox with no network and no address bar for the ?p= key.
 
 ## Project setup, step by step
 
@@ -49,6 +34,17 @@ pot filler and second dishwasher.
     https://airtable.com/appfRsDMRMX4sGSPK/pagl5l9DF1uWwbixg
 
 ## Recently fixed
+
+**Both sample jobs are gone and the base is clean.** 418 selections, 55
+options, 46 rooms, 30 Room Plan lines and the two projects, deleted after the
+review below. What survived is everything that should: the 131-item library,
+15 room types, the 36-row window catalog, the Sections and Trades maps, and
+all four automations.
+
+**DEMO_KEY is cleared.** The example job's key was pre-filled in the portal
+page, which is a public file. That was on the pre-client list; the job it
+pointed at is deleted, so it went now.
+
 
 **Paint is generated now, not hand-built.** The per-room paint arrangement
 existed on exactly one job and nowhere in the library - 17 rows typed by hand,
