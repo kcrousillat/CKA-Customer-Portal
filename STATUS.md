@@ -64,18 +64,15 @@ pot filler and second dishwasher.
 
     https://airtable.com/appfRsDMRMX4sGSPK/pagl5l9DF1uWwbixg
 
-## Waiting on you: two hinge sides, and one button to click
+## Hinge sides are all filled in
 
-**Click Update on the "Load catalog options" automation, once more.** It is
-tested and working, but there is a hardening change sitting as a draft - see
-below. Airtable > Automations > Load catalog options into a selection > the
-orange **Update** button.
+On Sub-Zero the trailing letter of the model number is the hinge: `R` right,
+`L` left. So the refrigerator column DEC3650RIDR is hinged right, the freezer
+column DEC3650FIL is hinged left, and the beverage center DEU2450BGL is left -
+which the bid had already said in words.
 
-**Which way do the two Sub-Zero columns hinge?** The beverage center is set to
-Left - the quote says so, "CUST PNL LH". The refrigerator column DEC3650RIDR
-and the freezer column DEC3650FIL are blank, because the bid does not say and
-I am not guessing at something that gets ordered. The Sub-Zero spec sheet or
-Steven will have it. Two words and they are filled in.
+The paired columns are deliberately opposite so the doors open away from each
+other. All eight appliance rows now carry a hinge or are correctly blank.
 
 ## Hinge side is recorded and shown
 

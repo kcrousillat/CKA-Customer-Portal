@@ -95,6 +95,15 @@ It carries into the job and the portal shows it, with a standing line telling
 the owner the swing is fixed once the order goes in. That is what makes the
 approval cover the hinge as well as the appliance.
 
+**The model number usually tells you.** On Sub-Zero the trailing letter is the
+hinge: `R` right, `L` left. DEC3650RIDR is right, DEC3650FIL is left,
+DEU2450BGL is left. That is not a guess to make on other brands - check the
+spec sheet - but where the letter is there, it is the most reliable source,
+because it is the thing actually being ordered.
+
+A paired 36 + 36 column run wants opposite hinges so the doors open away from
+each other. Getting that backwards is a restock, not an adjustment.
+
 ## Getting the catalog in
 
 Sub-Zero's and Thermador's sites are unreachable from the build environment, so catalog data comes
