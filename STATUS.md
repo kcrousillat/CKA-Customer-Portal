@@ -64,6 +64,59 @@ pot filler and second dishwasher.
 
     https://airtable.com/appfRsDMRMX4sGSPK/pagl5l9DF1uWwbixg
 
+## Waiting on you: four brand names
+
+Eight appliances from the Ferguson bid for Paperny Res. (B511572, 5 Aug 2026)
+are loaded into the catalog, but sitting **inactive** until one question is
+answered, because the brand is nowhere on the quote - the item codes are
+Ferguson's own SKUs, not manufacturer model numbers.
+
+Which brands are these?
+
+  - SDEC3650RIDR / SDEC3650FIL - 36" design column refrigerator and freezer
+  - WDF48650GSP - 48" dual-fuel range (plus WPL462212 hood liner, W814423 blower)
+  - SSMD2470ASY - 24" microwave drawer
+  - CDW2451 - 24" dishwasher, and SDEU2450BGL - 24" beverage center
+
+Say the word for each and they get filled in and switched on in one call. The
+laundry pair is already marked LG - that one the quote does state.
+
+They are inactive rather than half-filled on purpose: an Active catalog row
+loads straight into a job and then straight in front of an owner, and a
+guessed brand is exactly the mistake this product exists to prevent.
+
+## Appliances from a vendor quote
+
+This is the normal path: the interior designer picks the appliances and the
+vendor quotes them, so the decision is already made by the time it reaches
+us. The job is to record it, not to present choices.
+
+What that looks like in the base - all of it done on the demo job already, so
+open the Kitchen there to see it:
+
+  - One **Option** per appliance, attached to the matching selection, carrying
+    supplier, the order number, and the finish.
+  - Selection status **Options presented**. The owner sees one card per
+    appliance and approves it; they are not being asked to choose.
+  - The bid's own notes land in **Internal notes**, which the owner never
+    sees - "CONFIRM BLOWER", the left-hand hinge on the beverage center, the
+    brushed brass knobs being a separate line that has to be ordered with the
+    range.
+  - **Rough-in notes** on the catalog row carry what the MEP rough and the
+    cabinet shop need: panel-ready, dual fuel, 1200 CFM, 240V dryer circuit.
+
+**No prices were loaded, deliberately.** The Net Price column on a vendor bid
+is trade pricing, not MSRP. The portal's rule is MSRP only, labelled, and
+excluding installation - so putting a bid number in that field would be wrong
+twice over and would show an owner what we pay. MSRP stays empty until we
+have list pricing. Worth knowing: Ferguson quoted installation as its own
+set of lines, which is a good check on the "excludes installation" wording.
+
+**Do not commit a client quote to this repo.** It is public. Committing
+images to it is the fast way to get chips into Airtable, and that is fine for
+manufacturer artwork - but a vendor bid carries the client's name, the
+designer's address and phone, and trade pricing. Those go in Airtable only.
+
 ## Recently fixed
 
 **Both sample jobs are gone and the base is clean.** 418 selections, 55
