@@ -232,6 +232,21 @@ once the expand-space automation is working again.
   next job. The two gotchas identified were a composite task key and a
   mismatch-guard view.
 
+## Known gap: the library does not backfill
+
+Changing Item Templates only affects rooms built **afterwards**. Build rooms
+adds missing *rooms*; it never adds a newly-added item to a room that already
+exists. Add an item to the library mid-job and every room already on that job
+stays as it was, silently.
+
+This bit immediately on the sandbox: bedrooms built before the closet lines
+were attached came out with no closet, and it read as the change not working.
+
+Worth an automation - a "Top up selections" tick that walks a project's rooms
+and creates any template row that is missing, add-only, same shape as Build
+rooms. Until then, remember that a library change is for future rooms, and
+existing jobs need the rows added by hand.
+
 ## Open questions
 
 - Should the portal's headings use a serif display face instead of Archivo?
