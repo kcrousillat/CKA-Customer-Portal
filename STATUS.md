@@ -29,11 +29,38 @@ The portal then opens on a phone at
 A file on a Desktop cannot do that: opening it from OneDrive on a phone lands
 in a preview sandbox with no network and no address bar for the ?p= key.
 
+## Project setup, step by step
+
+1. On the Project, add a **Room Plan** line per kind of room, then tick
+   **Build rooms**. Rooms and their selections appear.
+2. Open the **Project setup -> Optional items** interface page, pick the job
+   from the Job dropdown, and set the Status of everything that house actually
+   has to "Not started". Everything left as "Not applicable" stays invisible
+   to the owner.
+
+That second screen is the whole answer to "which of these does this house
+have". It lists only the rows marked Optional in the library, grouped by room,
+in both states - so an item can be switched on or back off from the one place.
+Today that means tubs (one line per bath), the kitchen prep sink, prep faucet,
+pot filler and second dishwasher.
+
+    https://airtable.com/appfRsDMRMX4sGSPK/pagl5l9DF1uWwbixg
+
 ## Recently fixed
 
-**Optional items have a home.** Some rooms have a thing and some do not - a
-prep sink, a pot filler, a tub. There is now an **Optional** checkbox on Item
-Templates. A ticked item still generates on every job, so nobody has to
+**Nine appliance templates had the appliance name in the wrong column** -
+Dishwasher, Ice maker, Beverage center, Wine storage, Steam oven, Warming
+drawer, Coffee system, Microwave / speed oven, Undercounter refrigeration all
+had their name sitting in **Default mode** instead of **Palette category**.
+Generating them wrote junk into Mode and left the palette empty, so no option
+palette ever loaded. Moved to the right column; Default mode is now
+"CKA presents options" on all nine.
+
+
+**Optional items have a home, and a screen.** Some rooms have a thing and some
+do not - a prep sink, a pot filler, a tub, a second dishwasher. There is now an
+**Optional** checkbox on Item Templates, and a "Project setup -> Optional
+items" page that asks about all of them at once (see above). A ticked item still generates on every job, so nobody has to
 remember it exists, but it arrives as "Not applicable" and the owner never
 sees it. Someone sets its Status to "Not started" on the jobs that have one.
 One click to add, against having to notice a missing row on every other job.
@@ -44,9 +71,13 @@ prep faucet and pot filler in one approval, which is not something an order
 desk can key. It is now Sink, Faucet, and three Optional rows: Prep sink,
 Prep faucet, Pot filler.
 
-The tub was deliberately left alone: it still generates visible and is turned
-off for a shower-only bath. Missing a tub selection is worse than carrying a
-spare row. Tick Optional on it if that turns out to be the wrong way round.
+The tub and the second dishwasher are now Optional too. That was safe to do
+only because the setup page exists: with a screen that lists every switched-off
+item per room, an off-by-default tub cannot quietly go missing.
+
+Existing tub rows on the example job were left in whatever state they were
+already in - those decisions are made, and re-defaulting them would have
+thrown away real information.
 
 
 **The room generator works again**, and so does the new Room Plan build. Both
