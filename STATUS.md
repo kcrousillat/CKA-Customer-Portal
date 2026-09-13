@@ -50,21 +50,24 @@ pot filler and second dishwasher.
 
 ## Recently fixed
 
-**A bedroom closet belongs to the bedroom.** The two closet lines - closet
-system layout, closet hardware and lighting - now hang off Bedroom as well as
-Closet, so every bedroom carries its own closet decisions and no separate room
-is needed for an ordinary closet.
+**A bedroom closet belongs to the bedroom, and the primary gets its own room
+type.** The two closet lines - closet system layout, closet hardware and
+lighting - hang off Bedroom, so every secondary bedroom carries its own closet
+and no separate room is needed for it.
 
-**Closet** stays a room type, but only for a closet that really is a room: a
-primary walk-in or a dressing room. On most jobs that count is 1 or 0, not one
-per bedroom.
+The primary is different: it nearly always has a walk-in that is its own room,
+sometimes two. So **Primary bedroom** is now its own room type - everything a
+bedroom has except the closet lines - and the old Closet type is renamed
+**Walk-in closet**, counted by how many walk-ins there are.
 
-The one overlap to watch: if the primary bedroom's closet is a walk-in set up
-as its own Closet room, the primary bedroom still gets its two closet lines and
-the owner is asked twice. Mark those two rows Not applicable on that bedroom.
-They are not Optional items, so they will not appear on the setup page - find
-them in Selections filtered to that room. Worth revisiting if it turns out to
-happen on every job.
+Three room types now, and nobody is asked about a closet twice:
+
+  - **Bedroom** - secondary. 7 room items plus its 2 closet lines.
+  - **Primary bedroom** - the same 7 room items, no closet lines.
+  - **Walk-in closet** - the 2 closet lines. How many = number of walk-ins.
+
+No template was duplicated to do this: a template can belong to several room
+types, so the seven bedroom items simply claim both bedroom types.
 
 
 **Build rooms no longer stops at six.** It used to cap each run at six rooms
