@@ -111,7 +111,7 @@ Wolf, Sharp and Cove; Options still only knew PGT and ES Windows. The scripting
 API has no typecast, so writing an unknown choice throws and takes the whole
 load down. Both lists match now, and the script asks the field what it accepts
 rather than assuming - an unknown choice is left empty and named in the log
-instead of killing the run. That is the draft waiting on the Update button.
+instead of killing the run.
 
 **A catalog note is owner-facing.** Palettes.Note is copied onto the option and
 shown in the portal, and mine held bid numbers, a trade rep's name and another
