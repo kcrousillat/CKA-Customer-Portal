@@ -50,6 +50,23 @@ pot filler and second dishwasher.
 
 ## Recently fixed
 
+**Mirrors and shower enclosures have their own heading.** There is one Glazing
+trade and it points at Exterior Doors & Windows, so a shower door was filing
+under the same heading as the window package. New section **Glass & mirrors**
+(sort 75, right after Exterior Doors & Windows), claimed by the three interior
+glass items through their own Section cell: Shower enclosure, Mirrors (Bath)
+and Mirror (Powder).
+
+Done with Section overrides rather than a new trade, because the trade really
+is the same one - it is the conversation and often the vendor that differs. If
+the glass shop ever becomes a separate trade partner worth tracking, splitting
+the trade would be the better answer and would move these automatically.
+
+All 22 existing selections on both jobs were moved too. That is the backfill
+gap again: a template's Section is copied onto a selection when it is
+generated, so changing the template alone would have fixed only future rooms.
+
+
 **A bedroom closet belongs to the bedroom, and the primary gets its own room
 type.** The two closet lines - closet system layout, closet hardware and
 lighting - hang off Bedroom, so every secondary bedroom carries its own closet
