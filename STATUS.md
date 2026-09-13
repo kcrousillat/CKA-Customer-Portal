@@ -83,9 +83,10 @@ Catalog rows carry both: **Code** is the manufacturer's model, and the
 Ferguson SKU is in the row's note and in the selection's Internal notes, so
 whichever number the order desk or the rep is working from, it is there.
 
-One to check before ordering: the microwave drawer came through as
-SSMD2470ASY, so by the rule SMD2470ASY - but Sharp's drawer models usually
-end AS, and the trailing Y may be Ferguson's own. Flagged on the record.
+The rule held on the one I doubted. The microwave drawer decodes to
+SMD2470ASY and Sharp's own product page shows exactly that - so the flag on
+that record is cleared. The page also corrected the bid: Sharp says 950W,
+the bid said 1000W. Take the manufacturer's number.
 
 ## Appliances from a vendor quote
 
@@ -107,7 +108,14 @@ open the Kitchen there to see it:
   - **Rough-in notes** on the catalog row carry what the MEP rough and the
     cabinet shop need: panel-ready, dual fuel, 1200 CFM, 240V dryer circuit.
 
-**No prices were loaded, deliberately.** The Net Price column on a vendor bid
+**The first MSRP is in.** Sharp's product page lists the microwave drawer at
+$1,899.99, so that is on the catalog row and on the demo job's option - the
+first real test of the portal's MSRP display. Note what did NOT go in: the
+same page showed a street price of $1,499.99. MSRP is the list number, and
+the portal says so and says it excludes installation. A street price is
+neither, and it moves.
+
+**No other prices were loaded, deliberately.** The Net Price column on a vendor bid
 is trade pricing, not MSRP. The portal's rule is MSRP only, labelled, and
 excluding installation - so putting a bid number in that field would be wrong
 twice over and would show an owner what we pay. MSRP stays empty until we
