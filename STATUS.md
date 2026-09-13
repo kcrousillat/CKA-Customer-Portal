@@ -4,10 +4,10 @@ Kept here rather than in chat so it survives. Updated 13 Sep 2026.
 
 ## Next time at a computer
 
-**"Load the starter plan" is created but switched OFF.** A new automation
-always is. Open it in Airtable and turn it on:
+**"Build rooms from the Room Plan" has an unapplied draft.** Open it in
+Airtable and click Update, or the six-room cap stays:
 
-    https://airtable.com/appfRsDMRMX4sGSPK/wflKehaUSR2zoc0jA
+    https://airtable.com/appfRsDMRMX4sGSPK/wflpTbwWN5yXdTExh
 
 Nothing else is pending.
 
@@ -49,6 +49,17 @@ pot filler and second dishwasher.
     https://airtable.com/appfRsDMRMX4sGSPK/pagl5l9DF1uWwbixg
 
 ## Recently fixed
+
+**Build rooms no longer stops at six.** It used to cap each run at six rooms
+on the theory that a room might be slow. Measured: six rooms and 83 selections
+took four seconds, against a thirty-second limit. A twenty-room house needed
+four ticks for no reason, and the first person to try it hit exactly that.
+
+It now watches the clock instead of counting rooms - it keeps going until
+twenty seconds are spent, which leaves room for the writes that follow the
+loop. A normal house finishes in one tick. A very large one still says so in
+the Setup log and is finished with a second tick.
+
 
 **A job now starts from a list, not a blank page.** Ticking **Load starter
 plan** on a Project drops in a Room Plan line for every room type in the

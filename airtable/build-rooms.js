@@ -10,9 +10,12 @@
  * Nothing is renamed, nothing is deleted, so the same plan is re-run whenever
  * a client adds a room mid-job.
  *
- * Six rooms per run, because an automation script is given about thirty
- * seconds and a room can carry eighteen selections. It unticks the box either
- * way and says in the log whether there is more to do.
+ * Airtable gives a script about thirty seconds. Rather than guess a room count
+ * that fits, it watches the clock and stops when the budget is spent - a room
+ * takes well under a second, so a normal house finishes in one run and only a
+ * very large one needs a second tick. The first version capped this at six
+ * rooms, which turned a twenty-room house into four ticks for no reason.
+ * It unticks the box either way and says in the log whether there is more.
  */
 const cfg = input.config();
 const projects = base.getTable('Projects');
@@ -21,7 +24,13 @@ const planT = base.getTable('Room Plan');
 const templates = base.getTable('Item Templates');
 const selections = base.getTable('Selections');
 
-const ROOMS_PER_RUN = 6;
+// Stop well short of the ~30s ceiling: the writes after the loop - the Room
+// Plan links, the untick, the log - still have to land.
+const BUDGET_MS = 20000;
+const startedAt = Date.now();
+// Belt and braces. The clock is what actually governs; this only bounds a
+// pathological case where rooms somehow cost nothing.
+const ROOMS_PER_RUN = 60;
 let log = [];
 let roomsMade = 0;
 let rowsMade = 0;
@@ -102,7 +111,7 @@ if (!project) {
     const builtHere = [];
 
     for (let n = already + 1; n <= wanted; n++) {
-      if (budget <= 0) { more = true; break; }
+      if (budget <= 0 || Date.now() - startedAt > BUDGET_MS) { more = true; break; }
       budget--;
 
       nextSort++;
@@ -173,7 +182,7 @@ if (!project) {
     log.unshift('Nothing to build - every room on the plan already exists.');
   }
   if (more) {
-    log.push('Stopped at ' + ROOMS_PER_RUN + ' rooms to stay inside the time limit. Tick Build rooms again for the rest.');
+    log.push('Stopped after ' + roomsMade + ' rooms to stay inside the time limit. Tick Build rooms again for the rest.');
   }
 }
 
