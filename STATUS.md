@@ -2,17 +2,16 @@
 
 Kept here rather than in chat so it survives. Updated 13 Sep 2026.
 
-## Next time at a computer
+## Nothing is waiting on a deploy
 
-**Run the updater.** The portal page changed - the example job's key was
-pre-filled in it and that job no longer exists, so the box is empty now.
+The updater has been run and the live Worker was read back to confirm it:
+MSRP is off, hinge is being served. Airtable changes need only a page reload -
+only a change to the portal page or the Worker needs the updater:
 
     powershell -ExecutionPolicy Bypass -File "$([Environment]::GetFolderPath('Desktop'))\update-cka-portal.ps1"
 
 Three green numbered steps, then "All done." It downloads the current portal
 and Worker from GitHub before deploying, so a stale local copy cannot go live.
-
-Then open the demo job below and click around it.
 
 ## The demo job
 
@@ -139,9 +138,10 @@ LG is the exception that proves it: two letters, because the brand is two
 letters. S covers both Sub-Zero and Sharp, so the product type is what tells
 them apart - a 36" column is Sub-Zero, a microwave drawer is Sharp.
 
-Catalog rows carry both: **Code** is the manufacturer's model, and the
-Ferguson SKU is in the row's note and in the selection's Internal notes, so
-whichever number the order desk or the rep is working from, it is there.
+Catalog rows carry both: **Model** is the manufacturer's, and the Ferguson SKU
+is in **Internal note** and in the selection's Internal notes - so whichever
+number the order desk or the rep is working from, it is there, without a vendor
+SKU ever reaching an owner.
 
 The rule held on the one I doubted. The microwave drawer decodes to
 SMD2470ASY and Sharp's own product page shows exactly that - so the flag on
