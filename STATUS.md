@@ -4,14 +4,12 @@ Kept here rather than in chat so it survives. Updated 13 Sep 2026.
 
 ## Next time at a computer
 
-**Two automations have unapplied drafts.** Open each in Airtable and click
-Update, or nothing changes:
+**"Load the starter plan" is created but switched OFF.** A new automation
+always is. Open it in Airtable and turn it on:
 
-  - Expand space into selections
-  - Build rooms from the Room Plan
+    https://airtable.com/appfRsDMRMX4sGSPK/wflKehaUSR2zoc0jA
 
-Both got the same one-line change: an Item Template ticked **Optional** now
-generates as "Not applicable" instead of "Not started".
+Nothing else is pending.
 
 ### Then, the usual update
 
@@ -31,14 +29,18 @@ in a preview sandbox with no network and no address bar for the ?p= key.
 
 ## Project setup, step by step
 
-1. On the Project, add a **Room Plan** line per kind of room, then tick
-   **Build rooms**. Rooms and their selections appear.
-2. Open the **Project setup -> Optional items** interface page, pick the job
+1. On the Project, tick **Load starter plan**. The Room Plan fills with one
+   line per room type in the library, all at zero except Whole house.
+2. Go down the **How many** column and type the counts. Bedroom 4, Bath 3,
+   Powder 1, Elevator 1, Floor / level 2. Leave the zeros alone - a zero is
+   skipped, so a room type the house does not have costs nothing.
+3. Tick **Build rooms**. Rooms and their selections appear.
+4. Open the **Project setup -> Optional items** interface page, pick the job
    from the Job dropdown, and set the Status of everything that house actually
    has to "Not started". Everything left as "Not applicable" stays invisible
    to the owner.
 
-That second screen is the whole answer to "which of these does this house
+That last screen is the whole answer to "which of these does this house
 have". It lists only the rows marked Optional in the library, grouped by room,
 in both states - so an item can be switched on or back off from the one place.
 Today that means tubs (one line per bath), the kitchen prep sink, prep faucet,
@@ -47,6 +49,22 @@ pot filler and second dishwasher.
     https://airtable.com/appfRsDMRMX4sGSPK/pagl5l9DF1uWwbixg
 
 ## Recently fixed
+
+**A job now starts from a list, not a blank page.** Ticking **Load starter
+plan** on a Project drops in a Room Plan line for every room type in the
+library - 14 of them today - each at How many 0, Whole house at 1. Setup is
+reading down a column and typing counts.
+
+The point is that nothing has to be remembered. "Two story" is the
+Floor / level line set to 2. "Elevator?" is the Elevator line set to 1 or left
+at 0. Those were always room-count questions; they just were not being asked.
+
+It only adds. A room type already on the plan is skipped, counts and all, so
+ticking again after a new type is added to the library brings in that one line
+and touches nothing else. Add "Office" to Space Types and it appears on every
+job set up from then on - which is the thing a spreadsheet questionnaire could
+not do without somebody remembering to update the spreadsheet.
+
 
 **The example job's dates were in the past**, which made Appliances look
 broken. It was not: the portal deliberately refuses to collapse a section
