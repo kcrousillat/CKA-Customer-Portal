@@ -50,6 +50,23 @@ pot filler and second dishwasher.
 
 ## Recently fixed
 
+**A bedroom closet belongs to the bedroom.** The two closet lines - closet
+system layout, closet hardware and lighting - now hang off Bedroom as well as
+Closet, so every bedroom carries its own closet decisions and no separate room
+is needed for an ordinary closet.
+
+**Closet** stays a room type, but only for a closet that really is a room: a
+primary walk-in or a dressing room. On most jobs that count is 1 or 0, not one
+per bedroom.
+
+The one overlap to watch: if the primary bedroom's closet is a walk-in set up
+as its own Closet room, the primary bedroom still gets its two closet lines and
+the owner is asked twice. Mark those two rows Not applicable on that bedroom.
+They are not Optional items, so they will not appear on the setup page - find
+them in Selections filtered to that room. Worth revisiting if it turns out to
+happen on every job.
+
+
 **Build rooms no longer stops at six.** It used to cap each run at six rooms
 on the theory that a room might be slow. Measured: six rooms and 83 selections
 took four seconds, against a thirty-second limit. A twenty-room house needed
