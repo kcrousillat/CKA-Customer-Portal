@@ -13,6 +13,19 @@
  *   ALLOWED_ORIGIN   where the portal is served from, or * while testing
  */
 
+/**
+ * MSRP is held in Airtable but not published. Kevin's call: a list price next
+ * to a decision invites the owner to shop it, and it is not the number on
+ * their contract anyway. The catalog keeps collecting it, so turning this to
+ * true is the whole job if that view changes — the portal already knows how
+ * to render it, labelled and noted as excluding installation.
+ *
+ * The gate is here rather than in the page on purpose: with it off the figure
+ * never leaves the Worker, so it is not sitting in the JSON for anyone who
+ * opens the network tab.
+ */
+const SHOW_MSRP = false;
+
 const T = {
   projects:  "Projects",
   spaces:    "Spaces",
@@ -333,7 +346,7 @@ async function getProject(env, key) {
               swatch: o.fields["Swatch color"] || "",
               code: o.fields["Color code"] || "",
               finishChoices: splitList(o.fields["Finish options"]),
-              msrp: typeof o.fields["MSRP"] === "number" ? o.fields["MSRP"] : null,
+              msrp: SHOW_MSRP && typeof o.fields["MSRP"] === "number" ? o.fields["MSRP"] : null,
               photos: attachments(o.fields["Photo"]),
               order: num(o.fields["Sort order"], 999),
             }))

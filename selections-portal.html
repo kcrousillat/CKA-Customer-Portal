@@ -878,6 +878,9 @@ function panelMarkup(row){
         (o.code ? '<span class="od">Code ' + esc(o.code) + '</span>' : "") +
         ((o.finishChoices && o.finishChoices.length)
           ? '<span class="od variants">' + o.finishChoices.length + ' finishes</span>' : "") +
+        /* Arrives null while the Worker's SHOW_MSRP is off, so this and the
+           note below simply do not render. Left in place deliberately: the
+           decision was "not yet", not "never". */
         (o.msrp ? '<span class="od msrp">MSRP ' + money(o.msrp) + '</span>' : "") +
         (o.note ? '<span class="od">' + esc(o.note) + '</span>' : "") +
         (o.link ? '<a class="od" href="' + esc(o.link) + '" target="_blank" rel="noopener">See the product</a>' : "") +

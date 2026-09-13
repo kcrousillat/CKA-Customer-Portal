@@ -50,11 +50,18 @@ Ticking it twice adds nothing twice: rows already on the selection are skipped b
 
 ## MSRP
 
-The portal shows **MSRP**, labelled as such, with a standing note that it excludes installation
-and is not the contract number. It is there so an owner can see that one range sits at twice
-another before falling in love with it.
+**Collected, not shown.** Keep filling the MSRP column — it is the manufacturer's published list
+price and it is worth having. The portal does not publish it: `SHOW_MSRP` in
+`worker/src/index.js` is `false`, so the figure never leaves the Worker.
 
-CKA's own cost never goes in. The catalog's MSRP is the manufacturer's published list price.
+Kevin's call, and a reasonable one — a list price next to a decision invites an owner to go
+shopping it, and it is not the number on their contract anyway. The portal already knows how to
+render it, labelled and noted as excluding installation, so flipping the flag to `true` and
+redeploying is the entire job if that view changes.
+
+Two things that are *not* MSRP and never go in that column: a vendor's **net/trade price** off a
+bid, and a retailer's **street or sale price**. Both are lower than list, both move, and the first
+is effectively CKA's cost. CKA's own cost never goes in at all.
 
 ## Getting the catalog in
 

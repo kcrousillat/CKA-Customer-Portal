@@ -108,12 +108,20 @@ open the Kitchen there to see it:
   - **Rough-in notes** on the catalog row carry what the MEP rough and the
     cabinet shop need: panel-ready, dual fuel, 1200 CFM, 240V dryer circuit.
 
-**The first MSRP is in.** Sharp's product page lists the microwave drawer at
-$1,899.99, so that is on the catalog row and on the demo job's option - the
-first real test of the portal's MSRP display. Note what did NOT go in: the
-same page showed a street price of $1,499.99. MSRP is the list number, and
-the portal says so and says it excludes installation. A street price is
-neither, and it moves.
+**MSRP is collected but not shown.** Sharp's page lists the microwave drawer
+at $1,899.99 and that is on the catalog row, but the portal does not publish
+it. `SHOW_MSRP` in `worker/src/index.js` is `false`, and the gate is in the
+Worker rather than the page so the figure never leaves the server - it is not
+sitting in the JSON for anyone who opens the network tab.
+
+Keep filling the column. The portal already knows how to render it, labelled
+and noted as excluding installation, so flipping that flag to `true` and
+redeploying is the whole job if the view changes.
+
+Two things that are not MSRP and never go in that column: a vendor's net or
+trade price off a bid, and a retailer's street or sale price. Sharp's page
+showed $1,499.99 street against $1,899.99 list - both real numbers, only one
+of them MSRP.
 
 **No other prices were loaded, deliberately.** The Net Price column on a vendor bid
 is trade pricing, not MSRP. The portal's rule is MSRP only, labelled, and
