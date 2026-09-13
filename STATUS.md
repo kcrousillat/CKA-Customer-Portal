@@ -64,26 +64,28 @@ pot filler and second dishwasher.
 
     https://airtable.com/appfRsDMRMX4sGSPK/pagl5l9DF1uWwbixg
 
-## Waiting on you: four brand names
+## Decoding a Ferguson SKU
 
-Eight appliances from the Ferguson bid for Paperny Res. (B511572, 5 Aug 2026)
-are loaded into the catalog, but sitting **inactive** until one question is
-answered, because the brand is nowhere on the quote - the item codes are
-Ferguson's own SKUs, not manufacturer model numbers.
+Ferguson's item numbers are the manufacturer's model number with the brand's
+letter stuck on the front. Drop it and you have the real model:
 
-Which brands are these?
+    SDEC3650RIDR  ->  Sub-Zero  DEC3650RIDR
+    WDF48650GSP   ->  Wolf      DF48650GSP
+    SSMD2470ASY   ->  Sharp     SMD2470ASY
+    CDW2451       ->  Cove      DW2451
+    LGWM6500HBA   ->  LG        WM6500HBA
 
-  - SDEC3650RIDR / SDEC3650FIL - 36" design column refrigerator and freezer
-  - WDF48650GSP - 48" dual-fuel range (plus WPL462212 hood liner, W814423 blower)
-  - SSMD2470ASY - 24" microwave drawer
-  - CDW2451 - 24" dishwasher, and SDEU2450BGL - 24" beverage center
+LG is the exception that proves it: two letters, because the brand is two
+letters. S covers both Sub-Zero and Sharp, so the product type is what tells
+them apart - a 36" column is Sub-Zero, a microwave drawer is Sharp.
 
-Say the word for each and they get filled in and switched on in one call. The
-laundry pair is already marked LG - that one the quote does state.
+Catalog rows carry both: **Code** is the manufacturer's model, and the
+Ferguson SKU is in the row's note and in the selection's Internal notes, so
+whichever number the order desk or the rep is working from, it is there.
 
-They are inactive rather than half-filled on purpose: an Active catalog row
-loads straight into a job and then straight in front of an owner, and a
-guessed brand is exactly the mistake this product exists to prevent.
+One to check before ordering: the microwave drawer came through as
+SSMD2470ASY, so by the rule SMD2470ASY - but Sharp's drawer models usually
+end AS, and the trailing Y may be Ferguson's own. Flagged on the record.
 
 ## Appliances from a vendor quote
 
