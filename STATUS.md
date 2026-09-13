@@ -60,11 +60,21 @@ Two new palette categories, **Baseboard profile** and **Casing profile**, are
 waiting to be filled - see below.
 
 
-**Front entry door files with the windows.** Its trade is Millwork, which put
-it under Cabinetry & millwork next to the interior doors. An owner thinks of
-the front door with the exterior openings, so it now carries a Section override
-to Exterior Doors & Windows. The example job already had that override set by
-hand; the library carries it now, so every future job inherits it.
+**The front door and its hardware file with the windows.** Front entry door is
+trade Millwork and Exterior door hardware is trade Hardware, so the two halves
+of one decision were landing under two headings, neither of them the one an
+owner would look in. Both now carry a Section override to Exterior Doors &
+Windows.
+
+The example job already had the same override set by hand on its front door
+and its sliding door hardware. That was the tell: patching each job is what
+you do when the library is wrong. Fixed at the source, so future jobs inherit
+it and nothing needs patching.
+
+Four overrides in the library now - front door, exterior door hardware,
+mirrors, shower enclosures. The rule they all follow: **trade says who
+installs it, section says how the owner thinks about it**, and those two do
+not always agree. The override exists for the gap.
 
 **Mirrors and shower enclosures have their own heading.** There is one Glazing
 trade and it points at Exterior Doors & Windows, so a shower door was filing
