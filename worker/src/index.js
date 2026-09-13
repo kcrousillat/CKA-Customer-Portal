@@ -314,6 +314,9 @@ async function getProject(env, key) {
           ownerEntry: {
             supplier: r.fields["Owner supplier"] || "",
             model: r.fields["Owner model"] || "",
+            // Colour is its own field, not folded into finish: a paint order
+            // needs the colour number and the sheen as separate facts.
+            color: r.fields["Owner color"] || "",
             finish: r.fields["Owner finish"] || "",
             notes: r.fields["Owner notes"] || "",
           },
@@ -419,6 +422,7 @@ async function submit(env, { project, record }, body) {
         "Status": "Owner selected",
         "Owner supplier": supplier,
         "Owner model": model,
+        "Owner color": text(body.color, 200),
         "Owner finish": text(body.finish, 200),
         "Owner notes": text(body.notes, 2000),
         "Submitted by": name,

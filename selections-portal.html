@@ -508,7 +508,7 @@ img{max-width:100%}
     <thead>
       <tr>
         <th style="width:60pt">Sample</th><th style="width:20%">Item</th><th style="width:12%">Trade</th>
-        <th>Supplier / model / finish</th><th style="width:22%">Approved by</th>
+        <th>Manufacturer / product / color / finish</th><th style="width:22%">Approved by</th>
       </tr>
     </thead>
     <tbody id="doc-record-body"></tbody>
@@ -684,7 +684,7 @@ function recordLine(row){
     return [o.name, picked.finish || o.finish, o.supplier, o.model].filter(Boolean).join(" · ");
   }
   var e = row.ownerEntry || {};
-  var line = [e.supplier, e.model, e.finish].filter(Boolean).join(" · ");
+  var line = [e.supplier, e.model, e.color, e.finish].filter(Boolean).join(" · ");
   return line || "—";
 }
 function firstPhoto(o){ return (o.photos && o.photos[0]) ? o.photos[0].url : ""; }
@@ -928,9 +928,10 @@ function panelMarkup(row){
   }
 
   out += '<div class="fields">' +
-    field(row.id, "supplier", "Supplier or showroom", pick(d.supplier, e.supplier)) +
-    field(row.id, "model", "Product or model", pick(d.model, e.model)) +
-    field(row.id, "finish", "Color or finish", pick(d.finish, e.finish)) +
+    field(row.id, "supplier", "Manufacturer or supplier", pick(d.supplier, e.supplier)) +
+    field(row.id, "model", "Product or line", pick(d.model, e.model)) +
+    field(row.id, "color", "Color name or number", pick(d.color, e.color)) +
+    field(row.id, "finish", "Sheen or finish", pick(d.finish, e.finish)) +
     '<span class="field wide"><label for="notes-' + row.id + '">Anything we should know</label>' +
     '<textarea id="notes-' + row.id + '" data-entry="notes" data-row-id="' + row.id + '" ' +
     'placeholder="A link to a photo, a second choice, or a question for us">' +
@@ -1223,6 +1224,7 @@ document.addEventListener("click", function(ev){
     return post(rid, "submit", {
       supplier: pick(dr.supplier, e.supplier),
       model:    pick(dr.model, e.model),
+      color:    pick(dr.color, e.color),
       finish:   pick(dr.finish, e.finish),
       notes:    pick(dr.notes, e.notes),
       name:     (state.data.project.owners || [])[0] || "Owner"
