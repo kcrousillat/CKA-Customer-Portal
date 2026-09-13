@@ -64,6 +64,36 @@ directly, which is how the baths and powder were built.
 6. **Clear `DEMO_KEY`** from selections-portal.html before the first real
    client. It pre-fills the example job's portal key, and this repo is public.
 
+## To revisit: how paint is organised
+
+Paint is currently one list under Whole house, with a row per room, plus
+Exterior, Interior, Ceilings and Interior trim & doors. Per-room paint was
+switched off in the library so it is not asked twice.
+
+Kevin's concern, and it is the right one: every other item generates itself
+when a room is added, and paint does not. Adding a room, renaming one, or
+dropping one means someone hand-edits the paint list to match. A manual
+procedure that applies to exactly one item is the kind of thing that gets
+missed, and it pulls against wanting to grow the page freely.
+
+Three ways out, for that conversation:
+
+1. **Back to per-room paint.** Each room generates its own paint row again,
+   and the By trade tab is the one-sitting paint list -- it already groups
+   every paint decision across the house on one screen. Costs nothing to
+   build; loses the single curated list under Whole house.
+
+2. **Keep it central and make it generate.** Extend the expand-space
+   automation so adding a room also creates that room's paint row under Whole
+   house, named from the room. Keeps the list Kevin wants and removes the
+   manual step. Needs the room rename case thought through: rename a room and
+   its paint row has to follow.
+
+3. **Leave it manual** and accept a checklist step when rooms change.
+
+Option 2 is probably what he actually wants, and it is only worth building
+once the expand-space automation is working again.
+
 ## Parked by Kevin
 
 - **The needed-by date model.** Dates count lead time back from construction
