@@ -264,22 +264,35 @@ mirrors, shower enclosures. The rule they all follow: **trade says who
 installs it, section says how the owner thinks about it**, and those two do
 not always agree. The override exists for the gap.
 
-**Mirrors and shower enclosures have their own heading.** There is one Glazing
-trade and it points at Exterior Doors & Windows, so a shower door was filing
-under the same heading as the window package. New section **Glass & mirrors**
-(sort 75, right after Exterior Doors & Windows), claimed by the three interior
-glass items through their own Section cell: Shower enclosure, Mirrors (Bath)
-and Mirror (Powder).
+**Interior glass is its own trade now.** It started as a Section override:
+one Glazing trade pointing at Exterior Doors & Windows, with the shower doors
+and mirrors overridden across to **Glass & mirrors** (sort 75). That worked,
+but it was a patch - and it guessed wrong about the vendor.
 
-Done with Section overrides rather than a new trade, because the trade really
-is the same one - it is the conversation and often the vendor that differs. If
-the glass shop ever becomes a separate trade partner worth tracking, splitting
-the trade would be the better answer and would move these automatically.
+It is two contractors. The exterior door and window supplier does the window
+package; a shower enclosure and mirror contractor does the interior glass. Two
+trade partners, so two trades:
 
-All 22 existing selections on both jobs were moved too. That is the backfill
-gap again: a template's Section is copied onto a selection when it is
-generated, so changing the template alone would have fixed only future rooms.
+  - **Glazing** -> Exterior Doors & Windows. The window package: manufacturer,
+    frame color, glass tint, window grids, sliding glass door hardware.
+  - **Interior glazing** (sort 115) -> Glass & mirrors. Shower enclosures,
+    bath mirrors, powder mirrors.
 
+Both headings are now driven by a trade like every other section, so the seven
+overrides that used to do this job are gone. **Two overrides remain in the
+whole base** and both earn it: Front entry door (trade Millwork) and Exterior
+door hardware (trade Hardware), each filed under Exterior Doors & Windows
+because that is where an owner looks for them.
+
+The rule this all turns on: **a trade can point at only one heading.** When two
+groups of items need different headings, that is a second trade, not a
+re-pointing of the first. Re-pointing Glazing at Glass & mirrors drags the
+entire window order along with it - which is exactly what happened when it was
+tried, and why the window package briefly sat under a mirrors heading.
+
+Templates and the demo's existing rows were both updated, because a template's
+trade is copied onto a selection when it is generated - changing the library
+alone would have fixed only future rooms.
 
 **Every bedroom carries its own closet, and a second one is optional.** The
 first go at this made **Walk-in closet** a room type of its own, counted like
