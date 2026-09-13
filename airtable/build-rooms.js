@@ -61,6 +61,13 @@ if (!project) {
   const spaceQuery = await spacesT.selectRecordsAsync({
     fields: ['Space name', 'Space Type', 'Project', 'Sort order'],
   });
+
+  // Which room types get their own paint line, and the pattern to copy.
+  const typeQuery = await base.getTable('Space Types').selectRecordsAsync({
+    fields: ['Space type', 'Paint row'],
+  });
+  const paintsByType = {};
+  for (const t of typeQuery.records) paintsByType[t.id] = !!t.getCellValue('Paint row');
   const mine = spaceQuery.records.filter((r) => {
     const p = r.getCellValue('Project') || [];
     return p.some((x) => x.id === cfg.projectId);
@@ -84,6 +91,10 @@ if (!project) {
 
   let budget = ROOMS_PER_RUN;
   let more = false;
+  // Paint is one scheme, not a per-room afterthought: every painted room gets
+  // a line under Whole house so an owner picks the lot in one sitting. Built
+  // after the room loop, because Whole house may itself be created in this run.
+  const paintedRooms = [];
 
   for (const line of lines) {
     const typeLink = line.getCellValue('Space type') || [];
@@ -124,6 +135,7 @@ if (!project) {
       });
       roomsMade++;
       builtHere.push({ id: spaceId });
+      if (paintsByType[typeId]) paintedRooms.push(roomName);
 
       const spaceOrder = nextSort;
       const rows = applicable.map((t) => {
@@ -174,6 +186,65 @@ if (!project) {
       await planT.updateRecordAsync(line.id, { 'Rooms built': prior.concat(builtHere) });
     }
     if (more) break;
+  }
+
+  // ---- paint lines, once every room in this run exists ----
+  if (paintedRooms.length) {
+    // Sort order and Selections are read below, so they have to be asked for
+    // here - Airtable throws on getCellValue for a field the query did not load.
+    const whole = (await spacesT.selectRecordsAsync({
+      fields: ['Space name', 'Space Type', 'Project', 'Sort order', 'Selections'],
+    })).records.filter((r) => {
+      const p = r.getCellValue('Project') || [];
+      if (!p.some((x) => x.id === cfg.projectId)) return false;
+      const t = r.getCellValue('Space Type') || [];
+      return t.some((x) => (x.name || '') === 'Whole house');
+    })[0];
+
+    if (!whole) {
+      log.push('No Whole house room on this job, so the paint lines were not created. '
+             + 'Add Whole house to the plan and tick Build rooms again.');
+    } else {
+      const pattern = templateQuery.records.filter(
+        (t) => (t.getCellValue('Item name') || '') === 'Room paint')[0];
+      const lead = pattern ? (pattern.getCellValue('Default lead time (weeks)') || 2) : 2;
+      const desc = pattern ? (pattern.getCellValue('Description') || '') : '';
+      let neededBy = null;
+      if (start) {
+        const d = new Date(start.getTime());
+        d.setDate(d.getDate() - lead * 7);
+        neededBy = d.toISOString().slice(0, 10);
+      }
+
+      // Count what is already there so a second run appends rather than
+      // collides, and so the lines stay in the order the rooms were built.
+      const existing = (whole.getCellValue('Selections') || []).length;
+      const wholeOrder = whole.getCellValue('Sort order') || 0;
+
+      const paintRows = paintedRooms.map((roomName, i) => ({
+        fields: {
+          'Item': roomName + ' paint',
+          'Project': [{ id: cfg.projectId }],
+          'Space': [{ id: whole.id }],
+          'Item Template': pattern ? [{ id: pattern.id }] : null,
+          'Status': { name: 'Not started' },
+          // Owner specifies, because paint is the one thing an owner arrives
+          // already knowing: manufacturer, product, colour and sheen.
+          'Mode': { name: 'Owner specifies' },
+          'Trade': { name: 'Paint' },
+          'Lead time (weeks)': lead,
+          'Needed by': neededBy,
+          'Description': desc || ('Wall color for ' + roomName + '.'),
+          'Sort order': wholeOrder * 100 + 30 + existing + i,
+        },
+      }));
+
+      for (let i = 0; i < paintRows.length; i += 50) {
+        const batch = await selections.createRecordsAsync(paintRows.slice(i, i + 50));
+        rowsMade += batch.length;
+      }
+      log.push('Added ' + paintRows.length + ' paint line(s) under Whole house.');
+    }
   }
 
   if (roomsMade) {

@@ -50,6 +50,28 @@ pot filler and second dishwasher.
 
 ## Recently fixed
 
+**Paint is generated now, not hand-built.** The per-room paint arrangement
+existed on exactly one job and nowhere in the library - 17 rows typed by hand,
+which would have had to be typed again on every house and were one deletion
+away from being lost.
+
+Space Types gets a **Paint row** checkbox, ticked for the ten types that get
+painted: Kitchen, Bar, Bath, Powder, Laundry, Bedroom, Primary bedroom,
+Walk-in closet, Stair, Garage. Build a room of a ticked type and the build
+also creates a "<room> paint" line under Whole house - Owner specifies, so the
+client fills in manufacturer, product, colour and sheen in the four fields.
+**Ceilings** is a normal Whole house item alongside it.
+
+The wording of every paint line comes from an inactive **Room paint** template.
+Edit that description once and every line created afterwards reads the same.
+
+**Three window items were rescued from the example job.** Glass tint, Window
+grids and Sliding glass door hardware existed only there, with 15 options
+already built from the ES Windows and PGT catalog. All three are library items
+now. **Window & door frame color** was also wired to its 36 catalog rows - it
+had a full catalog behind it and no connection to it.
+
+
 **Baseboard and casing are two decisions, not one.** Whole house carried a
 single "Interior trim & baseboard profile" row covering both. It is now
 **Baseboard profile** and **Door & window casing**, side by side under
