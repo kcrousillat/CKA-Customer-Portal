@@ -39,6 +39,30 @@ Leave **Finish options** empty for anything with no variants — a frame color i
 **Attach the chip once, here, on the Palettes row.** Every future job inherits it. Do not attach
 chips to a job's Options rows — that work is thrown away when the job closes.
 
+## What belongs in here, and what does not
+
+**A catalog row is something you would put in front of another client.** That is the whole
+test, and it is worth applying every time, because the failure is slow: a catalog nobody
+pruned turns into a junk drawer, and then nobody trusts it enough to pick from it.
+
+The Newport Brass Chesterfield faucet, yes. The wax ring, no. The Sub-Zero column, yes. The
+supply kit that comes in the box with it, no.
+
+A vendor quote will not make this distinction for you — it lists every orderable part, because
+somebody has to order every part. A toilet arrives as four lines: bowl, trip lever, supply kit,
+wax ring. The master bath shower system is eight. **The consumables and the parts came with the
+decision; they were not the decision.** Only the thing the owner chose belongs here.
+
+Two more that fail the test even though they are real products:
+
+- **Anything specified once for one house** — a custom size, a one-off finish match. It will
+  never be offered again, so it is a job record, not a catalog row.
+- **Anything we have not verified.** A row with a guessed color code is worse than no row,
+  because the next person assumes it was checked. Leave it out and say so.
+
+Nothing automatic enforces this. The health check tests structure — that rows point at things
+that exist — and cannot tell a faucet from a wax ring. This one is judgement, on the way in.
+
 ## What is loaded now
 
 | Brand | Category | Rows |
@@ -50,6 +74,14 @@ chips to a job's Options rows — that work is thrown away when the job closes.
 | ES Windows | Frame color | 6 |
 | ES Windows | Woodgrain finish | 7 |
 | ES Windows | Hardware finish | 4 |
+| Sub-Zero | Built-in refrigerator, Freezer column, Beverage center | 3 |
+| Wolf | Range, Vent hood | 2 |
+| Cove | Dishwasher | 1 |
+| Sharp | Microwave / speed oven | 1 |
+| LG | Washer & dryer | 1 |
+
+44 rows: 36 window and door options, 8 appliances. Every one of them is a product that could be
+offered to the next client.
 
 Swatch hex values are sampled from the brochure chips and are a fallback tile only — they are not
 a color match. The photo is what an owner should be deciding from.
