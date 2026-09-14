@@ -90,6 +90,20 @@ that exist — and cannot tell a faucet from a wax ring. This one is judgement, 
 109 rows: 36 window and door options, 8 appliances, 65 from a designer's spec book. Every one of
 them is a product that could be offered to the next client.
 
+## A new brand needs teaching to Options too
+
+The catalog loader is an Airtable script, and **the scripting API has no typecast**: it cannot
+write a Brand the Options table has not already been taught. A catalog row carrying an unknown
+brand loads in blank.
+
+There is no way to add a select choice through the schema API either. The way that works is to
+write one throwaway Options row carrying the new brand with typecast on, then delete the row - the
+choice stays. Two API calls however many brands there are.
+
+The health check's "Brands in the catalog that Options does not have" is the tripwire for this,
+and it earns its place: it caught Top Knobs and Proflo minutes after they were added, because they
+arrived after the batch that taught Options the other 26.
+
 ## Category names have to match the library, exactly
 
 A catalog row's **Category** and a library item's **Palette category** are joined by the literal
