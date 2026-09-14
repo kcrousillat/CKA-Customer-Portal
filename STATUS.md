@@ -314,6 +314,27 @@ hardware together, and in the Garage room the garage door files under Exterior
 Doors & Windows. Three overrides in the base now, all of them hardware or a
 front door sitting with the opening they belong to.
 
+
+**Opener & keypad is retired, folded into Garage doors.** The opener, keypad
+and remotes come on the same order from the same company, so asking about them
+separately was a question with no real choice behind it. The wording moved into
+the Garage doors description; the template is inactive rather than deleted, so
+the history is visible.
+
+That is the same test the kitchen split used, applied in the other direction:
+
+  - **A prep sink is its own row** because it is a separate product with its own
+    price that a house either has or does not.
+  - **An opener is not** because it arrives with the door whatever you choose.
+
+The question to ask of any row: *could an owner answer this differently, and
+would anyone order something different as a result?* Two rows where there is
+one decision is as bad as one row covering five products - it just fails
+quietly instead of loudly.
+
+Five inactive templates now, all deliberate: three per-room Paint color rows
+and the Room paint pattern (superseded by the generated paint lines), and this.
+
 **Every bedroom carries its own closet, and a second one is optional.** The
 first go at this made **Walk-in closet** a room type of its own, counted like
 bedrooms. It read badly in the portal: a heading saying WALK-IN CLOSET 2 with
