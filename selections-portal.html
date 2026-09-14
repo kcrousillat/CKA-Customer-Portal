@@ -942,11 +942,15 @@ function panelMarkup(row){
     return out + '</div>';
   }
 
+  /* Four boxes, always the same four fields underneath — only the labels
+     change. Paint wants manufacturer / product / colour / sheen; a garage door
+     wants manufacturer / colour / opener / keypad. The labels come from the
+     library item's "Owner boxes", so a new kind of item needs no code. */
   out += '<div class="fields">' +
-    field(row.id, "supplier", "Manufacturer or supplier", pick(d.supplier, e.supplier)) +
-    field(row.id, "model", "Product or line", pick(d.model, e.model)) +
-    field(row.id, "color", "Color name or number", pick(d.color, e.color)) +
-    field(row.id, "finish", "Sheen or finish", pick(d.finish, e.finish)) +
+    field(row.id, "supplier", boxLabel(row, 0), pick(d.supplier, e.supplier)) +
+    field(row.id, "model", boxLabel(row, 1), pick(d.model, e.model)) +
+    field(row.id, "color", boxLabel(row, 2), pick(d.color, e.color)) +
+    field(row.id, "finish", boxLabel(row, 3), pick(d.finish, e.finish)) +
     '<span class="field wide"><label for="notes-' + row.id + '">Anything we should know</label>' +
     '<textarea id="notes-' + row.id + '" data-entry="notes" data-row-id="' + row.id + '" ' +
     'placeholder="A link to a photo, a second choice, or a question for us">' +
@@ -982,6 +986,16 @@ function field(id, key, label, val){
 }
 
 function groupId(i){ return "g" + i; }
+/* The labels on the four owner-entry boxes. Airtable can rename any of them
+   per library item; an empty slot keeps the default, so "Manufacturer,,Opener
+   specification,Keypad" changes two and leaves two alone. */
+var DEFAULT_BOXES = ["Manufacturer or supplier", "Product or line",
+                     "Color name or number", "Sheen or finish"];
+function boxLabel(row, i){
+  var b = (row && row.ownerBoxes) || [];
+  return String(b[i] || "").trim() || DEFAULT_BOXES[i];
+}
+
 function sectionId(gi, si){ return "g" + gi + "s" + si; }
 
 /* Where a heading sits in the Sections table. Anything the table does not

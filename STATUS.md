@@ -315,29 +315,38 @@ Doors & Windows. Three overrides in the base now, all of them hardware or a
 front door sitting with the opening they belong to.
 
 
-**Opener & keypad stays its own row**, and it is worth recording why, because
-it was nearly merged into Garage doors on the argument that it "comes with the
-door anyway". It does not. Wall-mount and overhead are different units at
-different prices, wall-mount frees the ceiling and needs a header that suits
-it, and the automation tie-in is a real choice. It fails no test.
+**The four owner boxes can be renamed per item.** Where a selection is
+"Owner specifies", the portal shows four boxes plus a notes field. They used to
+be hard-coded as Manufacturer or supplier / Product or line / Color name or
+number / Sheen or finish - which fits paint, because paint is where they came
+from.
 
-Its trade is now **Garage doors** rather than Doors, since the overhead door
-company fits the opener too.
+There is now an **Owner boxes** field on Item Templates: four labels,
+comma-separated, in order. Leave it empty for the defaults; leave one position
+empty to change the others and keep that one. The same four fields are written
+underneath either way, so nothing else changes.
 
-The test that settled it, which is the kitchen split stated as a rule:
+The Worker reads these from the library **live**, by following the selection's
+Item Template link - not copied onto the selection at generation. So renaming a
+box in Airtable changes every job on the next page load. That is deliberate:
+copying it would have made it the fifth thing the backfill gap could strand.
 
-  - **A prep sink is its own row** - separate product, own price, a house
-    either has one or does not.
-  - **"Plumbing fixtures" covering a faucet, a prep faucet and a pot filler is
-    not** - three products behind one approval, which no order desk can key.
+**Garage doors uses it**, and that is what settled the opener. The row had been
+merged into Garage doors, then split back out when it turned out wall-mount vs
+overhead is a real choice at a real price. Kevin's answer was better than
+either: keep one approval - it is one order from one company - but give the
+detail its own boxes. Garage doors is now Owner specifies with
+`Manufacturer, Color or finish, Opener specification, Electronic keypad`, and
+Opener & keypad is retired again.
 
-So: *could an owner answer this differently, and would anyone order something
-different as a result?* Both yes means its own row. The opener passes on both
-counts. Two rows where there is one decision is as bad as one row covering five
-products - it just fails quietly instead of loudly.
+Which is the rule restated: **one order from one company is one approval; the
+boxes are what keep the detail.** A row should exist where somebody would place
+a separate order. A box should exist where a fact has to be recorded exactly.
+Those are different questions and they have different answers.
 
-Four inactive templates, all deliberate: three per-room Paint color rows and
-the Room paint pattern, superseded when paint moved to generated lines.
+Five inactive templates, all deliberate: three per-room Paint color rows and
+the Room paint pattern (superseded when paint moved to generated lines), and
+Opener & keypad.
 
 **Every bedroom carries its own closet, and a second one is optional.** The
 first go at this made **Walk-in closet** a room type of its own, counted like

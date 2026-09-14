@@ -33,6 +33,7 @@ const T = {
   options:   "Options",
   sections:  "Sections",
   trades:    "Trades",
+  templates: "Item Templates",
 };
 
 /**
@@ -242,11 +243,17 @@ async function getProject(env, key) {
   const project = await findProject(env, key);
   const pid = project.id;
 
-  const [spaces, selections, sections] = await Promise.all([
+  const [spaces, selections, sections, templates] = await Promise.all([
     linkedRecords(env, T.spaces, project),
     linkedRecords(env, T.selections, project),
     sectionMap(env),
+    // The owner-entry box labels live on the library item, not on the
+    // selection, so they are read live. Rename them in Airtable and every job
+    // follows on the next page load — no rebuild, no backfill.
+    allRecords(env, T.templates, { "fields[]": ["Owner boxes"] }).catch(() => []),
   ]);
+  const boxesByTemplate = {};
+  for (const t of templates) boxesByTemplate[t.id] = t.fields["Owner boxes"] || "";
 
   const live = selections.filter((r) =>
     OWNER_VISIBLE_STATUSES.includes(r.fields["Status"] || "Not started")
@@ -306,6 +313,10 @@ async function getProject(env, key) {
           needed: r.fields["Needed by"] || null,
           status: r.fields["Status"] || "Not started",
           mode: r.fields["Mode"] === "Owner specifies" ? "open" : "curated",
+        // Positional, so an empty slot keeps that box's default label. Unlike
+        // splitList this must not drop the blanks.
+        ownerBoxes: String(boxesByTemplate[(r.fields["Item Template"] || [])[0]] || "")
+          .split(",").map((x) => x.trim()),
           desc: r.fields["Description"] || "",
           order: num(r.fields["Sort order"], 999),
           approvedOption: (r.fields["Approved option"] || [])[0] || null,
