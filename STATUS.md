@@ -294,6 +294,26 @@ Templates and the demo's existing rows were both updated, because a template's
 trade is copied onto a selection when it is generated - changing the library
 alone would have fixed only future rooms.
 
+
+**Doors got the same treatment.** The Doors heading held nothing but garage
+doors, while the interior door decision was split across two headings - style
+under Cabinetry & millwork, hardware under Hardware. An owner clicking "Doors"
+found a garage door.
+
+  - **Doors** trade now means interior doors, and **Interior door style** is on
+    it. It files under the Doors heading with no override.
+  - **Garage doors** is a new trade (sort 135) pointing at Exterior Doors &
+    Windows. The overhead door company is a specialty sub, not the interior
+    door installer, and a garage door is an impact-rated exterior opening.
+  - **Interior door hardware** keeps trade **Hardware** - the hardware supplier
+    really does supply it - and carries a Section override to Doors. Exactly
+    the shape Exterior door hardware already has.
+
+So in Whole house the owner now sees one Doors heading with the style and the
+hardware together, and in the Garage room the garage door files under Exterior
+Doors & Windows. Three overrides in the base now, all of them hardware or a
+front door sitting with the opening they belong to.
+
 **Every bedroom carries its own closet, and a second one is optional.** The
 first go at this made **Walk-in closet** a room type of its own, counted like
 bedrooms. It read badly in the portal: a heading saying WALK-IN CLOSET 2 with
