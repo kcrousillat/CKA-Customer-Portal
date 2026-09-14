@@ -123,6 +123,36 @@ Also corrected while in there: catalog **Model** now holds the manufacturer's
 model number and the Ferguson SKU lives in Internal note. It was the other way
 round, which would have shown an owner a vendor SKU as the model.
 
+## Laundry sink and faucet are two rows; interior doors got boxes
+
+**Laundry "Sink & faucet" is now Sink and Faucet**, two rows, both trade
+Plumbing so they file under Plumbing Fixtures. Two products, two prices, and a
+laundry faucet is a real choice - a pull-down spout earns its keep where
+buckets get filled. The old combined row was the "Plumbing fixtures" pattern in
+miniature.
+
+**Interior door style is now Interior doors**, Owner specifies, with boxes:
+`Manufacturer, Door style / profile, Finish, Height`. Height is the one with
+teeth - 8ft and 10ft doors change the framing, so it has to be right before the
+walls go up, not when the doors arrive.
+
+### A wrinkle in how selection order is calculated
+
+A selection's Sort order is `room position x 100 + (template Sort order mod
+100)`. That works while every template in a room has distinct last-two-digits -
+but a template shared across room types brings its own number with it, and can
+tie with one already there.
+
+It happened immediately: the new Laundry Faucet at 606 collided with Washer &
+dryer, also 606. Fixed by moving Washer & dryer to 610.
+
+There are still ties in Laundry, from Bath's Cabinet hardware (406) and
+Plumbing trim finish (407) landing on 6 and 7 alongside Laundry's own items.
+**Cosmetic only** - tied rows still appear, just in an arbitrary order among
+themselves, and always under the right heading. Worth a proper fix if room
+ordering ever looks wrong to an owner; not worth restructuring the scheme for
+two ties nobody will notice.
+
 ## Decoding a Ferguson SKU
 
 Ferguson's item numbers are the manufacturer's model number with the brand's
