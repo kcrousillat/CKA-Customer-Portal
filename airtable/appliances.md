@@ -104,6 +104,37 @@ because it is the thing actually being ordered.
 A paired 36 + 36 column run wants opposite hinges so the doors open away from
 each other. Getting that backwards is a restock, not an adjustment.
 
+## Ask for the spec book, not just the quote
+
+The price quote is one line per product. The **spec book** - Ferguson's
+"Premium Spec Package", generated off the same bid number - is one page per
+product with the manufacturer's own model number, a full description, the
+product photo and the installation drawings.
+
+It is worth asking for every time. From bid B511572's spec book:
+
+  - **The models have slashes.** `DEC3650RID/R`, `DEC3650FI/L`, `DF48650G/S/P`,
+    `DEU2450BG/L`. Ferguson's own SKU strips them. The manufacturer's format is
+    the one that belongs in Code.
+  - **The hinge is spelled out** - "Panel Ready - Right Hinge". Confirms the
+    trailing-letter rule rather than relying on it.
+  - **Things the quote does not mention.** The Wolf range has an infrared
+    griddle. The freezer column has an ice maker, so it needs its own water
+    line - a rough-in the one-line quote would not have told anyone about. The
+    hood liner is 22" deep, which the cabinet shop needs.
+  - **The photos.** One per product, extractable.
+
+Extracting is `pymupdf`: `get_images` for the bitmaps and `get_image_rects` for
+where each sits on the page, so products are matched by position rather than by
+assuming the order. Commit them under `brand/appliances/`, then write the
+raw.githubusercontent URL into the Palettes Photo field - Airtable copies the
+file on ingest, so nothing is hot-linked. Nine images, one API call.
+
+**The photo may not match what was ordered.** The spec book says so itself, and
+the Wolf range proves it: the stock photo shows the red knobs, and this order is
+brushed brass. Where that happens, say so in the option's note rather than
+leaving an owner to assume.
+
 ## Getting the catalog in
 
 Sub-Zero's and Thermador's sites are unreachable from the build environment, so catalog data comes
