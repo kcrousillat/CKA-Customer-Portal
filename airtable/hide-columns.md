@@ -13,6 +13,22 @@ It breaks nothing else. The portal, the Worker and every automation read and
 write fields directly, not through a view, so hiding a column has no effect on
 any of them.
 
+## Marked before they are hidden
+
+Airtable cannot colour a column - fields have no colour property. Only dropdown
+choices are coloured, and conditional colouring works on rows, not columns.
+
+So the don't-touch fields carry a **description starting "DO NOT EDIT"**
+instead. That shows as an information icon on the column header and as text
+under the field name whenever a record is expanded - which is the moment
+someone is about to type in it. Not red, but it lands at the right time, and it
+says *why*, which a colour cannot.
+
+Renaming the fields with a lock emoji was the other option and was rejected:
+the Worker, the portal and all four automation scripts find these fields **by
+name**. Renaming "Approved by" would break the approval write on the live
+portal. Not worth a visual cue.
+
 ## How, per table
 
 1. Open the table, main **Grid view**.
