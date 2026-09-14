@@ -315,25 +315,29 @@ Doors & Windows. Three overrides in the base now, all of them hardware or a
 front door sitting with the opening they belong to.
 
 
-**Opener & keypad is retired, folded into Garage doors.** The opener, keypad
-and remotes come on the same order from the same company, so asking about them
-separately was a question with no real choice behind it. The wording moved into
-the Garage doors description; the template is inactive rather than deleted, so
-the history is visible.
+**Opener & keypad stays its own row**, and it is worth recording why, because
+it was nearly merged into Garage doors on the argument that it "comes with the
+door anyway". It does not. Wall-mount and overhead are different units at
+different prices, wall-mount frees the ceiling and needs a header that suits
+it, and the automation tie-in is a real choice. It fails no test.
 
-That is the same test the kitchen split used, applied in the other direction:
+Its trade is now **Garage doors** rather than Doors, since the overhead door
+company fits the opener too.
 
-  - **A prep sink is its own row** because it is a separate product with its own
-    price that a house either has or does not.
-  - **An opener is not** because it arrives with the door whatever you choose.
+The test that settled it, which is the kitchen split stated as a rule:
 
-The question to ask of any row: *could an owner answer this differently, and
-would anyone order something different as a result?* Two rows where there is
-one decision is as bad as one row covering five products - it just fails
-quietly instead of loudly.
+  - **A prep sink is its own row** - separate product, own price, a house
+    either has one or does not.
+  - **"Plumbing fixtures" covering a faucet, a prep faucet and a pot filler is
+    not** - three products behind one approval, which no order desk can key.
 
-Five inactive templates now, all deliberate: three per-room Paint color rows
-and the Room paint pattern (superseded by the generated paint lines), and this.
+So: *could an owner answer this differently, and would anyone order something
+different as a result?* Both yes means its own row. The opener passes on both
+counts. Two rows where there is one decision is as bad as one row covering five
+products - it just fails quietly instead of loudly.
+
+Four inactive templates, all deliberate: three per-room Paint color rows and
+the Room paint pattern, superseded when paint moved to generated lines.
 
 **Every bedroom carries its own closet, and a second one is optional.** The
 first go at this made **Walk-in closet** a room type of its own, counted like
