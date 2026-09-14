@@ -123,6 +123,47 @@ Also corrected while in there: catalog **Model** now holds the manufacturer's
 model number and the Ferguson SKU lives in Internal note. It was the other way
 round, which would have shown an owner a vendor SKU as the model.
 
+## The base health check
+
+**Two automations, both switched off until you turn them on.** New automations
+are created off; that is Airtable, not a mistake.
+
+    https://airtable.com/appfRsDMRMX4sGSPK/wfl6rsW1GOExXoGwz   Check the base
+    https://airtable.com/appfRsDMRMX4sGSPK/wfl8AGdAxHM4gF878   Run it each morning
+
+Open each, read it, and use the toggle at the top right to turn it on.
+
+**How to use it.** A new **Base health** table with one row. Tick **Run check**
+and ten seconds later Findings says what is wrong. Tick it right after changing
+trades, sections or the library - that is when structure breaks. The morning
+automation ticks the same box at 7am, so the script exists in one place only;
+two copies of a script is how the catalog loader ran the wrong one for a day.
+
+**Two tiers, deliberately.** PROBLEMS are broken - an owner would see it wrong,
+or an automation will not work. WORTH TIDYING is real but harmless today, like
+a catalog row with no photo. Only problems are counted, because a check that
+always reports something is a check nobody reads.
+
+What it looks for:
+
+  - a trade with no heading, so its items fall under "Other"
+  - a heading nothing files under
+  - a library item with no trade
+  - an override naming a heading that no longer exists - the one a rename causes
+  - a trade used on a selection with no row in Trades
+  - "Options presented" with no options to present
+  - brand or hinge choices in the catalog that Options does not have, which is
+    exactly what took the first catalog load down
+  - a project with no Portal key
+  - and as tidying: catalog rows with no photo, library items with no
+    description, palette categories with nothing in the catalog
+
+**What it cannot do**, so it is not over-trusted: it checks structure, never
+judgement. Rename a heading to something daft and every link stays valid and
+the check stays quiet. It also cannot see inside an automation - the wrong
+script in the catalog loader was in code, not data. That kind is caught by
+reading the deployed version back, which is why that is done by hand.
+
 ## The owner boxes are as many as the item needs
 
 Listing three labels in **Owner boxes** now shows three boxes, not three and a
@@ -552,16 +593,7 @@ Load catalog options. Done once, reused on every house.
 Rewritten 14 Sep. The previous list had three items on it that were already
 done, which is how a list stops being read.
 
-1. **Base health check.** Kevin asked for it, parked for later. A script that
-   checks the things that break silently and says nothing unless one is wrong:
-   a trade with no heading, a heading nothing points at, a library item with no
-   trade, a Section override naming a heading that no longer exists, a
-   selection at "Options presented" with no options, a palette category with no
-   catalog rows, Brand or Hinge choices in Palettes that Options does not have,
-   a project with no Portal key, active catalog rows with no photo. Runs each
-   morning, plus a "Check the base" checkbox for on demand. It cannot catch a
-   bad naming choice, an automation carrying the wrong script, or wrong
-   manufacturer data - only structural breakage.
+1. ~~Base health check~~ - **built**, see below. Needs turning on once.
 
 2. **Hide and lock the columns that should not be hand-edited.** Kevin's idea,
    and the best protection Airtable actually offers - there is no cell locking.
