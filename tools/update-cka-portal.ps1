@@ -70,9 +70,47 @@ try {
   exit 1
 }
 
+# Wrangler runs through npx, which ships with Node.js. A bare "npx" depends on
+# PATH, and PATH is the thing that breaks: a Node update, a new user profile or
+# a shell opened at the wrong moment and the deploy stops working while every
+# other step still succeeds. So look for it properly before giving up.
+function Find-Npx {
+  $onPath = Get-Command npx -ErrorAction SilentlyContinue
+  if ($onPath) { return $onPath.Source }
+  $guesses = @(
+    "$env:ProgramFiles\nodejs\npx.cmd",
+    "${env:ProgramFiles(x86)}\nodejs\npx.cmd",
+    "$env:LOCALAPPDATA\Programs\nodejs\npx.cmd",
+    "$env:APPDATA\npm\npx.cmd",
+    "$env:LOCALAPPDATA\Volta\bin\npx.exe"
+  )
+  foreach ($g in $guesses) { if ($g -and (Test-Path $g)) { return $g } }
+  # nvm for Windows keeps one folder per version; take the newest.
+  $nvm = Get-ChildItem "$env:APPDATA\nvm" -Filter npx.cmd -Recurse -ErrorAction SilentlyContinue |
+         Sort-Object LastWriteTime -Descending | Select-Object -First 1
+  if ($nvm) { return $nvm.FullName }
+  return $null
+}
+
+$npx = Find-Npx
+if (-not $npx) {
+  Say ""
+  Say "Could not find npx, which means Node.js is missing from this computer" 'Red'
+  Say "or is not on the PATH. Everything else worked - the portal page is" 'Yellow'
+  Say "updated and the Worker code is downloaded and staged." 'Yellow'
+  Say ""
+  Say "To fix it: install the LTS version from https://nodejs.org , tick the" 'Cyan'
+  Say "box that says Add to PATH, then CLOSE this window, open a new" 'Cyan'
+  Say "PowerShell and run this script again. The PATH only updates in windows" 'Cyan'
+  Say "opened after the install." 'Cyan'
+  Say ""
+  exit 1
+}
+if ($npx -ne 'npx') { Say "     Using npx at: $npx" 'Gray' }
+
 Push-Location $workerDir
 try {
-  npx wrangler deploy
+  & $npx wrangler deploy
   if ($LASTEXITCODE -ne 0) { throw "wrangler exited with code $LASTEXITCODE" }
   Say ""
   Say "All done. The portal page and the Worker are both current." 'Green'
