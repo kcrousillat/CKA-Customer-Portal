@@ -124,11 +124,24 @@ It is worth asking for every time. From bid B511572's spec book:
     hood liner is 22" deep, which the cabinet shop needs.
   - **The photos.** One per product, extractable.
 
-Extracting is `pymupdf`: `get_images` for the bitmaps and `get_image_rects` for
-where each sits on the page, so products are matched by position rather than by
-assuming the order. Commit them under `brand/appliances/`, then write the
-raw.githubusercontent URL into the Palettes Photo field - Airtable copies the
-file on ingest, so nothing is hot-linked. Nine images, one API call.
+There is a script for it now - `tools/specbook-extract.py`:
+
+    python3 tools/specbook-extract.py <specbook.pdf> --images-dir brand/plumbing
+
+It prints brand, model and description for every product and writes one image
+each. Commit those, then write the raw.githubusercontent URL into the Palettes
+Photo field - Airtable copies the file on ingest, so nothing is hot-linked.
+
+It matches each photo to the text **directly above it in the same column**
+rather than trusting reading order, which is what stops a long description in
+one cell claiming the next cell's photo. It reads only the summary pages,
+found by their footer - the forty-odd manufacturer sheets behind them also hold
+captioned images, and without that filter they arrive as products called
+"Front View" and "Group 1".
+
+Checked against the appliance book: 12 products, 12 distinct images, every one
+matching what had already been pulled by hand - plus three accessories the hand
+pass had skipped.
 
 **The photo may not match what was ordered.** The spec book says so itself, and
 the Wolf range proves it: the stock photo shows the red knobs, and this order is
