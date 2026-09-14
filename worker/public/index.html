@@ -947,17 +947,16 @@ function panelMarkup(row){
      wants manufacturer / colour / opener / keypad. The labels come from the
      library item's "Owner boxes", so a new kind of item needs no code. */
   out += '<div class="fields">' +
-    field(row.id, "supplier", boxLabel(row, 0), pick(d.supplier, e.supplier)) +
-    field(row.id, "model", boxLabel(row, 1), pick(d.model, e.model)) +
-    field(row.id, "color", boxLabel(row, 2), pick(d.color, e.color)) +
-    field(row.id, "finish", boxLabel(row, 3), pick(d.finish, e.finish)) +
+    boxesFor(row).map(function(b){
+      return field(row.id, b.key, b.label, pick(d[b.key], e[b.key]));
+    }).join("") +
     '<span class="field wide"><label for="notes-' + row.id + '">Anything we should know</label>' +
     '<textarea id="notes-' + row.id + '" data-entry="notes" data-row-id="' + row.id + '" ' +
     'placeholder="A link to a photo, a second choice, or a question for us">' +
     esc(pick(d.notes, e.notes)) + '</textarea></span></div>';
   out += '<div class="panel-actions">' +
     '<button class="btn btn-primary" type="button" data-submit="' + row.id + '"' +
-      (String(pick(d.supplier, e.supplier)).trim() && String(pick(d.model, e.model)).trim() ? "" : " disabled") +
+      (readyToSubmit(row, d, e) ? "" : " disabled") +
       '>Send to CKA</button>' +
     '<span class="note" style="margin:0">CKA confirms it is buildable and priced, then it is released for order.</span>' +
     '</div>';
@@ -986,14 +985,40 @@ function field(id, key, label, val){
 }
 
 function groupId(i){ return "g" + i; }
-/* The labels on the four owner-entry boxes. Airtable can rename any of them
-   per library item; an empty slot keeps the default, so "Manufacturer,,Opener
-   specification,Keypad" changes two and leaves two alone. */
+/* The owner-entry boxes. A library item lists the labels it wants in Airtable,
+   and it gets exactly that many — three labels means three boxes, not three and
+   a spare. A designer's spec card carries six fields because one card has to
+   cover every trade; an item here only has to cover itself.
+
+   An empty slot between two labels keeps that box's default, so
+   "Manufacturer,,Opener specification,Keypad" renames two and leaves one alone.
+   No labels at all means the four paint-shaped defaults.
+
+   Four is the ceiling because four fields store the answers. Nothing has
+   wanted a fifth yet; if something does, it needs a field to land in, not just
+   a label. */
+var BOX_KEYS = ["supplier", "model", "color", "finish"];
 var DEFAULT_BOXES = ["Manufacturer or supplier", "Product or line",
                      "Color name or number", "Sheen or finish"];
-function boxLabel(row, i){
-  var b = (row && row.ownerBoxes) || [];
-  return String(b[i] || "").trim() || DEFAULT_BOXES[i];
+function boxesFor(row){
+  var asked = ((row && row.ownerBoxes) || []).map(function(x){
+    return String(x == null ? "" : x).trim();
+  });
+  var count = asked.filter(Boolean).length ? Math.min(asked.length, BOX_KEYS.length)
+                                           : BOX_KEYS.length;
+  var out = [];
+  for (var i = 0; i < count; i++) {
+    out.push({ key: BOX_KEYS[i], label: asked[i] || DEFAULT_BOXES[i] });
+  }
+  return out;
+}
+/* Enough filled in to send: the first box always, and the second when there is
+   one. On paint that is manufacturer and product, which is what it always was. */
+function readyToSubmit(row, d, e){
+  var boxes = boxesFor(row);
+  return boxes.slice(0, 2).every(function(b){
+    return String(pick(d[b.key], e[b.key])).trim();
+  });
 }
 
 function sectionId(gi, si){ return "g" + gi + "s" + si; }
@@ -1283,8 +1308,7 @@ document.addEventListener("input", function(ev){
     var row = state.data.selections.filter(function(r){ return r.id === rid; })[0];
     var e = (row && row.ownerEntry) || {}, d = draft(rid);
     var sbtn = document.querySelector('[data-submit="' + rid + '"]');
-    if (sbtn) sbtn.disabled = !(String(pick(d.supplier, e.supplier)).trim() &&
-                               String(pick(d.model, e.model)).trim());
+    if (sbtn) sbtn.disabled = !readyToSubmit(row, d, e);
   }
 });
 

@@ -123,6 +123,24 @@ Also corrected while in there: catalog **Model** now holds the manufacturer's
 model number and the Ferguson SKU lives in Internal note. It was the other way
 round, which would have shown an owner a vendor SKU as the model.
 
+## The owner boxes are as many as the item needs
+
+Listing three labels in **Owner boxes** now shows three boxes, not three and a
+spare. No labels still means the four paint-shaped defaults, and a blank
+position between two labels still keeps that box's default.
+
+The designer's spec card has six fields - manufacturer, model name, model
+number, size, colour, finish - because one card has to cover every trade on the
+job. An item here only has to cover itself, so it asks for what it needs.
+
+**Four is the ceiling**, because four fields store the answers: Owner supplier,
+model, colour and finish, in that order. Nothing has wanted a fifth. If
+something does, it needs a field to land in and not just a label.
+
+"Send to CKA" now waits on the first two boxes that actually exist rather than
+on supplier and model by name - so a two-box item is not held up by a field it
+never showed.
+
 ## Recessed lighting is a Whole house selection
 
 Four boxes: `Manufacturer, Model number, Size, Finish`. Owner specifies, trade
