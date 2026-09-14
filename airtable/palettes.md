@@ -90,6 +90,30 @@ that exist — and cannot tell a faucet from a wax ring. This one is judgement, 
 109 rows: 36 window and door options, 8 appliances, 65 from a designer's spec book. Every one of
 them is a product that could be offered to the next client.
 
+## Category names have to match the library, exactly
+
+A catalog row's **Category** and a library item's **Palette category** are joined by the literal
+text. There is no mapping table and no fuzzy match: "Bath faucet" and "Faucet" are two different
+categories, and a selection asking for one will not see rows filed under the other.
+
+This is a quiet failure, not a loud one. "Load catalog options" finds nothing, unticks itself and
+reports success. The selection just sits there with no options, and nothing says why.
+
+It happened on 14 Sep, an hour after the designer's spec book went in: 65 rows arrived under
+invented names - Bath faucet, Bath sink, Shower drain, Shower system - while the library had been
+calling those Faucet, Sink, Drain and Valve & trim all along. Fifteen rows were unreachable. The
+health check found it on its first real run, under "palette categories with no catalog rows yet",
+which is the same fault seen from the library's end.
+
+**So: before adding a category, open Item Templates and read what the Palette category dropdown
+already offers.** Reuse the name if one fits. Invent one only when nothing does - and then set it
+on the template too, or the rows have nothing to load into.
+
+Two exceptions were kept on purpose. **Kitchen faucet** and **Kitchen sink** are deliberately not
+folded into Faucet and Sink: the library's Faucet serves Bath, Powder and Laundry, and a pull-down
+kitchen faucet has no business appearing in a powder room. Those two wait for the kitchen
+templates to point at them.
+
 ## Where this survives, and where it does not
 
 Worth being explicit, because the answer is different per table.
