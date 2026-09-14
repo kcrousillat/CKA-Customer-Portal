@@ -79,9 +79,56 @@ that exist — and cannot tell a faucet from a wax ring. This one is judgement, 
 | Cove | Dishwasher | 1 |
 | Sharp | Microwave / speed oven | 1 |
 | LG | Washer & dryer | 1 |
+| Brizo, Pfister, Newport Brass, American Standard, Kohler, Toto, Miseno, Elkay, InSinkErator, Wyndham Collection, Infinity Drain, Signature Hardware, Outdoor Shower Company | plumbing fixtures and bath accessories | 38 |
+| Emtek, Sietto, Alno | cabinet, door and shower-door hardware | 7 |
+| Trustile | Interior door | 1 |
+| Visual Comfort, Millennium Lighting, Hinkley, Quorum, Modern Forms | Pendant, Sconce, Chandelier | 6 |
+| Shades of Light, Kohler, Robern | Mirror | 3 |
+| Sherwin Williams | Paint color | 6 |
+| Mapei | Grout | 4 |
 
-44 rows: 36 window and door options, 8 appliances. Every one of them is a product that could be
-offered to the next client.
+109 rows: 36 window and door options, 8 appliances, 65 from a designer's spec book. Every one of
+them is a product that could be offered to the next client.
+
+## Where this survives, and where it does not
+
+Worth being explicit, because the answer is different per table.
+
+**Survives everything.** Palettes and Item Templates are base-level - they belong to CKA, not to a
+job. Delete a project and they are untouched. This is the catalog, and it is the only part of the
+base that gets better with every job.
+
+**Dies with the job.** Selections and Options are per-project. They are the record of what one
+owner chose. When a job closes they go with it, which is correct - and it is exactly why a product
+worth offering again has to be written into Palettes and not left sitting on a job's Options row.
+
+**Never existed unless someone wrote it down.** Anything said in conversation and not put into a
+table or a file in this repo is gone. That is what the docs in this folder are for.
+
+**Not in either.** The source PDFs - vendor quotes, designer schedules, spec books - are not in
+this repo and must not be, because it is public and they carry client names, addresses and trade
+pricing. They need a home in CKA's own file storage. The extracted product data is safe here
+(`catalog/designer-spec-products.csv`); the documents themselves are not.
+
+## Transcribing a designer's spec book
+
+`catalog/designer-spec-products.csv` is the flat record of the 65 products above, with the
+"Needs confirming" column carrying anything that could not be read cleanly. Four rows are flagged:
+two toilets whose model line was not legible in the PDF, a Hinkley sconce with no readable number,
+and an Alno shower pull where the printed model and the printed link disagree with each other.
+Those are **left as flags, not resolved by guessing** - the Internal note on each Palettes row says
+so, and the answer comes from the designer or the rep.
+
+What did not get catalogued, and why: the tile and slab lines (`T-1 Ink Bubble Beeswax Gold
+Natural`, `SL-2 Vino Merry Nori Black Polished`) name a pattern and a size but no manufacturer.
+They read like a stone yard's own names. Without a manufacturer there is nothing to order from, so
+they are not catalog rows yet - ask the designer which supplier they came from.
+
+**The designer's drawings carry a copyright notice**: her information and design are not to be
+copied to other projects. That covers her scheme - the combination, the drawings, the room-by-room
+palette. It does not cover the fact that Brizo makes an 87476-NK showerhead in Brilliance Luxe
+Nickel; that is public manufacturer data, and each row here links to the manufacturer's own page.
+So: catalog the products, never re-use her scheme as a package.
 
 Swatch hex values are sampled from the brochure chips and are a fallback tile only — they are not
 a color match. The photo is what an owner should be deciding from.
