@@ -44,46 +44,54 @@ So the rule for reading these: **the sub-heading is the selection; the lines
 under it are the order.** Do not make a row per line — that is the "Plumbing
 fixtures" mistake in reverse.
 
-## Gaps this quote exposes in the library
+## Gaps this quote exposed — all now closed
 
-Nine real ones. The first four are plainly missing; the rest need a decision.
+**1. Garbage disposal & air switch** — new Kitchen item. The description says
+the thing that actually bites: an air switch needs a hole drilled in the stone,
+so it has to be settled before the countertop is templated.
 
-**1. Garbage disposal and air switch.** Not in the library at all. The quote has
-a 3/4 HP disposal and a counter-top air switch — a real choice (air switch vs
-wall switch changes the countertop drilling) and a real price.
+**2 and 3. Cabinet hardware on Powder, Laundry and Pantry.** No new template -
+the Bath one now claims all four room types. A template can belong to several,
+so this cost one edit and no duplication.
 
-**2. Powder has no Cabinet hardware.** Bath and Kitchen both do. The quote has
-ten knobs for the powder vanity with nowhere to record them.
+**4. Freestanding tub filler** — new Bath item, Optional, since only a room
+with a freestanding tub has one. Its rough goes in the slab, so the position is
+fixed long before the tub arrives.
 
-**3. Laundry has no Cabinet hardware.** Same gap, fourteen pulls.
+**5. Plumbing trim finish now covers Kitchen, Powder and Laundry**, not Bath
+alone - again by claiming more room types rather than copying the template. It
+is the paint pattern applied to metal: one finish per room, everything else in
+that room follows it.
 
-**4. Freestanding tub filler.** We have Tub and we have Shower & tub valve, but
-a floor-mounted filler is neither — it is its own product at its own price, and
-it needs its own rough, which lands in the slab.
+**6. The shower system is one selection with four boxes.** "Shower & tub valve"
+is now **Shower system**, set to Owner specifies with
+`Manufacturer & finish, Showerhead, Handheld on a slide bar, Valve & diverter
+trim`. A vendor quotes it as eight lines; the owner is choosing one system, so
+it is approved once and the boxes keep the parts distinct. Leaving the handheld
+box empty means no handheld.
 
-**5. Plumbing trim finish is Bath-only.** The quote declares a finish per room
-including Kitchen, Powder and Laundry. It is the decision every other plumbing
-line in that room follows, so it arguably belongs on all four room types — the
-same shape as paint being one scheme.
+**7. Shower door pull** — new Bath item, **Optional**, trade Interior glazing.
+The glass contractor normally supplies a standard pull with the enclosure, so
+this only needs answering when one is specified - which is exactly what the
+Optional mechanism is for. It files with the shower enclosure so the approval
+covers it, and the description says it should match the bath hardware rather
+than the glass.
 
-**6. Is the shower system one selection or three?** The quote separates
-showerhead, handheld-on-a-bar, and controls. An owner might reasonably choose a
-rain head without a handheld. Today we have one Shower & tub valve row, and it
-covers all of it.
+**8. Mirrors — no change needed, but worth writing down.** Ferguson sells
+appliances, plumbing, HVAC and lighting, so the vendor on a quote tells you
+nothing about the trade. **Trade is who installs it, not who invoices it.** The
+mirrors on this bid came from the plumbing quote and still belong to Interior
+glazing.
 
-**7. Shower door pull.** Quoted by the plumbing vendor, one per bath. But the
-shower enclosure itself is Interior glazing. The pull is a finish decision that
-should match the other bath hardware, not the glass.
+**9. Two new room types.** **Pantry** (sort 9, painted) for a walk-in or
+butler's pantry that is its own room - distinct from the Kitchen's "Pantry
+shelving & finish", which is a cupboard. It reuses the Laundry items: cabinet
+finish, cabinet hardware, countertop, backsplash, flooring, lighting. Six
+items, no new templates.
 
-**8. Mirrors came from the plumbing vendor** on this job — framed mirrors, two
-in the master. We just moved Mirrors to the Interior glazing trade on the
-grounds that the shower-and-mirror contractor supplies them. Both are true on
-different jobs. Trade is a default, not a law; this is what the Section
-override is for.
-
-**9. Two rooms we do not have.** A living room pantry (cabinet pulls only here,
-but it is its own room) and an outdoor shower (a single 316 stainless
-wall-mount unit, and a real thing in South Florida).
+**Outdoor shower** (sort 16, not painted) - two items, the fixture and a drain,
+reusing Bath's Drains. The fixture description leads on material, because 316
+stainless is the decision that matters this close to salt air.
 
 ## Ask for the plumbing spec book
 
