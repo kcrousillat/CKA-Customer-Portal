@@ -1004,8 +1004,13 @@ function boxesFor(row){
   var asked = ((row && row.ownerBoxes) || []).map(function(x){
     return String(x == null ? "" : x).trim();
   });
-  var count = asked.filter(Boolean).length ? Math.min(asked.length, BOX_KEYS.length)
-                                           : BOX_KEYS.length;
+  /* Never fewer than two. The Worker rejects a submission without both a
+     supplier and a product, which is a real rule — CKA cannot act on "some
+     brand of tap" — and a lone box would let the button enable for something
+     the server then refuses. Two boxes keep the page and the API agreeing. */
+  var count = asked.filter(Boolean).length
+    ? Math.min(Math.max(asked.length, 2), BOX_KEYS.length)
+    : BOX_KEYS.length;
   var out = [];
   for (var i = 0; i < count; i++) {
     out.push({ key: BOX_KEYS[i], label: asked[i] || DEFAULT_BOXES[i] });
