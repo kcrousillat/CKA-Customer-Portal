@@ -436,22 +436,51 @@ Load catalog options. Done once, reused on every house.
 
 ## Ready to do, in order
 
-1. **Fix expand-space** (above). Everything below that touches trades waits on
-   this.
-2. **Convert the Trade fields to links.** `Selections -> Trade` and
+Rewritten 14 Sep. The previous list had three items on it that were already
+done, which is how a list stops being read.
+
+1. **Base health check.** Kevin asked for it, parked for later. A script that
+   checks the things that break silently and says nothing unless one is wrong:
+   a trade with no heading, a heading nothing points at, a library item with no
+   trade, a Section override naming a heading that no longer exists, a
+   selection at "Options presented" with no options, a palette category with no
+   catalog rows, Brand or Hinge choices in Palettes that Options does not have,
+   a project with no Portal key, active catalog rows with no photo. Runs each
+   morning, plus a "Check the base" checkbox for on demand. It cannot catch a
+   bad naming choice, an automation carrying the wrong script, or wrong
+   manufacturer data - only structural breakage.
+
+2. **Hide and lock the columns that should not be hand-edited.** Kevin's idea,
+   and the best protection Airtable actually offers - there is no cell locking.
+   The per-table list is in `airtable/hide-columns.md`. It is a UI job; there is
+   no API for creating or locking views.
+
+3. **Lock down `ALLOWED_ORIGIN`** before the first real client. It is `*` in
+   worker/wrangler.toml, meaning any site can call the API. Set it to the
+   portal's own host.
+
+4. **Convert the Trade fields to links.** `Selections -> Trade` and
    `Item Templates -> Default trade`, both together, to the Trades table.
-   Duplicate the Trade column first as a backup. This makes adding a trade one
-   row instead of three edits.
-3. **Rename "Glass & mirrors"** to whatever it should be, in the Sections
-   table. Two selections override into that heading by name — Sliding glass
-   door hardware and Front Entry Door — and their Section cells need the same
-   edit or they strand under the old name.
-4. **Host the portal.** It currently lives as a file on the Desktop. On
-   Cloudflare Pages it becomes a link. Do this before the first real client.
-5. **Lock down `ALLOWED_ORIGIN`.** It is `*` in worker/wrangler.toml, meaning
-   any site can call the API. Set it to the portal's host once step 4 is done.
-6. **Clear `DEMO_KEY`** from selections-portal.html before the first real
-   client. It pre-fills the example job's portal key, and this repo is public.
+   Duplicate the Trade column first as a backup. Adding Interior glazing on
+   14 Sep took three separate edits - a new Trades row plus a new choice in two
+   separate dropdowns - which is exactly the cost this removes. The Worker
+   already handles both shapes, and so does the expand-space script.
+
+5. **A "Top up selections" pass.** The library does not backfill: adding an item
+   to a room type never reaches rooms that already exist. This has bitten twice
+   now - the closet lines, and the second-closet lines. Until it exists, a
+   library change means deleting and rebuilding the affected rooms, which is
+   only safe on a job with no approvals yet.
+
+6. **Write descriptions for the 15 active templates that have none.** Beverage
+   center, Warming drawer, Powder Toilet, 4 Laundry items, 3 Pool items, Garage
+   storage system, Stair railing & handrail finish, Bedroom Flooring, Elevator
+   call station. The description is what the owner reads in the portal, so an
+   empty one is a blank card.
+
+7. **Housekeeping in the Worker.** Strip the dead "Trades - old list" fallback
+   (that column no longer exists, so the branch is unreachable), and collapse
+   the overlapping selection-creation paths in expand-space and build-rooms.
 
 ## To revisit: how paint is organised
 
