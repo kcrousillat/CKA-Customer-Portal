@@ -123,6 +123,17 @@ Also corrected while in there: catalog **Model** now holds the manufacturer's
 model number and the Ferguson SKU lives in Internal note. It was the other way
 round, which would have shown an owner a vendor SKU as the model.
 
+## Recessed lighting is a Whole house selection
+
+Four boxes: `Manufacturer, Model number, Size, Finish`. Owner specifies, trade
+Lighting, so it files under Lighting & electrical.
+
+Size is the one that shows - a 2" aperture reads almost invisible where a 4" is
+a feature - and it decides how many the ceiling needs, so it drives the
+lighting layout. It is also settled earlier than the decorative fixtures,
+because the cans go in at the electrical rough, before drywall. Changing it
+afterwards means opening ceilings, and the description says so.
+
 ## Laundry sink and faucet are two rows; interior doors got boxes
 
 **Laundry "Sink & faucet" is now Sink and Faucet**, two rows, both trade
