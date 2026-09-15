@@ -86,9 +86,40 @@ that exist — and cannot tell a faucet from a wax ring. This one is judgement, 
 | Shades of Light, Kohler, Robern | Mirror | 3 |
 | Sherwin Williams | Paint color | 6 |
 | Mapei | Grout | 4 |
+| Florida Stucco | Pool finish | 28 |
 
-109 rows: 36 window and door options, 8 appliances, 65 from a designer's spec book. Every one of
+144 rows: 36 window and door options, 8 appliances, 65 from a designer's spec book. Every one of
 them is a product that could be offered to the next client.
+
+## Chips out of a scanned brochure
+
+A pool or plaster brochure arrives as a **flat scan** - one image per page, no text layer - so
+neither of the other extractors works on it. `tools/chip-crop.py` finds chips by texture instead:
+an aggregate chip is dense speckle and the page behind it is flat color, which separates them
+cleanly.
+
+Two things it does on purpose:
+
+- **It refuses when the count is wrong.** Given names and finding a different number of chips, it
+  prints what it found and stops. A chip paired with the wrong name is a color ordered wrong, and
+  that is the one failure here worth being loud about.
+- **It takes an explicit grid when detection is not enough.** A pale chip - White Gem, Petite
+  Silver - has too little speckle to register, so on those pages the grid is passed in, read off
+  the positions detection did find.
+
+Then **look at the crops before loading them.** A labelled contact sheet of all 28 caught two real
+faults the counts could not: the first pass was cropping low enough to catch the brochure's own
+printed caption inside the chip, and the Pearl crops came out at inconsistent sizes.
+
+**These chips are photographs of printed paper, twice removed from the product.** Florida Stucco's
+own brochure says "actual finishes may vary slightly from the printing process of the actual
+sample." They narrow a choice; they never settle one. A pool finish also shifts hard between dry,
+wet and under four feet of water, and none of that survives a chip - which is why the Pool finish
+item's description tells the owner to look at a real sample outdoors and wet.
+
+One more reason not to trust the web here: a search for this same color list returned **thirteen**
+names, including a "Double Sky Blue" and an "Azure" that are nowhere in the brochure. The brochure
+has eleven.
 
 ## A new brand needs teaching to Options too
 
