@@ -87,9 +87,31 @@ that exist — and cannot tell a faucet from a wax ring. This one is judgement, 
 | Sherwin Williams | Paint color | 6 |
 | Mapei | Grout | 4 |
 | Florida Stucco | Pool finish | 28 |
+| Diamond Brite (SGM) | Pool finish | 17 |
 
 144 rows: 36 window and door options, 8 appliances, 65 from a designer's spec book. Every one of
 them is a product that could be offered to the next client.
+
+## Two manufacturers in one category, and the name collision
+
+Pool finish is the first category stocked by **more than one manufacturer**, and both load onto the
+same selection together. That immediately produced a clash: Florida Stucco's Pearl range has a
+**Tahoe Blue**, and so does Diamond Brite's Watercolors range. Different products, same word, side
+by side on the owner's screen.
+
+The fix is not to rename either one - the manufacturer's exact name is the thing we must not
+paraphrase. It is to make sure **Supplier is filled in on every catalog row**, because the portal
+already prints `supplier - model - finish` as a second line under each option name. With it set,
+the two read as "Florida Stucco - Pearl" and "Diamond Brite by SGM - Watercolors" and nobody has
+to guess.
+
+So: **Supplier is not optional once a category has two brands in it.** The Florida Stucco rows were
+loaded without it and had to be backfilled, and any job that had already pulled options in would
+have kept the blank version - the catalog is copied at load time, not looked up live.
+
+Worth knowing what the Model column is doing here, since it is not a model number: it carries the
+**product line** - Florida Gem, Pearl, Petite Pearl, Diamond Brite, Watercolors. That is what the
+two owner-entry boxes ask for too, and it is what distinguishes a quartz finish from a pebble one.
 
 ## Chips out of a scanned brochure
 
