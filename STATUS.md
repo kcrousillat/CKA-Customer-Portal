@@ -685,6 +685,25 @@ existing jobs need the rows added by hand.
 
 ## Open questions
 
+- **Should this repo be private?** Undecided, 16 Sep. It is public today, which is
+  what let Airtable ingest the chips by URL. Nothing in it is a credential - the
+  Airtable token is a Cloudflare secret and has never been committed - and the
+  base holds no client data a reader could reach. What is exposed is the
+  reasoning: the Worker, the automations, and the notes explaining why the model
+  is shaped the way it is.
+
+  Two client names and a rep's name were committed in prose on 14-15 Sep and
+  scrubbed on the 16th. Git history keeps them, so scrubbing does not undo it -
+  going private is the only thing that closes that.
+
+  Cost of going private: every chip already loaded is safe, because Airtable
+  copies an image on ingest rather than hot-linking it. Only future chip loads
+  would need another route.
+
+  Toggle is Settings -> General -> Danger Zone -> Change visibility. Kevin's call.
+
+
+
 - Should the portal's headings use a serif display face instead of Archivo?
   Archivo was chosen to match the logo's squared letterforms; a serif would
   read more like a signed document. One line to change either way.
