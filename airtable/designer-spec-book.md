@@ -1,8 +1,9 @@
 # When the spec comes from the designer
 
-Worked from Jaime Blomquist Interiors' drawings for the Paperny Residence:
-**ID 3.0 Finish Schedule**, **ID 3.1 Fixture Schedule**, and a 27-page spec
-book, released 4 Aug 2026.
+Worked from a designer's drawings on a real job: an **ID 3.0 Finish Schedule**,
+an **ID 3.1 Fixture Schedule**, and a 27-page spec book, released 4 Aug 2026.
+The client, the residence and the design firm are deliberately not named here -
+this repo is public.
 
 This is a better source than any vendor quote, and it arrives first. The
 vendor quotes what the designer specified; the designer's book says what it is

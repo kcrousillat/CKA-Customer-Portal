@@ -24,11 +24,11 @@ Construction start is 1 Mar 2027 on purpose - far enough out that the
 needed-by dates land in the future, so the portal does not open with
 everything red.
 
-Portal key `demo-practice-7k4m2q`. It is a throwaway, and it should stay one:
+Portal key `<portal key - see the Projects table>`. It is a throwaway, and it should stay one:
 `ALLOWED_ORIGIN` on the Worker is still `*`, so the pre-client hardening is not
 done and nothing real belongs behind this key yet.
 
-    https://cka-selections-api.kevin-7c1.workers.dev/?p=demo-practice-7k4m2q
+    https://cka-selections-api.kevin-7c1.workers.dev/?p=<portal key - see the Projects table>
 
 The house it describes: kitchen, bar, 3 baths, powder, laundry, 3 bedrooms,
 primary bedroom (with its second closet switched on), stair, outdoor kitchen,

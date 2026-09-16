@@ -111,7 +111,7 @@ The price quote is one line per product. The **spec book** - Ferguson's
 product with the manufacturer's own model number, a full description, the
 product photo and the installation drawings.
 
-It is worth asking for every time. From bid B511572's spec book:
+It is worth asking for every time. From that job's spec book:
 
   - **The models have slashes.** `DEC3650RID/R`, `DEC3650FI/L`, `DF48650G/S/P`,
     `DEU2450BG/L`. Ferguson's own SKU strips them. The manufacturer's format is

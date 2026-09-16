@@ -1,7 +1,8 @@
 # Mapping a plumbing quote onto the library
 
-Worked from Ferguson bid **B518555** (Paperny Residence, 6 Aug 2026, quoted by
-Kelly Ferreira) — about 100 line items across eight rooms. The appliance quote
+Worked from a Ferguson plumbing bid on a real job, 6 Aug 2026 - about 100 line
+items across eight rooms. The client, the bid number and the rep are not named
+here; this repo is public. The appliance quote
 was 13 lines and mapped almost one-to-one. This one does not, and the
 differences are the useful part.
 
@@ -99,7 +100,7 @@ The appliance spec book gave us manufacturer model numbers, hinge sides, specs
 the quote omitted, and a photo per product. **Ferguson generates the same thing
 for plumbing** off the same bid number.
 
-Worth one email to Kelly, because this quote needs it more than the appliance
+Worth one email to the rep, because this quote needs it more than the appliance
 one did. The appliance bid had 13 items; this has about 100, and the brands are
 nowhere on it — the item codes are Ferguson SKUs again (`K2214-0`,
 `TMS624124CEFG01`, `MNOSA225ZBN`), and the same leading-letter rule seems to
@@ -117,6 +118,6 @@ consistent across the quote but wants confirming:
     BN / ZBN   brushed nickel    (laundry, powder, baths 2 and 3)
     NK     luxe nickel       (master bath)
 
-The `HD-1` … `HD-11` tags against the cabinet hardware look like keys back to a
+The `HD-1` ... `HD-11` tags against the cabinet hardware look like keys back to a
 hardware schedule or drawing. Worth asking what they refer to, since they are
 how the installer will find which pull goes where.
