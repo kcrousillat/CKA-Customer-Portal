@@ -270,22 +270,30 @@ img{max-width:100%}
 
 .opts{
   list-style:none; margin:0 0 18px; padding:0; display:grid; gap:10px;
-  grid-template-columns:repeat(auto-fit,minmax(168px,1fr));
+  /* Capped, not 1fr: a single option used to stretch the full width of the
+     panel, which turned its photo into a letterbox strip. */
+  grid-template-columns:repeat(auto-fit,minmax(280px,420px)); justify-content:start;
 }
 .opt{display:block; cursor:pointer}
 .opt input{position:absolute; opacity:0; width:0; height:0}
 .opt-card{
   border:1px solid var(--rule-strong); border-radius:5px; background:var(--surface);
-  overflow:hidden; height:100%; display:flex; flex-direction:column;
+  overflow:hidden; height:100%; display:flex; flex-direction:row; align-items:stretch;
 }
 .opt input:focus-visible + .opt-card{outline:2px solid var(--accent); outline-offset:2px}
 .opt input:checked + .opt-card{border-color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent)}
-.swatch{aspect-ratio:5/4; max-width:100%; max-height:132px; border-bottom:1px solid var(--rule); position:relative; background:var(--surface-3)}
-.swatch img{width:100%; height:100%; object-fit:cover; display:block}
+.swatch{
+  order:2; flex:0 0 116px; width:116px; aspect-ratio:1; align-self:center;
+  margin:10px 10px 10px 0; border-radius:4px; overflow:hidden;
+  position:relative; background:var(--surface-3);
+}
+/* contain, not cover: an appliance photo cropped to fit a box is a photo of
+   the wrong appliance. Letterboxing against the tile is the lesser evil. */
+.swatch img{width:100%; height:100%; object-fit:contain; display:block}
 .swatch.is-empty{
-  display:flex; align-items:center; justify-content:center; aspect-ratio:auto;
-  min-height:46px; max-height:46px; background:var(--surface-2);
-  font-family:var(--data); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase;
+  display:flex; align-items:center; justify-content:center; text-align:center;
+  padding:6px; background:var(--surface-2); border:1px dashed var(--rule);
+  font-family:var(--data); font-size:9.5px; letter-spacing:.06em; text-transform:uppercase;
   color:var(--muted);
 }
 .swatch.is-sample::after{
@@ -341,7 +349,10 @@ img{max-width:100%}
   font-family:var(--data); font-size:11.5px; color:var(--muted);
   margin:-8px 0 16px; line-height:1.6;
 }
-.opt-body{padding:9px 11px 11px; display:flex; flex-direction:column; gap:3px}
+.opt-body{
+  order:1; flex:1 1 auto; min-width:0; overflow-wrap:anywhere;
+  padding:11px 12px; display:flex; flex-direction:column; justify-content:center; gap:3px;
+}
 .opt-body .on{font-weight:600; font-size:13.5px; line-height:1.3}
 .opt-body .od{font-family:var(--data); font-size:11px; color:var(--muted); line-height:1.45}
 .opt input:checked + .opt-card .on::after{content:" ✓"; color:var(--accent)}
@@ -433,6 +444,12 @@ img{max-width:100%}
   body.print-record #doc-record{display:block}
   @page{size:landscape; margin:12mm 10mm 14mm}
   thead{display:table-header-group}
+}
+/* Narrow phones: a smaller tile, same square. Must stay after the base
+   .swatch rule above — same specificity, so the later one wins. */
+@media (max-width:420px){
+  .swatch{flex-basis:104px; width:104px; margin:8px 8px 8px 0}
+  .opt-body{padding:9px 10px}
 }
 </style>
 </head>
