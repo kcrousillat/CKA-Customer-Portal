@@ -37,3 +37,19 @@ first pass shipped black-cornered chips and only the contact sheet caught it.
 
 Refin's **Moon** and Supergres's **Moonlit** are different collections from different
 manufacturers. Supplier on the catalog row is what tells them apart in the portal.
+
+## Supergres — Kave, INX and Colovers+ (24 colors)
+
+Three different chip sources, because the three catalogs present colour three different ways.
+
+- **Kave** (3 - Light, Ivory, Nut) and **INX** (6 - Cement, Grey, White, Pearl, Ivory, Clay) print
+  each colour as a full-bleed material shot with the name set over it in 30pt. The crop is a fixed
+  square taken from the same band of every page - below the heading, above the size diagrams - so
+  every chip is the material and nothing carries type.
+- **Colovers+** (15) prints its palette as fifteen horizontal bands with the name on the band. The
+  crop is a square from the clear part of each band, away from the printed name, paired to the
+  band whose bounds contain the name's own midline.
+
+Both extractors assert the full expected colour set before writing anything, and refuse a
+duplicate name - INX and Kave both have an Ivory, which is exactly the kind of thing that pairs a
+chip to the wrong row.
