@@ -5,8 +5,8 @@ are Palettes `Category` values, and a category is created when the first product
 not before, because the health check counts an empty category as a problem and a check that always
 reports something is a check nobody reads.
 
-Live today: **Porcelain tile**. Wood flooring and Natural stone are named but empty until there is
-a catalog to put in them.
+Live today: **Porcelain tile** - 29 colors across two manufacturers. Wood flooring and Natural
+stone are named but empty until there is a catalog to put in them.
 
 ## The category goes on the selection, not the library item
 
@@ -49,6 +49,39 @@ Not filled in, deliberately:
   Empty until the name is confirmed.
 - **Code** - the catalog prints no SKU codes. Empty rather than invented.
 - **MSRP** - not published in these catalogs.
+
+## Refin - Eras, Etherea, Ink, Moon (24 colors)
+
+A second manufacturer, bought through the same vendor.
+
+| Collection | Colors | Sizes | Shade variation |
+|---|---|---|---|
+| **Eras** | 6 - White, Grey, Black, Ivory, Sand, Greige | 48x48, 24x48, 24x24, 12x24; matt or C2 GRIP | V3 moderate |
+| **Etherea** | 5 - White, Perle, Grey, Ivory, Sand | 48x48 and 30x60 matt or gloss; 32x32, 24x48, 24x24, 12x24 matt; 48x110 slab | V2 slight |
+| **Ink** | 8 - Pure, Grace, Bold, Wavy, Cozy, Earthy, Blush, Quiet | 32x32 only, matt | V3 moderate |
+| **Moon** | 5 - Shine, Glow, Twilight, Eclipse, Dark | 48x48, 32x32, 24x48, 24x24, 12x24; 48x110 slab | V4 substantial |
+
+**Shade variation is in the owner-facing note on purpose.** V4 means one tile differs substantially
+from the next. An owner who picks Moon off a single 220px chip and then sees the floor laid has a
+complaint; an owner told "expect real variety from tile to tile" does not.
+
+**Refin's Moon and Supergres's Moonlit are different collections from different manufacturers.**
+Supplier is what tells them apart on the option card.
+
+Ink is one size and one finish - 32"x32" matt, nothing else. Its Finish options are left empty
+rather than offering a choice that does not exist.
+
+Moon's range page lists sizes but never names a finish, so Finish is empty on those five rows.
+Empty and honest beats "Matt" and guessed.
+
+## The vendor is not the supplier
+
+CKA buys this through **Tile Jungle**. That name lives in **Internal note** and nowhere else.
+
+`Supplier` carries the **manufacturer** - Supergres, Refin - because Supplier is the field the
+portal prints under the option name, and the manufacturer is what an owner should be reading on
+their approval. It is also what an installer needs. The vendor is CKA's commercial relationship
+and is not the owner's business.
 
 ## Never put the price list in
 
