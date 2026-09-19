@@ -26,14 +26,41 @@ job needs to build (width, rough-in notes).
 appliance schedule is the document the cabinet shop and the MEP rough need — which is exactly why
 appliances have to be decided in month one though they are delivered in month ten.
 
-## 2. Each appliance is its own selection
+## 2. Each appliance is its own selection, and most of them are Optional
 
-Thirteen item templates on the Kitchen space type, one per slot: built-in refrigerator, freezer
-column, undercounter refrigeration, range, cooktop, wall ovens, vent hood, microwave / speed oven,
-steam oven, warming drawer, coffee system, dishwasher, ice maker, beverage center, wine storage.
+Fifteen item templates on the Kitchen space type, one per slot, plus three on Outdoor kitchen, one
+on Bar and one on Laundry. Twenty-one in all.
 
-A kitchen with a range has no cooktop; a kitchen with two dishwashers gets a second row. Delete
-what does not apply and add duplicates where needed — each template's description says which.
+**Seven of the twenty-one are standard**, because a house that has the room has the appliance:
+built-in refrigerator, vent hood and dishwasher in the kitchen; washer & dryer in the laundry;
+the grill and undercounter refrigeration outdoors; the bar's undercounter appliances. The other
+fourteen are Optional.
+
+**Everything else is ticked Optional**: freezer column, undercounter refrigeration, wall ovens,
+microwave / speed oven, steam oven, warming drawer, coffee system, ice maker, wine storage,
+beverage center, second dishwasher, and the outdoor vent hood. They are generated on every job but
+arrive as **Not applicable**, invisible to the owner until somebody switches them on at
+**Project setup → Optional items**. That screen is the answer to "which appliances does this house
+have", asked once per job instead of cleared row by row on every job.
+
+### Range and cooktop are both Optional, and that is deliberate
+
+They are mutually exclusive — a kitchen has a range, or a cooktop with wall ovens, never both —
+so neither can be the default. Both are Optional and exactly one gets switched on.
+
+The failure mode is switching on neither, which leaves a kitchen with no cooking appliance at all.
+Nothing in the base catches that; it is caught by a person looking at the plan. If it ever gets
+missed, the fix is a rule in the health check, not a default.
+
+Before this, the Range template's description ended with "delete this line if the kitchen uses a
+cooktop plus wall ovens" — an instruction to CKA sitting in owner-facing text, on a row the owner
+was not supposed to be reading in the first place. Removed.
+
+### Where the list actually comes from
+
+The base does not decide it. In order: the kitchen designer's appliance schedule, which is what the
+cabinet elevations are drawn around; the plans, where every opening is an appliance; and the owner,
+for the ones a drawing cannot tell you — coffee system or not, wine storage or not.
 
 **Brands mix.** Sub-Zero refrigeration beside a Wolf range beside a Cove dishwasher is the normal
 case, so unlike windows there is no manufacturer decision gating the rest. Every appliance stands
