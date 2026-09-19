@@ -272,7 +272,7 @@ img{max-width:100%}
   list-style:none; margin:0 0 18px; padding:0; display:grid; gap:10px;
   /* Capped, not 1fr: a single option used to stretch the full width of the
      panel, which turned its photo into a letterbox strip. */
-  grid-template-columns:repeat(auto-fit,minmax(280px,420px)); justify-content:start;
+  grid-template-columns:repeat(auto-fit,minmax(300px,470px)); justify-content:start;
 }
 .opt{display:block; cursor:pointer}
 .opt input{position:absolute; opacity:0; width:0; height:0}
@@ -283,13 +283,16 @@ img{max-width:100%}
 .opt input:focus-visible + .opt-card{outline:2px solid var(--accent); outline-offset:2px}
 .opt input:checked + .opt-card{border-color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent)}
 .swatch{
-  order:2; flex:0 0 116px; width:116px; aspect-ratio:1; align-self:center;
+  order:2; flex:0 0 176px; width:176px; align-self:center;
   margin:10px 10px 10px 0; border-radius:4px; overflow:hidden;
-  position:relative; background:var(--surface-3);
+  position:relative; background:var(--surface-3); line-height:0;
 }
+/* No photo to size the tile, so these two need a height of their own. */
+.swatch.is-sample{aspect-ratio:1}
+.swatch.is-empty{height:86px}
 /* contain, not cover: an appliance photo cropped to fit a box is a photo of
    the wrong appliance. Letterboxing against the tile is the lesser evil. */
-.swatch img{width:100%; height:100%; object-fit:contain; display:block}
+.swatch img{max-width:100%; max-height:176px; width:auto; height:auto; display:block; margin:0 auto}
 .swatch.is-empty{
   display:flex; align-items:center; justify-content:center; text-align:center;
   padding:6px; background:var(--surface-2); border:1px dashed var(--rule);
@@ -300,6 +303,7 @@ img{max-width:100%}
   content:"Color sample"; position:absolute; right:5px; bottom:5px;
   font-family:var(--data); font-size:9px; letter-spacing:.08em; text-transform:uppercase;
   background:rgba(255,255,255,.84); color:#1B1F24; padding:1px 5px; border-radius:2px;
+  line-height:1.5;   /* the tile sets line-height:0 for the photo; the badge needs its own */
 }
 .banner{
   border:1px solid var(--rule-strong); background:var(--surface-2); border-radius:5px;
@@ -448,7 +452,8 @@ img{max-width:100%}
 /* Narrow phones: a smaller tile, same square. Must stay after the base
    .swatch rule above — same specificity, so the later one wins. */
 @media (max-width:420px){
-  .swatch{flex-basis:104px; width:104px; margin:8px 8px 8px 0}
+  .swatch{flex-basis:132px; width:132px; margin:8px 8px 8px 0}
+  .swatch img{max-height:132px}
   .opt-body{padding:9px 10px}
 }
 </style>
