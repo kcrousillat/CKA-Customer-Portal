@@ -8,6 +8,59 @@ reports something is a check nobody reads.
 Live today: **Porcelain tile** - 29 colors across two manufacturers. Wood flooring and Natural
 stone are named but empty until there is a catalog to put in them.
 
+## Floor tile and wall tile are not siblings
+
+Kevin's rule, and it is the one that decides the shape of the whole catalog:
+
+> **Floor tile can be used for walls. Wall tile can only be used for walls.**
+
+So the two categories are not a pair. One is a superset of the other's uses, which means a
+backsplash or shower-wall selection pointing only at `Wall tile` would be hiding two thirds of the
+usable stock from the person choosing.
+
+Categories are therefore named by **what the tile can do**, not by what the showroom calls it:
+
+| Category | What is in it | Loaded by |
+|---|---|---|
+| `Porcelain tile` | Floor-rated. Legal on floors *and* walls. | Flooring selections, and wall selections |
+| `Wall tile` | Wall only. | Wall selections, in addition to the above |
+
+### Loading both onto a wall selection
+
+No new machinery needed. **Ticking Load catalog options twice adds nothing twice** - the loader
+skips catalog rows already on the selection by name. So on a backsplash:
+
+1. Palette category `Porcelain tile`, tick **Load catalog options**.
+2. Change it to `Wall tile`, tick again.
+
+Both loads land on the same selection. Then delete down to the two or three being presented.
+
+Two ticks instead of one. If that becomes a nuisance the field can be made to hold several
+categories so one tick pulls both - a change to the loader script and the field type, worth doing
+only once the two-tick version has actually annoyed somebody.
+
+### What this rule kept out of the catalog
+
+**Colovers+ white-body wall tile is deliberately not loaded.** Every one of its colors already
+exists in the floor-rated porcelain range, and a floor tile goes on a wall - so loading the wall
+version would put two rows with the same color name in front of an owner, one of them strictly
+less useful. Colovers goes in the flooring catalog only.
+
+INX's white-body wall range is the opposite case: its colors (Loto, Dune, Jasmine, Agave, Plume,
+Aqua, Sugar) are nothing like its floor colors (Cement, Grey, White, Pearl, Ivory, Clay), so it
+adds seven colors that cannot be had floor-rated. Worth loading. Bricksy likewise - a 2.5"x9.5"
+glossy brick has no floor-rated equivalent anywhere in the vendor's book.
+
+**The test is not "is it a wall tile".** It is: *does this add a color the floor-rated catalog
+cannot already supply?* If not, it is a duplicate with a worse spec.
+
+### Floor-rated is not the same as right for the floor
+
+Etherea is made in a gloss face. Legal on a floor, and a poor idea on a wet one. The anti-slip
+faces are Refin's C2 GRIP and Supergres's R10 B / R11 C, and they sit in Finish options on every
+row - so the owner picks a finish alongside the color. Wet-area item descriptions should say the
+finish is a slip decision and not only a look.
+
 ## The category goes on the selection, not the library item
 
 Tempting to set `Palette category` on the Flooring item template once and be done. Don't. The next
