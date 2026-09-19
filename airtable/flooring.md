@@ -5,8 +5,9 @@ are Palettes `Category` values, and a category is created when the first product
 not before, because the health check counts an empty category as a problem and a check that always
 reports something is a check nobody reads.
 
-Live today: **Porcelain tile** - 29 colors across two manufacturers. Wood flooring and Natural
-stone are named but empty until there is a catalog to put in them.
+Live today: **Porcelain tile** (53 colors) and **Wall tile** (15), across two manufacturers and
+nine collections. Wood flooring and Natural stone are named but empty until there is a catalog to
+put in them - every catalog the vendor has sent so far is porcelain.
 
 ## Floor tile and wall tile are not siblings
 
@@ -126,6 +127,29 @@ rather than offering a choice that does not exist.
 
 Moon's range page lists sizes but never names a finish, so Finish is empty on those five rows.
 Empty and honest beats "Matt" and guessed.
+
+## Supergres - Kave, INX and Colovers+ (24 colors)
+
+The rest of the first batch.
+
+| Collection | Colors | What it is |
+|---|---|---|
+| **Kave** | 3 - Light, Ivory, Nut | Cross-cut travertine look. Up to 48"x48", a 48"x109 1/2" 6mm slab, and a 20mm outdoor paver |
+| **INX** | 6 - White, Pearl, Ivory, Cement, Clay, Grey | Fine concrete look. 48"x48", 24"x48", 24"x24"; a 6mm slab and a 20mm paver on some colors |
+| **Colovers+** | 15 `love` colors | Flat spatula-resin look - color rather than pattern. The widest size range of the lot |
+
+**Colovers+ carries no finish.** Its catalog names sizes per color but never a finish, so Finish is
+empty on all fifteen rather than filled from the collection's marketing copy. Same reasoning as
+Refin's Moon.
+
+**Colovers+ size availability genuinely varies by color** - the catalog prints a dot matrix. The
+matrix is not transcribed, because reading dots out of extracted text is exactly how a color gets
+sold in a size that is not made. The owner-facing note says the range and says we confirm the size
+before ordering; the matrix stays where it is, in the catalog.
+
+**Two Ivories.** Kave has one and INX has one, different collections and different products. Each
+row's Internal note points at the other, and the chip extractor refuses a duplicate name outright -
+that collision is precisely how a chip lands under the wrong row.
 
 ## The vendor is not the supplier
 
