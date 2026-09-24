@@ -14,9 +14,12 @@ directory = "./public"
 
 [vars]
 AIRTABLE_BASE = "appfRsDMRMX4sGSPK"
-# Same origin as the page now, so this could be tightened to the Worker's own
-# URL. Left open until the portal has settled on a final address.
-ALLOWED_ORIGIN = "*"
+# The Worker serves the portal page itself, so the page's calls to /api are
+# same-origin and never consult this header at all. It only governs calls from
+# somewhere else - which is exactly what should not be allowed now that a real
+# client's selections live behind a key. Locked to the Worker's own address on
+# 24 Sep, ahead of the first real job.
+ALLOWED_ORIGIN = "https://cka-selections-api.kevin-7c1.workers.dev"
 
 # The Airtable token is a secret, never a var:
 #   npx wrangler secret put AIRTABLE_TOKEN
