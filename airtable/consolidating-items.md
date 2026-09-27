@@ -87,3 +87,17 @@ rows.
 
 Step 7 is the whole cost of doing this late. On the practice job it was five rows. On a job with
 an owner already in the portal it would also be a conversation.
+
+## Done so far
+
+| Date | Survivor | Absorbed | Why |
+|---|---|---|---|
+| 27 Sep | `Shower enclosure` (Bath) | `Shower door pull` | Same supplier, same order, same finish. Two lines that had to agree with each other. |
+
+The enclosure's four boxes are now **Glass type & thickness, Frame style, Hardware finish, Door
+pull style** — exactly the ceiling, with the steam-shower warning living in the description and
+the free-text box underneath catching the rest.
+
+One loose end from that merge: the Palettes table still has a **Shower door pull** category with
+curated options in it. Nothing points at it any more. Leave it — it costs nothing, and if the
+pull ever goes back to being its own line the options are still there.
