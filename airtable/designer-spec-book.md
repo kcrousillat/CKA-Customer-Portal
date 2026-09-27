@@ -35,7 +35,7 @@ One tag can serve several rooms — `PL-8` and `PL-9` appear in all three baths,
 | `ST` | Stain | Paint |
 | `B` / `CAS` | Baseboard / casing | Cabinetry & millwork |
 | `T` / `G` | Tile / grout | Tile & stone |
-| `SL` | Slab | Tile & stone |
+| `SL` | Slab | Countertops (vanity tops and counters) or Tile & stone (any other slab) |
 | `D` / `DH` | Door / door hardware | Doors |
 | `HD` | Cabinet & appliance pulls | Hardware |
 | `PL` | Plumbing | Plumbing Fixtures |
