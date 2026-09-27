@@ -44,7 +44,7 @@ pay application: countertops are their own line there, not part of tile and ston
 Stone trade still points at Tile & stone — stone flooring and stone tile belong there — so
 the countertop lines carry an override each.
 
-Six templates carry it, and every live selection built from them was updated at the same
+Nine templates carry it, and every live selection built from them was updated at the same
 time:
 
 | Template | Room | Line |
@@ -55,10 +55,22 @@ time:
 | `recNST89X89TC8TA7` | Powder | Vanity top |
 | `recKlXqLgX3uOukbq` | Laundry + Pantry | Countertop |
 | `recRMJyTRzo1KKd5D` | Outdoor kitchen | Countertop |
+| `recJ1pmfctS94nL81` | Kitchen | Backsplash |
+| `rechSaJL2lyTQGlsR` | Bar | Backsplash |
+| `reclZAKUUfqJbRhKL` | Laundry + Pantry | Backsplash |
 
-Vanity tops are included. Same fabricator, same slab, templated and installed in the same
-trip as the kitchen counter — so they belong on the countertop line of a pay app, not the
-tile one. Say the word if your coding splits them.
+**Vanity tops are countertops.** Kevin's call: that is where the budget money falls, and
+that is how it reads on both the estimate and the pay app. Same fabricator, same slab,
+templated and installed on the same trip as the kitchen counter.
+
+**Backsplash is not a tile line.** Renamed from "Backsplash tile", because a backsplash is
+as often a slab of the countertop stone as it is tile, and the old name was pre-deciding
+the material. It codes with countertops because a slab backsplash is cut from the counter's
+own slab and has to be ordered with it, while there is still slab left.
+
+One rough edge worth knowing: the backsplash lines still carry the **Tile** trade, so the
+portal's "By trade" view files them under Tile. That is a guess either way until the owner
+picks the material, and there is no "tile or stone" trade to point at. Left as Tile.
 
 **Tread & riser material** (Stair, `recBLkka72MVbscqg`) is Stone trade and currently
 inactive, so it was left alone. If it is ever switched back on, decide then whether stair
