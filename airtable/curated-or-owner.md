@@ -67,3 +67,45 @@ It made sense while CKA picked the fixtures. Once the owner specifies each fixtu
 arrives with the fixture and the row is asking a question whose answer is already in the other
 rows. Retired 27 Sep: Active unticked in the library, live rows set to Not applicable rather than
 deleted.
+
+## The catalog test, 27 Sep
+
+Kevin: *"for now while we build our catalog let's make everything an input from the client."*
+
+Taken at face value that would have flipped the tile and appliance lines too, and those are the
+ones with a real catalog behind them - the Supergres and Refin colours loaded this week would have
+sat in Airtable and never appeared on a page. So the rule applied was the one his reason implies,
+not the literal sentence:
+
+> **A line only says "CKA presents options" if there is something to present.** If the Palettes
+> table has no rows for its subject, the owner gets entry boxes instead.
+
+That is a test, not a taste. Run it against Palettes and the answer is the same every time,
+which also means it can be re-run as the catalog grows: load a catalog, flip the line back.
+
+**Stayed curated** - roughly 30 lines, because there are 231 palette rows behind them: all tile
+and flooring (Porcelain tile, Wall tile), the window and door package (Frame color, Glass tint,
+Grid style, Woodgrain finish, Door hardware), Pool finish, Bath accessories, Cabinet hardware,
+Mirrors, decorative lighting (Chandelier, Sconce, Pendant), Grout, and the appliances that have
+options loaded - Range, Cooktop's neighbours Dishwasher and Microwave, Built-in refrigerator,
+Freezer column, Beverage center, Vent hood, Washer, Dryer.
+
+**Flipped to owner input** - 46 library items and the 122 live selections built from them, across
+both jobs. Cabinetry and millwork finishes, ceiling details, wall treatments, closet systems and
+closet lighting, the elevator cab, baseboard and casing profiles, roof tile, stucco texture, deck
+and driveway paving, HVAC grilles, landscape lighting, pool lighting, coping, water feature,
+garage floor coating, the grill, and the appliances with no options loaded - cooktop, wall ovens,
+ice maker, coffee system, steam oven, warming drawer, wine storage, undercounter refrigeration.
+
+Each one got entry-box labels that suit it rather than the generic four. A grill asks Manufacturer
+/ Model number / Width / Fuel. Coping asks Material / Color / Edge profile / Finish or texture.
+Stucco asks Texture / Finish / Color. Leaving the labels empty would have worked - the portal
+falls back to Manufacturer / Product / Color / Sheen - but "Color name or number" over an elevator
+cab is the kind of thing that makes an owner stop and wonder what is being asked.
+
+### Two that failed the test and stayed curated anyway
+
+**Window & door package - manufacturer** and **Low voltage, AV & security**. Neither has palette
+rows, but neither is a catalog item: CKA bids them and brings the owner the numbers. Flipping them
+would have told the owner to go and source their own impact window manufacturer, which is not the
+job. Worth knowing they are the two exceptions to the rule above.
