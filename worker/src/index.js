@@ -170,7 +170,7 @@ export default {
         return json(await getProject(env, requireKey(url.searchParams.get("key"))), cors);
       }
 
-      const write = url.pathname.match(/^\/api\/selection\/(rec[A-Za-z0-9]{14})\/(approve|submit|change)$/);
+      const write = url.pathname.match(/^\/api\/selection\/(rec[A-Za-z0-9]{14})\/(approve|submit|change|photo)$/);
       if (write && request.method === "POST") {
         const [, selectionId, action] = write;
         const body = await request.json();
@@ -180,6 +180,7 @@ export default {
         if (action === "approve") return json(await approve(env, ctx, body), cors);
         if (action === "submit")  return json(await submit(env, ctx, body), cors);
         if (action === "change")  return json(await requestChange(env, ctx, body), cors);
+        if (action === "photo")   return json(await addPhoto(env, ctx, body), cors);
       }
 
       return json({ error: "Not found" }, cors, 404);
@@ -459,6 +460,93 @@ async function submit(env, { project, record }, body) {
     },
   });
   return { ok: true, status: updated.fields["Status"] };
+}
+
+/* ------------------------------------------------------------------ */
+/* Owner photos                                                        */
+
+/* A showroom snap or a page of a designer's spec book, attached to the line it
+   belongs to. Before this the only route was pasting a link into the notes box,
+   which meant the owner had to host the picture somewhere first - not a
+   reasonable thing to ask of someone choosing a tap.
+
+   Airtable takes the file contents directly on a separate host, so no image
+   host, no storage bucket and nothing else to pay for or keep running. It
+   appends to the attachment field server side, so two photos arriving at once
+   cannot overwrite each other the way a read-then-write would. */
+const PHOTO_FIELD = "Owner photos";
+const PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"];
+/* Airtable's own ceiling is 5MB. Stopping short of it means an oversize photo
+   is refused here, with a sentence the owner can act on, rather than coming
+   back as an Airtable 4xx that says nothing useful. The page shrinks photos
+   before sending, so hitting this at all means something unusual. */
+const PHOTO_MAX_BYTES = 4 * 1024 * 1024;
+/* Enough for a tap from three angles and the spec sheet. A cap mostly so that
+   a key in the wrong hands cannot fill the base with megabytes. */
+const PHOTO_MAX_COUNT = 6;
+
+async function addPhoto(env, { record }, body) {
+  assertOpen(record);
+
+  const contentType = text(body.contentType, 100).toLowerCase();
+  if (!PHOTO_TYPES.includes(contentType)) {
+    throw httpError(400, "Photos only, please - a JPEG, PNG or WEBP.");
+  }
+
+  const already = (record.fields[PHOTO_FIELD] || []).length;
+  if (already >= PHOTO_MAX_COUNT) {
+    throw httpError(409, `That is already ${PHOTO_MAX_COUNT} photos on this line, which is the limit. Delete one to add another.`);
+  }
+
+  /* Accept a bare base64 string or a whole data: URL, since which one arrives
+     depends on how the page read the file. */
+  const raw = String(body.data || "").replace(/^data:[^;]*;base64,/, "").replace(/\s+/g, "");
+  if (!raw) throw httpError(400, "That photo arrived empty. Try again.");
+  if (!/^[A-Za-z0-9+/]+={0,2}$/.test(raw)) throw httpError(400, "That photo did not arrive in one piece. Try again.");
+
+  /* Size of the decoded file, worked out from the base64 length rather than by
+     decoding it: the string is the biggest thing in this request and decoding
+     it only to measure it would double what the Worker holds in memory. */
+  const bytes = Math.floor(raw.length * 3 / 4) - (raw.endsWith("==") ? 2 : raw.endsWith("=") ? 1 : 0);
+  if (bytes <= 0) throw httpError(400, "That photo arrived empty. Try again.");
+  if (bytes > PHOTO_MAX_BYTES) {
+    throw httpError(413, "That photo is too large. Around 4MB is the limit.");
+  }
+
+  /* Uploads go to content.airtable.com, not the api host the rest of the file
+     talks to, so this cannot use at(). */
+  const res = await fetch(
+    `https://content.airtable.com/v0/${env.AIRTABLE_BASE}/${record.id}/${encodeURIComponent(PHOTO_FIELD)}/uploadAttachment`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${env.AIRTABLE_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        contentType,
+        file: raw,
+        filename: photoName(body.filename, contentType),
+      }),
+    }
+  );
+
+  if (!res.ok) {
+    const detail = await res.text();
+    throw httpError(502, `Airtable ${res.status}: ${detail.slice(0, 300)}`);
+  }
+
+  const saved = await res.json();
+  const field = (saved.fields && saved.fields[PHOTO_FIELD]) || [];
+  return { ok: true, photos: attachments(field), count: field.length };
+}
+
+/* Whatever the phone called it, reduced to something safe to put in a URL path
+   and guaranteed to carry an extension Airtable will recognise. */
+function photoName(v, contentType) {
+  const ext = contentType === "image/png" ? "png" : contentType === "image/webp" ? "webp" : "jpg";
+  const base = text(v, 80).replace(/\.[A-Za-z0-9]+$/, "").replace(/[^A-Za-z0-9._-]+/g, "-").replace(/^[-.]+/, "");
+  return (base || "owner-photo") + "." + ext;
 }
 
 /**

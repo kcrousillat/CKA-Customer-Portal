@@ -112,3 +112,35 @@ would tell the owner to go and source their own impact window manufacturer, whic
 Raised with Kevin when the sweep was done; he confirmed leaving them curated. So these are
 settled exceptions to the rule above, not an oversight waiting to be tidied up - if a later pass
 flips them for failing the catalog test, it is undoing a decision rather than fixing a gap.
+
+## Owner photos, 2 Oct
+
+Kevin tried to attach a photo to a selection and found he could not - there was
+no upload anywhere in the portal. The notes box said "a link to a photo", which
+quietly assumed the owner would host the picture somewhere first. Nobody
+choosing a tap is going to do that; they were always going to text it to Kevin
+instead, which is the thing this product exists to stop.
+
+So the entry form now takes photos directly. Up to six per line, shown as
+thumbnails under the boxes, each one opening full size.
+
+**No new service.** Airtable accepts file contents on a host of its own, so
+there is no image host, no storage bucket and nothing extra to pay for or keep
+running. Airtable appends to the attachment field itself, so two photos
+arriving together cannot overwrite each other the way reading and writing back
+would.
+
+**The page shrinks the photo before sending it**, to 1600px on the long edge.
+A phone photo is routinely 3-12MB and Airtable's limit is 5MB, so without this
+most real photos would simply fail. It also means a photo sent from a job site
+on one bar does not take minutes. A 4032x3024 test photo came out of the
+browser at 1600x1200 and about a third of the size. A side effect worth having:
+drawing the photo through a canvas drops the EXIF block, so the GPS location
+the phone stamped into the file does not travel to Airtable with it.
+
+The endpoint takes a file from anyone holding a portal key, so the refusals
+matter more than the happy path: images only, roughly 4MB, six per line, and
+nothing at all on a line already approved - that is what Request a change is
+for. `worker/test/photo.test.mjs` covers each of those against the real Worker
+with Airtable mocked. Run it with `node worker/test/photo.test.mjs`; it exits
+non-zero if anything regresses.

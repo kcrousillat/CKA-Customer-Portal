@@ -381,6 +381,30 @@ img{max-width:100%}
 .field textarea{min-height:64px; resize:vertical}
 .field.wide{grid-column:1/-1}
 
+/* Owner photos. The strip sits under the entry boxes because it is supporting
+   evidence for them - the tap in the showroom, the page of the spec book -
+   not a decision of its own. */
+.photos{grid-column:1/-1; display:flex; flex-wrap:wrap; gap:8px; align-items:flex-start}
+.photo-thumb{
+  width:84px; height:84px; border:1px solid var(--rule-strong); border-radius:4px;
+  overflow:hidden; background:var(--surface-3); flex:0 0 auto;
+}
+.photo-thumb img{width:100%; height:100%; object-fit:cover; display:block}
+/* The file input itself is unstyleable across browsers, so it is hidden and the
+   label is what gets clicked. The label keeps the input as a child so a click
+   reaches it without any script. */
+.photo-add{
+  width:84px; height:84px; flex:0 0 auto; cursor:pointer;
+  border:1px dashed var(--rule-strong); border-radius:4px; background:transparent;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+  font-family:var(--data); font-size:10px; letter-spacing:.07em; text-transform:uppercase;
+  color:var(--muted); text-align:center; line-height:1.3;
+}
+.photo-add:hover{border-color:var(--ink); color:var(--ink)}
+.photo-add input{position:absolute; width:1px; height:1px; opacity:0; pointer-events:none}
+.photo-add .plus{font-family:inherit; font-size:17px; line-height:1}
+.photo-add.is-busy{opacity:.55; cursor:default}
+
 .sign{
   border:1px solid var(--rule-strong); border-radius:5px; background:var(--surface);
   padding:14px; display:flex; flex-direction:column; gap:11px;
@@ -982,8 +1006,9 @@ function panelMarkup(row){
     }).join("") +
     '<span class="field wide"><label for="notes-' + row.id + '">Anything we should know</label>' +
     '<textarea id="notes-' + row.id + '" data-entry="notes" data-row-id="' + row.id + '" ' +
-    'placeholder="A link to a photo, a second choice, or a question for us">' +
-    esc(pick(d.notes, e.notes)) + '</textarea></span></div>';
+    'placeholder="A second choice, or a question for us">' +
+    esc(pick(d.notes, e.notes)) + '</textarea></span>' +
+    photoStrip(row) + '</div>';
   out += '<div class="panel-actions">' +
     '<button class="btn btn-primary" type="button" data-submit="' + row.id + '"' +
       (readyToSubmit(row, d, e) ? "" : " disabled") +
@@ -1012,6 +1037,87 @@ function field(id, key, label, val){
   return '<span class="field"><label for="' + key + '-' + id + '">' + label + '</label>' +
     '<input id="' + key + '-' + id + '" type="text" data-entry="' + key + '" data-row-id="' + id + '" ' +
     'value="' + esc(val) + '"></span>';
+}
+
+/* Photos already on the line, then the tile that adds one. The cap matches the
+   Worker's; the page simply stops offering the tile rather than letting someone
+   pick a file and then be told no. */
+var PHOTO_MAX = 6;
+function photoStrip(row){
+  var photos = row.ownerPhotos || [];
+  var out = '<div class="photos">';
+  out += photos.map(function(p){
+    return '<a class="photo-thumb" href="' + esc(p.full || p.url) + '" target="_blank" rel="noopener">' +
+      '<img src="' + esc(p.url) + '" alt="Photo on this selection"></a>';
+  }).join("");
+  if (photos.length < PHOTO_MAX) {
+    out += '<label class="photo-add" id="addphoto-' + row.id + '">' +
+      '<span class="plus">+</span><span>Add a<br>photo</span>' +
+      '<input type="file" accept="image/*" data-photo="' + row.id + '"></label>';
+  }
+  return out + '</div>';
+}
+
+/* Shrink in the browser before sending. Two reasons, and the second is the one
+   that matters on a job site: a phone photo is routinely 3-12MB, which is over
+   what Airtable accepts, and sending the original over a weak signal is a long
+   wait for no benefit. 1600px is still more than the portal or a vendor email
+   will ever show.
+   Canvas also drops the EXIF block on the way through, so the location the
+   phone stamped into the photo does not travel to Airtable with it. */
+var PHOTO_MAX_EDGE = 1600;
+function shrink(file){
+  return new Promise(function(resolve, reject){
+    var url = URL.createObjectURL(file);
+    var img = new Image();
+    img.onload = function(){
+      URL.revokeObjectURL(url);
+      var w = img.naturalWidth, h = img.naturalHeight;
+      if (!w || !h) { reject(new Error("That file did not look like a photo.")); return; }
+      var scale = Math.min(1, PHOTO_MAX_EDGE / Math.max(w, h));
+      var c = document.createElement("canvas");
+      c.width = Math.max(1, Math.round(w * scale));
+      c.height = Math.max(1, Math.round(h * scale));
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      /* JPEG whatever came in: a photographed page saved as a 9MB PNG is the
+         case that would otherwise still be too big after resizing. */
+      var data = c.toDataURL("image/jpeg", 0.82);
+      if (data.indexOf("data:image/jpeg") !== 0) { reject(new Error("This browser could not prepare that photo.")); return; }
+      resolve({ contentType: "image/jpeg", data: data.split(",")[1] });
+    };
+    img.onerror = function(){
+      URL.revokeObjectURL(url);
+      /* HEIC from an iPhone lands here on a browser that cannot decode it. */
+      reject(new Error("That file could not be opened as a photo. A JPEG or PNG works."));
+    };
+    img.src = url;
+  });
+}
+
+function uploadPhoto(rowId, file){
+  var tile = document.getElementById("addphoto-" + rowId);
+  if (state.preview) { showRowError(rowId, "Preview mode - connect the Worker to save photos."); return; }
+  if (tile) tile.classList.add("is-busy");
+  showRowError(rowId, "");
+  shrink(file).then(function(img){
+    return api("/api/selection/" + rowId + "/photo", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        key: PORTAL_KEY,
+        filename: file.name || "photo.jpg",
+        contentType: img.contentType,
+        data: img.data
+      })
+    });
+  }).then(function(){
+    /* Reload rather than splice the new photo in by hand, so the thumbnail
+       shown is the one Airtable actually stored. */
+    return reload();
+  }).catch(function(err){
+    if (tile) tile.classList.remove("is-busy");
+    showRowError(rowId, err.message || "That photo did not save. Try again.");
+  });
 }
 
 function groupId(i){ return "g" + i; }
@@ -1349,6 +1455,15 @@ document.addEventListener("input", function(ev){
 
 document.addEventListener("change", function(ev){
   var el = ev.target;
+  if (el.hasAttribute && el.hasAttribute("data-photo")) {
+    var pf = el.files && el.files[0];
+    /* Clear it straight away: picking the same file twice in a row fires no
+       change event otherwise, which reads as the button being broken. */
+    var prid = el.getAttribute("data-photo");
+    el.value = "";
+    if (pf) uploadPhoto(prid, pf);
+    return;
+  }
   if (el.hasAttribute && el.hasAttribute("data-pick")) {
     var id = el.getAttribute("data-pick");
     var d = draft(id);
