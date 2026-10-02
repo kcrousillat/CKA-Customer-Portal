@@ -363,7 +363,13 @@ img{max-width:100%}
 
 /* forms */
 .fields{display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); margin:0 0 16px}
-.field{display:flex; flex-direction:column; gap:4px}
+/* justify-content:flex-end, not the default stretch: grid stretches every
+   .field to the tallest in its row, and a label that wraps to two lines
+   ("Size and bowl configuration") used to push its own input down while the
+   short labels beside it stayed up. Sending the pair to the bottom of the cell
+   levels every input on the row and keeps each label glued to its own box,
+   whatever number of lines it wraps to - no magic height to maintain. */
+.field{display:flex; flex-direction:column; gap:4px; justify-content:flex-end}
 .field label, .sign label{
   font-family:var(--data); font-size:10.5px; letter-spacing:.09em;
   text-transform:uppercase; color:var(--muted);
