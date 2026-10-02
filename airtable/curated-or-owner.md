@@ -103,9 +103,12 @@ Stucco asks Texture / Finish / Color. Leaving the labels empty would have worked
 falls back to Manufacturer / Product / Color / Sheen - but "Color name or number" over an elevator
 cab is the kind of thing that makes an owner stop and wonder what is being asked.
 
-### Two that failed the test and stayed curated anyway
+### Two that fail the test and stay curated anyway
 
 **Window & door package - manufacturer** and **Low voltage, AV & security**. Neither has palette
 rows, but neither is a catalog item: CKA bids them and brings the owner the numbers. Flipping them
-would have told the owner to go and source their own impact window manufacturer, which is not the
-job. Worth knowing they are the two exceptions to the rule above.
+would tell the owner to go and source their own impact window manufacturer, which is not the job.
+
+Raised with Kevin when the sweep was done; he confirmed leaving them curated. So these are
+settled exceptions to the rule above, not an oversight waiting to be tidied up - if a later pass
+flips them for failing the catalog test, it is undoing a decision rather than fixing a gap.
