@@ -3,7 +3,11 @@
 # Run it from anywhere - it finds the project folder itself rather than
 # depending on where PowerShell happened to start.
 #
-#   powershell -ExecutionPolicy Bypass -File "$HOME\Desktop\update-cka-portal.ps1"
+#   powershell -ExecutionPolicy Bypass -File "$([Environment]::GetFolderPath('Desktop'))\update-cka-portal.ps1"
+#
+# Use GetFolderPath, not $HOME\Desktop. Kevin's Desktop is redirected into
+# OneDrive, so $HOME\Desktop does not exist and the command fails with a
+# confusing curl error rather than a missing-folder one.
 #
 # ASCII ONLY. Windows PowerShell reads .ps1 as ANSI, so a curly quote or an
 # em dash arrives as mojibake in the middle of a string and the whole file
@@ -60,6 +64,17 @@ try {
   $b = (Get-Item "$workerDir\src\index.js").Length
   if ($b -lt 5000) { throw "index.js came back too small ($b bytes), so the download did not work." }
   Say "     Worker code downloaded ($b bytes)." 'Green'
+
+  # wrangler.toml too. It was left out at first, on the theory that settings
+  # change rarely - but that is exactly the problem: a settings change made in
+  # the repo then never reached a deploy, and the Worker kept running the old
+  # one. ALLOWED_ORIGIN was locked down in the repo on 24 Sep and was still
+  # wide open on the live Worker a week later because of this.
+  # It holds no per-machine values, so overwriting the local copy is safe.
+  curl.exe -fsSL -o "$workerDir\wrangler.toml" "$raw/worker/wrangler.toml"
+  $t = (Get-Item "$workerDir\wrangler.toml").Length
+  if ($t -lt 200) { throw "wrangler.toml came back too small ($t bytes), so the download did not work." }
+  Say "     Worker settings downloaded ($t bytes)." 'Green'
 
   New-Item -ItemType Directory -Force -Path "$workerDir\public" | Out-Null
   Copy-Item "$desk\selections-portal.html" "$workerDir\public\index.html" -Force
