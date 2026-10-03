@@ -144,3 +144,46 @@ nothing at all on a line already approved - that is what Request a change is
 for. `worker/test/photo.test.mjs` covers each of those against the real Worker
 with Airtable mocked. Run it with `node worker/test/photo.test.mjs`; it exits
 non-zero if anything regresses.
+
+## Resetting a job to untouched, 3 Oct
+
+Kevin, once the photo upload was working: *"clear everything. this has not been
+put in use yet. Change the dates so nothing due yet."*
+
+**Cleared.** Five rows carried test data and all five are back to Not started
+with every owner field empty - three typed-junk submissions (Hahitti's kitchen
+and club-room sinks, DEMO's waterline tile) and two approvals on DEMO (pool
+finish, built-in refrigerator). Owner supplier, model, colour, finish, notes,
+photos, submitted-by, submitted-on, approved-by, approved-on and the approved
+option link were all emptied; the attached screenshot went with them. Hahitti
+now holds nothing Rami did not do himself, which is nothing.
+
+**The dates.** `Needed by` is **stored, not calculated** - the build writes it
+once as construction start minus the item's lead time and never looks again.
+So Hahitti's real 19 Oct 2026 start, 16 days out, had the 16-week items reading
+months overdue before the owner had the link. The portal would have opened on a
+page of red for a client who had not been asked anything yet.
+
+Construction start is now a **placeholder of 1 Jun 2027**, with the reason
+written into the project's Notes so it is visible in Airtable rather than only
+in a chat log. It is not a real date. Replace it with the true start and the
+dates follow.
+
+### Recompute needed-by dates
+
+Because a stored date that nobody can refresh is the actual bug here, this is
+now an automation rather than something to redo by hand: tick **Recompute
+dates** on a Project and every selection's Needed by is rewritten from the
+current Construction start, same arithmetic as the build.
+
+- Lead time is read from the **selection**, not the library, so a row whose
+  lead was adjusted by hand for this job keeps the adjustment.
+- Only rows whose date actually moves are written.
+- It touches nothing but the date. Status, owner answers, approvals and the
+  supersede trail are left alone, so it is safe on a job already underway.
+- It watches the clock like the room build, says in the log if it ran out of
+  time, unticks itself and writes what it did into Setup log.
+
+Script kept at `airtable/recompute-dates.js`. It earns its place beyond this
+one reset: every schedule slip needs it, and it is the seam the Material Log
+feed will eventually write through.
