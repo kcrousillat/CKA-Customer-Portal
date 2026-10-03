@@ -34,6 +34,7 @@ const T = {
   sections:  "Sections",
   trades:    "Trades",
   templates: "Item Templates",
+  inspiration:"Inspiration",
 };
 
 /**
@@ -183,6 +184,19 @@ export default {
         if (action === "photo")   return json(await addPhoto(env, ctx, body), cors);
       }
 
+      if (url.pathname === "/api/inspiration" && request.method === "POST") {
+        const body = await request.json();
+        const project = await findProject(env, requireKey(body.key));
+        return json(await addInspiration(env, project, body), cors);
+      }
+
+      const insp = url.pathname.match(/^\/api\/inspiration\/(rec[A-Za-z0-9]{14})\/remove$/);
+      if (insp && request.method === "POST") {
+        const body = await request.json();
+        const project = await findProject(env, requireKey(body.key));
+        return json(await removeInspiration(env, project, insp[1]), cors);
+      }
+
       return json({ error: "Not found" }, cors, 404);
     } catch (err) {
       const status = err.status || 500;
@@ -244,7 +258,7 @@ async function getProject(env, key) {
   const project = await findProject(env, key);
   const pid = project.id;
 
-  const [spaces, selections, sections, templates] = await Promise.all([
+  const [spaces, selections, sections, templates, inspiration] = await Promise.all([
     linkedRecords(env, T.spaces, project),
     linkedRecords(env, T.selections, project),
     sectionMap(env),
@@ -252,6 +266,10 @@ async function getProject(env, key) {
     // selection, so they are read live. Rename them in Airtable and every job
     // follows on the next page load — no rebuild, no backfill.
     allRecords(env, T.templates, { "fields[]": ["Owner boxes"] }).catch(() => []),
+    // Caught rather than thrown: the gallery is a nice-to-have beside the
+    // decisions, and a job whose base predates the Inspiration table should
+    // still load its selections rather than show the owner an error page.
+    linkedRecords(env, T.inspiration, project).catch(() => []),
   ]);
   const boxesByTemplate = {};
   for (const t of templates) boxesByTemplate[t.id] = t.fields["Owner boxes"] || "";
@@ -374,6 +392,21 @@ async function getProject(env, key) {
     // whatever is late, then whatever is waiting on the owner; this only
     // settles the ties, so headings do not shuffle alphabetically.
     sectionOrder: sections.order,
+    /* Internal note is deliberately absent: it is CKA's read on the photo and
+       the owner never sees it, same rule as Note vs Internal note in the
+       catalog. Newest first, because the most recent thing they sent is the
+       thing they are thinking about. */
+    inspiration: inspiration
+      .map((r) => ({
+        id: r.id,
+        caption: r.fields["Caption"] || "",
+        photos: attachments(r.fields["Photo"]),
+        space: (r.fields["Space"] || [])[0] || null,
+        addedBy: r.fields["Added by"] || "",
+        addedOn: r.fields["Added on"] || null,
+      }))
+      .filter((r) => r.photos.length)
+      .sort((a, b) => String(b.addedOn || "").localeCompare(String(a.addedOn || ""))),
     generatedAt: new Date().toISOString(),
   };
 }
@@ -463,6 +496,81 @@ async function submit(env, { project, record }, body) {
 }
 
 /* ------------------------------------------------------------------ */
+/* Inspiration gallery                                                 */
+
+/* What the owner likes, before any of it is a decision. Kept in its own table
+   rather than on a selection because it is mood, not evidence: "I like this
+   kitchen" is not "this is my sink", and letting forty saved pictures sit on
+   the sink row would bury the one photo that actually identifies a tap.
+
+   The caption is the point. A photo on its own is a nice picture; a photo that
+   says "the matte black against the white oak" is something that can be
+   ordered from, so the page asks what they like rather than for a title. */
+const INSPO_MAX_PER_PROJECT = 120;
+
+async function addInspiration(env, project, body) {
+  const caption = text(body.caption, 500);
+  if (!caption) throw httpError(400, "Say what you like about it, even in a few words.");
+
+  /* The room is optional - "I just like this" is a real answer - but if one is
+     named it has to be a room on this job, or the gallery would group a photo
+     under someone else's house. */
+  let space = null;
+  if (body.spaceId) {
+    const spaceId = String(body.spaceId);
+    if (!/^rec[A-Za-z0-9]{14}$/.test(spaceId)) throw httpError(400, "That room is not one we know.");
+    const row = await at(env, T.spaces, { recordId: spaceId });
+    if (!(row.fields["Project"] || []).includes(project.id)) {
+      throw httpError(403, "That room is not on this project.");
+    }
+    space = [{ id: spaceId }];
+  }
+
+  const existing = await linkedRecords(env, T.inspiration, project).catch(() => []);
+  if (existing.length >= INSPO_MAX_PER_PROJECT) {
+    throw httpError(409, `That is ${INSPO_MAX_PER_PROJECT} photos, which is the limit for one job. Delete a few and add more.`);
+  }
+
+  const photo = await preparePhoto(body);
+  const created = await at(env, T.inspiration, {
+    method: "POST",
+    body: {
+      records: [{
+        fields: {
+          "Caption": caption,
+          "Project": [{ id: project.id }],
+          ...(space ? { "Space": space } : {}),
+          "Added by": cleanName(body.name || (project.fields["Owner 1 name"] || "Owner")),
+          "Added on": new Date().toISOString(),
+        },
+      }],
+    },
+  });
+
+  const id = created.records[0].id;
+  /* The record first, then the file onto it. Airtable's upload endpoint needs a
+     record to attach to, so there is no way to do this in one call. If the
+     upload fails the row is removed again rather than left as a caption with no
+     picture, which would show in the gallery as an empty tile. */
+  try {
+    await uploadAttachment(env, id, "Photo", photo);
+  } catch (err) {
+    await at(env, T.inspiration, { recordId: id, method: "DELETE" }).catch(() => {});
+    throw err;
+  }
+  return { ok: true, id };
+}
+
+async function removeInspiration(env, project, id) {
+  const row = await at(env, T.inspiration, { recordId: id });
+  if (!(row.fields["Project"] || []).includes(project.id)) {
+    throw httpError(403, "That photo is not on this project.");
+  }
+  await at(env, T.inspiration, { recordId: id, method: "DELETE" });
+  return { ok: true };
+}
+
+/* ------------------------------------------------------------------ */
 /* Owner photos                                                        */
 
 /* A showroom snap or a page of a designer's spec book, attached to the line it
@@ -488,14 +596,23 @@ const PHOTO_MAX_COUNT = 6;
 async function addPhoto(env, { record }, body) {
   assertOpen(record);
 
-  const contentType = text(body.contentType, 100).toLowerCase();
-  if (!PHOTO_TYPES.includes(contentType)) {
-    throw httpError(400, "Photos only, please - a JPEG, PNG or WEBP.");
-  }
-
   const already = (record.fields[PHOTO_FIELD] || []).length;
   if (already >= PHOTO_MAX_COUNT) {
     throw httpError(409, `That is already ${PHOTO_MAX_COUNT} photos on this line, which is the limit. Delete one to add another.`);
+  }
+
+  const saved = await uploadAttachment(env, record.id, PHOTO_FIELD, preparePhoto(body));
+  const field = (saved.fields && saved.fields[PHOTO_FIELD]) || [];
+  return { ok: true, photos: attachments(field), count: field.length };
+}
+
+/* Checks a photo off the wire and hands back what Airtable wants. Shared by the
+   selection photos and the inspiration gallery: the rules about what counts as
+   a photo should not be able to drift apart between two upload paths. */
+function preparePhoto(body) {
+  const contentType = text(body.contentType, 100).toLowerCase();
+  if (!PHOTO_TYPES.includes(contentType)) {
+    throw httpError(400, "Photos only, please - a JPEG, PNG or WEBP.");
   }
 
   /* Accept a bare base64 string or a whole data: URL, since which one arrives
@@ -513,21 +630,23 @@ async function addPhoto(env, { record }, body) {
     throw httpError(413, "That photo is too large. Around 4MB is the limit.");
   }
 
-  /* Uploads go to content.airtable.com, not the api host the rest of the file
-     talks to, so this cannot use at(). */
+  return { contentType, file: raw, filename: photoName(body.filename, contentType) };
+}
+
+/* Uploads go to content.airtable.com, not the api host the rest of the file
+   talks to, so this cannot use at(). Airtable appends to the attachment field
+   itself, which is why two photos arriving together cannot overwrite each
+   other the way a read-then-write would. */
+async function uploadAttachment(env, recordId, field, photo) {
   const res = await fetch(
-    `https://content.airtable.com/v0/${env.AIRTABLE_BASE}/${record.id}/${encodeURIComponent(PHOTO_FIELD)}/uploadAttachment`,
+    `https://content.airtable.com/v0/${env.AIRTABLE_BASE}/${recordId}/${encodeURIComponent(field)}/uploadAttachment`,
     {
       method: "POST",
       headers: {
         Authorization: `Bearer ${env.AIRTABLE_TOKEN}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        contentType,
-        file: raw,
-        filename: photoName(body.filename, contentType),
-      }),
+      body: JSON.stringify(photo),
     }
   );
 
@@ -535,10 +654,7 @@ async function addPhoto(env, { record }, body) {
     const detail = await res.text();
     throw httpError(502, `Airtable ${res.status}: ${detail.slice(0, 300)}`);
   }
-
-  const saved = await res.json();
-  const field = (saved.fields && saved.fields[PHOTO_FIELD]) || [];
-  return { ok: true, photos: attachments(field), count: field.length };
+  return res.json();
 }
 
 /* Whatever the phone called it, reduced to something safe to put in a URL path

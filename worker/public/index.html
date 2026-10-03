@@ -405,6 +405,51 @@ img{max-width:100%}
 .photo-add .plus{font-family:inherit; font-size:17px; line-height:1}
 .photo-add.is-busy{opacity:.55; cursor:default}
 
+/* Inspiration gallery. Wider tiles than the per-selection strip: these are
+   meant to be looked at, not just confirmed, and the caption carries as much
+   weight as the picture. */
+.inspo-grid{
+  list-style:none; margin:0 0 20px; padding:0; display:grid; gap:14px;
+  grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
+}
+.inspo-card{
+  border:1px solid var(--rule-strong); border-radius:5px; background:var(--surface);
+  overflow:hidden; display:flex; flex-direction:column;
+}
+.inspo-card .shot{display:block; width:100%; aspect-ratio:4/3; background:var(--surface-3)}
+.inspo-card .shot img{width:100%; height:100%; object-fit:cover; display:block}
+.inspo-card .body{padding:10px 11px; display:flex; flex-direction:column; gap:6px; flex:1 1 auto}
+.inspo-card .cap{margin:0; font-size:14px; line-height:1.45; overflow-wrap:anywhere}
+.inspo-card .meta{
+  font-family:var(--data); font-size:10.5px; letter-spacing:.07em; text-transform:uppercase;
+  color:var(--muted); display:flex; align-items:center; gap:8px; margin-top:auto;
+}
+.inspo-card .meta .rm{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.inspo-del{
+  margin-left:auto; border:0; background:none; padding:2px 4px; cursor:pointer;
+  font:inherit; font-size:10.5px; letter-spacing:.07em; text-transform:uppercase;
+  font-family:var(--data); color:var(--muted); border-radius:3px;
+}
+.inspo-del:hover{color:#b4232a}
+/* The composer. Hidden until a file is chosen - asking for a caption before
+   there is a picture to caption is a form, and nobody fills in a form. */
+.inspo-new{
+  border:1px dashed var(--rule-strong); border-radius:5px; padding:14px;
+  margin:0 0 18px; display:flex; gap:14px; align-items:flex-start; flex-wrap:wrap;
+}
+.inspo-new .prev{flex:0 0 150px; border-radius:4px; overflow:hidden; background:var(--surface-3)}
+.inspo-new .prev img{width:100%; display:block}
+.inspo-new .fields{flex:1 1 260px; display:flex; flex-direction:column; gap:8px}
+.inspo-pick{
+  display:inline-flex; align-items:center; gap:8px; cursor:pointer;
+  border:1px dashed var(--rule-strong); border-radius:5px; padding:14px 18px;
+  font-family:var(--data); font-size:11px; letter-spacing:.07em; text-transform:uppercase;
+  color:var(--muted); margin:0 0 18px;
+}
+.inspo-pick:hover{border-color:var(--ink); color:var(--ink)}
+.inspo-pick input{position:absolute; width:1px; height:1px; opacity:0; pointer-events:none}
+.inspo-pick.is-busy{opacity:.55; cursor:default}
+
 .sign{
   border:1px solid var(--rule-strong); border-radius:5px; background:var(--surface);
   padding:14px; display:flex; flex-direction:column; gap:11px;
@@ -528,6 +573,7 @@ img{max-width:100%}
       <button class="view-tab" type="button" role="tab" data-view="room" aria-selected="false">By room</button>
       <button class="view-tab" type="button" role="tab" data-view="trade" aria-selected="false">By trade</button>
       <button class="view-tab" type="button" role="tab" data-view="record" aria-selected="false">Approved record</button>
+      <button class="view-tab" type="button" role="tab" data-view="inspiration" aria-selected="false">Inspiration</button>
     </div>
     <p class="view-note" id="view-note"></p>
     <div class="list" id="list"><p class="state"><b>Loading your selections</b>One moment.</p></div>
@@ -615,6 +661,7 @@ var PREVIEW = {
       desc:"Double vanity top with an integral or undermount basin.", order:2,
       options:[], ownerEntry:{}, ownerPhotos:[] }
   ],
+  inspiration: [],
   generatedAt: new Date().toISOString()
 };
 
@@ -633,10 +680,14 @@ var VIEW_NOTES = {
   blocking: "Sorted by the date we need the decision, not by room. The date is the lead time counted back from when the trade is scheduled — an item at the top is holding up work, however small the decision looks.",
   room:     "Every open and approved selection grouped the way you walk the house. The number on each room is how many decisions it is waiting on you for.",
   trade:    "The same selections grouped by who installs them, with the number each trade is waiting on. Useful when you are talking to one vendor about several rooms at once.",
-  record:   "Approved selections only, with who approved each one and when. This is the record that goes in your turnover package."
+  record:   "Approved selections only, with who approved each one and when. This is the record that goes in your turnover package.",
+  inspiration: "Pictures of things you like, with a note on what you like about them. These are not decisions \u2014 nothing here gets ordered. They are what we look at together before the decisions get made, so the more specific the note, the more use they are."
 };
 
-var state = { view:"blocking", open:null, draft:{}, sections:{}, data:null, preview:false, busy:false };
+var state = { view:"blocking", open:null, draft:{}, sections:{}, data:null, preview:false, busy:false,
+              /* The photo chosen but not yet saved: shrunk, previewed, waiting
+                 on a caption. Null whenever the composer is closed. */
+              inspo:null };
 var TODAY = new Date();
 
 /* ---------------- data ---------------- */
@@ -1120,6 +1171,151 @@ function uploadPhoto(rowId, file){
   });
 }
 
+/* ---------------- inspiration gallery ---------------- */
+
+/* Grouped by room, in the order the owner walks the house, with anything
+   untagged collected at the end rather than scattered through. The room tag is
+   what keeps this readable once there are a hundred photos; without it the
+   gallery is one scroll nobody reaches the bottom of. */
+function inspoGroups(){
+  var byId = {};
+  (state.data.spaces || []).forEach(function(s){ byId[s.id] = s; });
+  var map = {}, keys = [];
+  (state.data.inspiration || []).forEach(function(it){
+    var key = (it.space && byId[it.space]) ? it.space : "_none";
+    if (!map[key]) { map[key] = []; keys.push(key); }
+    map[key].push(it);
+  });
+  keys.sort(function(a, b){
+    if (a === "_none") return 1;
+    if (b === "_none") return -1;
+    return (byId[a].order || 999) - (byId[b].order || 999);
+  });
+  return keys.map(function(k){
+    return {
+      title: k === "_none" ? "Whole house, or not tagged yet" : byId[k].name,
+      items: map[k]
+    };
+  });
+}
+
+function inspoCard(it){
+  var byId = {};
+  (state.data.spaces || []).forEach(function(s){ byId[s.id] = s; });
+  var shot = it.photos && it.photos[0];
+  if (!shot) return "";
+  return '<li class="inspo-card">' +
+    '<a class="shot" href="' + esc(shot.full || shot.url) + '" target="_blank" rel="noopener">' +
+      '<img src="' + esc(shot.url) + '" alt="' + esc(it.caption || "Inspiration photo") + '" loading="lazy"></a>' +
+    '<div class="body">' +
+      '<p class="cap">' + esc(it.caption || "") + '</p>' +
+      '<div class="meta">' +
+        '<span class="rm">' + esc(it.addedBy || "") + '</span>' +
+        '<button class="inspo-del" type="button" data-inspo-remove="' + it.id + '">Remove</button>' +
+      '</div>' +
+    '</div></li>';
+}
+
+/* The room dropdown offers only this job's rooms, plus the deliberate "not
+   sure yet" - a required tag would just get answered at random. */
+function inspoRoomSelect(){
+  var opts = '<option value="">Whole house / not sure yet</option>';
+  (state.data.spaces || []).forEach(function(sp){
+    opts += '<option value="' + esc(sp.id) + '"' +
+      (state.inspo && state.inspo.spaceId === sp.id ? " selected" : "") +
+      '>' + esc(sp.name) + '</option>';
+  });
+  return '<select data-inspo-room>' + opts + '</select>';
+}
+
+function inspoComposer(){
+  if (!state.inspo) {
+    return '<label class="inspo-pick" id="inspo-pick">' +
+      '<span>+ Add a photo you like</span>' +
+      '<input type="file" accept="image/*" data-inspo-file></label>';
+  }
+  return '<div class="inspo-new">' +
+    '<div class="prev"><img src="' + state.inspo.preview + '" alt="The photo you just chose"></div>' +
+    '<div class="fields">' +
+      '<span class="field"><label for="inspo-cap">What do you like about it?</label>' +
+        '<input id="inspo-cap" type="text" data-inspo-caption ' +
+        'placeholder="The matte black against the white oak" ' +
+        'value="' + esc(state.inspo.caption || "") + '"></span>' +
+      '<span class="field"><label for="inspo-room">Which room?</label>' +
+        inspoRoomSelect() + '</span>' +
+      '<div class="panel-actions">' +
+        '<button class="btn btn-primary" type="button" data-inspo-save' +
+          (String(state.inspo.caption || "").trim() ? "" : " disabled") + '>Save to gallery</button>' +
+        '<button class="btn" type="button" data-inspo-cancel>Cancel</button>' +
+      '</div>' +
+    '</div></div>';
+}
+
+function renderInspiration(){
+  var host = document.getElementById("list");
+  var groups = inspoGroups();
+  var out = inspoComposer() + '<p class="err" id="err-inspo"></p>';
+  if (!groups.length) {
+    out += '<p class="state"><b>No pictures yet</b>' +
+      'Anything you like the look of belongs here \u2014 a kitchen from a magazine, ' +
+      'a photo from a showroom, a screenshot. Say what you like about it and we ' +
+      'will have it in front of us when the decisions come round.</p>';
+  } else {
+    out += groups.map(function(g){
+      return '<section class="group">' +
+        '<div class="group-head"><h2>' + esc(g.title) + '</h2>' +
+        '<span class="count">' + g.items.length + ' photo' + (g.items.length === 1 ? "" : "s") + '</span></div>' +
+        '<ul class="inspo-grid">' + g.items.map(inspoCard).join("") + '</ul></section>';
+    }).join("");
+  }
+  host.innerHTML = out;
+}
+
+function showInspoError(msg){
+  var el = document.getElementById("err-inspo");
+  if (el) el.textContent = msg || "";
+}
+
+function saveInspiration(){
+  if (!state.inspo) return;
+  var caption = String(state.inspo.caption || "").trim();
+  if (!caption) return;
+  if (state.preview) { showInspoError("Preview mode - connect the Worker to save photos."); return; }
+  var btn = document.querySelector("[data-inspo-save]");
+  if (btn) { btn.disabled = true; btn.textContent = "Saving..."; }
+  showInspoError("");
+  api("/api/inspiration", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      key: PORTAL_KEY,
+      caption: caption,
+      spaceId: state.inspo.spaceId || "",
+      filename: state.inspo.filename,
+      contentType: state.inspo.contentType,
+      data: state.inspo.data,
+      name: (state.data.project.owners || [])[0] || "Owner"
+    })
+  }).then(function(){
+    state.inspo = null;
+    return reload();
+  }).catch(function(err){
+    if (btn) { btn.disabled = false; btn.textContent = "Save to gallery"; }
+    showInspoError(err.message || "That did not save. Try again.");
+  });
+}
+
+function removeInspiration(id){
+  if (state.preview) { showInspoError("Preview mode - connect the Worker."); return; }
+  api("/api/inspiration/" + id + "/remove", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ key: PORTAL_KEY })
+  }).then(reload).catch(function(err){
+    showInspoError(err.message || "That did not delete. Try again.");
+  });
+}
+
 function groupId(i){ return "g" + i; }
 /* The owner-entry boxes. A library item lists the labels it wants in Airtable,
    and it gets exactly that many — three labels means three boxes, not three and
@@ -1235,6 +1431,11 @@ function render(){
   renderTiles();
   document.getElementById("views").hidden = false;
   document.getElementById("view-note").textContent = VIEW_NOTES[state.view];
+
+  /* The gallery is not a list of decisions, so it does not go through
+     groupsFor / rowMarkup at all - it has its own shape and its own empty
+     state. Everything below this line is the selections table. */
+  if (state.view === "inspiration") { renderInspiration(); return; }
 
   var groups = groupsFor(state.view);
   var host = document.getElementById("list");
@@ -1369,7 +1570,8 @@ function post(id, action, payload){
 /* ---------------- events ---------------- */
 
 document.addEventListener("click", function(ev){
-  var t = ev.target.closest("[data-toggle],[data-approve],[data-submit],[data-change],[data-view],[data-print],[data-sect]");
+  var t = ev.target.closest("[data-toggle],[data-approve],[data-submit],[data-change],[data-view],[data-print],[data-sect]," +
+                            "[data-inspo-save],[data-inspo-cancel],[data-inspo-remove]");
   if (!t) return;
 
   if (t.hasAttribute("data-sect")) {
@@ -1429,6 +1631,9 @@ document.addEventListener("click", function(ev){
     rid = t.getAttribute("data-change");
     return post(rid, "change", { name: (state.data.project.owners || [])[0] || "Owner" });
   }
+  if (t.hasAttribute("data-inspo-cancel")) { state.inspo = null; render(); return; }
+  if (t.hasAttribute("data-inspo-save")) return saveInspiration();
+  if (t.hasAttribute("data-inspo-remove")) return removeInspiration(t.getAttribute("data-inspo-remove"));
 });
 
 document.addEventListener("input", function(ev){
@@ -1443,6 +1648,15 @@ document.addEventListener("input", function(ev){
     if (btn) btn.disabled = !approvable(nrow, draft(id));
     return;
   }
+  if (el.hasAttribute("data-inspo-caption")) {
+    if (!state.inspo) return;
+    state.inspo.caption = el.value;
+    /* Toggled in place rather than by re-rendering: a redraw on every
+       keystroke would take the cursor out of the box. */
+    var sv = document.querySelector("[data-inspo-save]");
+    if (sv) sv.disabled = !el.value.trim();
+    return;
+  }
   if (el.hasAttribute("data-entry")) {
     var rid = el.getAttribute("data-row-id");
     draft(rid)[el.getAttribute("data-entry")] = el.value;
@@ -1455,6 +1669,36 @@ document.addEventListener("input", function(ev){
 
 document.addEventListener("change", function(ev){
   var el = ev.target;
+  if (el.hasAttribute && el.hasAttribute("data-inspo-room")) {
+    if (state.inspo) state.inspo.spaceId = el.value;
+    return;
+  }
+  if (el.hasAttribute && el.hasAttribute("data-inspo-file")) {
+    var f = el.files && el.files[0];
+    el.value = "";
+    if (!f) return;
+    var pick = document.getElementById("inspo-pick");
+    if (pick) pick.classList.add("is-busy");
+    showInspoError("");
+    /* Shrunk here, before the caption is even typed, so the preview the owner
+       sees is the picture that will actually be stored - not a 12MB original
+       that turns into something else on save. */
+    shrink(f).then(function(img){
+      state.inspo = {
+        caption: "", spaceId: "",
+        filename: f.name || "inspiration.jpg",
+        contentType: img.contentType, data: img.data,
+        preview: "data:" + img.contentType + ";base64," + img.data
+      };
+      render();
+      var cap = document.getElementById("inspo-cap");
+      if (cap) cap.focus();
+    }).catch(function(err){
+      if (pick) pick.classList.remove("is-busy");
+      showInspoError(err.message || "That photo could not be opened.");
+    });
+    return;
+  }
   if (el.hasAttribute && el.hasAttribute("data-photo")) {
     var pf = el.files && el.files[0];
     /* Clear it straight away: picking the same file twice in a row fires no
