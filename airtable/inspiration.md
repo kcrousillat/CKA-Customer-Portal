@@ -65,6 +65,20 @@ Internal note in the catalog, for the same reason.
   photos; `worker/test/inspiration.test.mjs` pins that down along with the
   other refusals.
 
+## Confirmed working, 3 Oct
+
+Tested against the live Worker and read back in Airtable: the upload, the
+shrink, the caption, the room tag, the right job and the right name on it. A
+photo saved with no room comes through with Space empty, which is the "not sure
+yet" case working rather than a lost tag - worth knowing before anyone reports
+it as a bug.
+
+One claim in this file is reasoned rather than proven: EXIF stripping. Drawing
+through a canvas and re-encoding produces a file with no EXIF block and nothing
+copies it across, and the shrink itself was checked in Chromium - but the
+container cannot reach Airtable's attachment host, so no stored file has been
+opened and inspected. Worth one look on a real phone photo if it ever matters.
+
 ## Not built yet, and worth doing
 
 **Linking an inspiration photo to a selection.** "You flagged the matte black
