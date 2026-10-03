@@ -523,7 +523,10 @@ async function addInspiration(env, project, body) {
     if (!(row.fields["Project"] || []).includes(project.id)) {
       throw httpError(403, "That room is not on this project.");
     }
-    space = [{ id: spaceId }];
+    /* A plain record-ID string, not {id}. The REST API takes link fields as
+       arrays of id strings; {id} is the scripting API's shape, and sending it
+       here stringifies to "[object Object]" and comes back as a 422. */
+    space = [spaceId];
   }
 
   const existing = await linkedRecords(env, T.inspiration, project).catch(() => []);
@@ -538,7 +541,7 @@ async function addInspiration(env, project, body) {
       records: [{
         fields: {
           "Caption": caption,
-          "Project": [{ id: project.id }],
+          "Project": [project.id],
           ...(space ? { "Space": space } : {}),
           "Added by": cleanName(body.name || (project.fields["Owner 1 name"] || "Owner")),
           "Added on": new Date().toISOString(),

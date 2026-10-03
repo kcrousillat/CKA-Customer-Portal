@@ -21,6 +21,7 @@ let inspoRows = [];      // what linkedRecords will find
 let inspoOwner = PROJ;   // which job the fetched Inspiration row belongs to
 let uploadFails = false; // make content.airtable.com return 500
 let calls = [];          // every call, so rollback can be asserted
+let created = null;      // the fields sent to Airtable on create
 
 function J(o) {
   return new Response(JSON.stringify(o), { status: 200, headers: { "Content-Type": "application/json" } });
@@ -49,7 +50,21 @@ globalThis.fetch = async (url, opts = {}) => {
     return J({ id: INSPO, fields: { Project: [inspoOwner] } });
   }
   if (u.includes("/Inspiration")) {
-    if (method === "POST") return J({ records: [{ id: INSPO, fields: {} }] });
+    if (method === "POST") {
+      created = JSON.parse(opts.body).records[0].fields;
+      /* Stand in for Airtable's own validation. The mock used to accept any
+         shape, which is exactly why a link field sent as [{id}] instead of
+         ["rec..."] passed the tests and then 422'd against the real base. */
+      for (const f of ["Project", "Space"]) {
+        const v = created[f];
+        if (v === undefined) continue;
+        if (!Array.isArray(v) || v.some((x) => typeof x !== "string" || !/^rec/.test(x))) {
+          return new Response(JSON.stringify({ error: { type: "INVALID_RECORD_ID",
+            message: `Value "${v}" is not a valid record ID.` } }), { status: 422 });
+        }
+      }
+      return J({ records: [{ id: INSPO, fields: {} }] });
+    }
     return J({ records: inspoRows });
   }
   return J({ records: [] });
@@ -79,6 +94,11 @@ ok("happy path returns 200 and an id", r.status === 200 && b.ok === true && b.id
 ok("creates the row, then attaches the photo to it",
    calls.some((c) => c.startsWith("POST /v0/appTEST/Inspiration")) &&
    calls.some((c) => c.includes("/Photo/uploadAttachment")));
+ok("links are arrays of plain record-id strings, which is what REST takes",
+   Array.isArray(created.Project) && created.Project[0] === PROJ &&
+   Array.isArray(created.Space) && created.Space[0] === SPACE);
+ok("stamps who added it and when",
+   created["Added by"] === "Rami Hahitti" && typeof created["Added on"] === "string");
 
 r = await add(GOOD);
 ok("a photo with no room is fine - 'not sure yet' is a real answer", r.status === 200);
