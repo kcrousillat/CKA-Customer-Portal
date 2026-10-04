@@ -51,12 +51,54 @@ Three fields make this work, and two of them are plumbing:
 A job with `Notify CKA` empty is excluded by the trigger, so it never fires and
 never shows a failed run. DEMO stays quiet until someone fills it in.
 
-## Still to build: the owner's confirmation
+## The three owner emails - built, deliberately OFF
 
-Blocked on one thing only. Airtable's Gmail and Outlook send actions need a
-connected mail account, and none is connected to this base - so the owner's
-email would have to come from an `airtable.com` address, which is the wrong
-face for something a client reads and may reply to.
+| Automation | Fires on | Keeps promise |
+|---|---|---|
+| Owner email - options are ready | `Options presented` | 2 |
+| Owner email - approved | `Approved` | 1 and 3 |
+| Owner email - released for order | `Released for order` | 4 |
 
-Once an account is connected, the remaining work is three automations on the
-status transitions listed above, built the same way as this one.
+Each one CCs the job's CKA list except the first, carries what was chosen, and
+links straight into the owner's portal rather than telling someone to go and
+find an old message.
+
+### Why they are off
+
+Outlook needs IT approval at CKA, so on 4 Oct a personal Gmail was connected to
+unblock the setup. A client's approval record must not arrive from someone's
+personal inbox: it reads as a private note rather than a company record, and it
+puts a personal mailbox in the middle of the paper trail.
+
+So they are built against Airtable's built-in send and left off. That is a
+deliberate choice of placeholder - if one is ever switched on by accident it
+goes out from an `airtable.com` address, which is merely impersonal, rather
+than from a personal Gmail, which is worse. When Outlook is approved, the swap
+is replacing the send step in each; the recipients, the copy and the triggers
+all stay.
+
+### Two safety catches worth knowing
+
+Neither is an oversight:
+
+- **No owner email on the job means nothing sends.** The trigger requires
+  `Owner emails text` to be non-empty. Hahitti has no address for Rami yet - on
+  purpose - so these stay silent until one is entered.
+- **Nothing fires retroactively.** Turning them on does not email anyone about
+  selections that reached those statuses in the past.
+
+### The plumbing, and why there is so much of it
+
+An automation watching Selections cannot read the Project's fields, and an
+email To box takes a string where a lookup arrives as a list. So each value the
+emails need takes three fields: a formula on Projects, a lookup on Selections,
+and an `ARRAYJOIN` formula to flatten it.
+
+| On Projects | Lookup on Selections | Flattened to |
+|---|---|---|
+| `Notify CKA` | `Notify CKA` | `Notify CKA emails` |
+| `Owner emails` | `Owner emails lookup` | `Owner emails text` |
+| `Portal link` | `Portal link lookup` | `Portal link text` |
+
+All six are marked DO NOT EDIT. Change the addresses on the Project, and the
+portal key to revoke access - `Portal link` follows it.
