@@ -188,3 +188,33 @@ The approved email now prints a credit block built by `stamp-approval.js`:
 and opens "Your selection has been confirmed by CKA and is approved" rather than
 "a selection you have approved". The owner decided; CKA checked it. That is the
 true order and it is the order the record should read in.
+
+## Open decision: how much email is too much
+
+Raised 5 Oct, parked for Kevin to think about. Nothing is blocked; the emails
+work. The question is volume.
+
+Hahitti has **283 live selections**. Three owner emails each — received,
+approved, released for order — is about **850 emails to one owner**, plus 283
+internal ones to Kevin and David. And they arrive in bursts, because owners work
+in sittings: all 22 appliances in one evening is 22 emails in ten minutes, then
+22 more when CKA approves them.
+
+The options, as put to Kevin:
+
+| | What it means | Cost |
+| --- | --- | --- |
+| **Daily digest** | One evening email per owner listing everything that moved that day, and one internal list of what is waiting on CKA | An owner who submits at 9am hears back at 6pm; a typo sits for the day |
+| **Receipt now, rest batched** | Keep the instant "Selection received" (it catches a wrong model number in minutes, and the owner is at the page expecting a response); batch approvals and releases | 20 appliances in a sitting is still 20 emails |
+| **Ends only** | Email only on Released for order; the portal carries everything in between | No written record of what the owner sent until it is already ordered |
+| **Leave as is** | Every status change emails immediately | ~850 emails |
+
+My recommendation was the daily digest, on the grounds that a selection is not a
+transaction and nobody is waiting at the screen for a receipt. Kevin may weigh
+the paper-trail-per-item value differently for a given client, which is the
+actual question and not one the code can answer.
+
+Worth noting if the digest wins: it is a scheduled automation reading rows that
+changed that day, not three triggers — so the three current ones would be turned
+off rather than edited, and the per-row triggers kept in case a client does want
+them.
