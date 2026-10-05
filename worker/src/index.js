@@ -329,6 +329,11 @@ async function getProject(env, key) {
                    sections.byTrade[tradeName(r.fields["Trade"], sections.tradeById)] ||
                    "Other",
           lead: num(r.fields["Lead time (weeks)"], 0),
+          // The group a selection belongs to - "Group 2" - and the date that
+          // group falls due on this job. The date is what the portal sorts and
+          // warns on; the group is what makes five dates read as five rounds
+          // rather than 283 unrelated deadlines.
+          group: (r.fields["Group number"] || [])[0] || "",
           needed: r.fields["Needed by"] || null,
           status: r.fields["Status"] || "Not started",
           mode: r.fields["Mode"] === "Owner specifies" ? "open" : "curated",

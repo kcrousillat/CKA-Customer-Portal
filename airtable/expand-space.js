@@ -52,15 +52,38 @@ if (!space) {
   const typeId = spaceType[0].id;
   const projectId = projectLink[0].id;
 
-  // Construction start anchors every needed-by date.
-  const project = await projects.selectRecordAsync(projectId, { fields: ['Construction start'] });
-  const startValue = project ? project.getCellValue('Construction start') : null;
-  const start = startValue ? new Date(startValue) : null;
+  // The contract execution date anchors every due date: a selection is due
+  // its group's allowance of days after contract, the way the owner
+  // selections sheet has always worked. Lead time rides along on the row as a
+  // cross-check against the construction start, not as the date itself.
+  const project = await projects.selectRecordAsync(projectId, {
+    fields: ['Construction start', 'Contract executed'],
+  });
+  const contractValue = project ? project.getCellValue('Contract executed') : null;
+  const contract = contractValue ? new Date(contractValue) : null;
+
+  const groupsT = base.getTable('Selection groups');
+  const daysByGroupId = {};
+  for (const g of (await groupsT.selectRecordsAsync({
+    fields: ['Group', 'Days from contract execution'],
+  })).records) {
+    daysByGroupId[g.id] = g.getCellValue('Days from contract execution');
+  }
+  const dueFor = (groupLink) => {
+    if (!contract) return null;
+    const link = groupLink || [];
+    if (!link.length) return null;
+    const days = daysByGroupId[link[0].id];
+    if (days === null || days === undefined) return null;
+    const d = new Date(contract.getTime());
+    d.setDate(d.getDate() + days);
+    return d.toISOString().slice(0, 10);
+  };
 
   const query = await templates.selectRecordsAsync({
     fields: ['Item name', 'Space Type', 'Default trade', 'Default lead time (weeks)',
              'Default mode', 'Description', 'Sort order', 'Active', 'Optional',
-             'Palette category', 'Section'],
+             'Palette category', 'Section', 'Selection group'],
   });
 
   const applicable = query.records.filter((t) => {
@@ -76,13 +99,8 @@ if (!space) {
 
     const rows = applicable.map((t) => {
       const lead = t.getCellValue('Default lead time (weeks)') || 0;
-      let neededBy = null;
-      if (start) {
-        // The order has to be placed `lead` weeks before the trade is on site.
-        const d = new Date(start.getTime());
-        d.setDate(d.getDate() - lead * 7);
-        neededBy = d.toISOString().slice(0, 10);
-      }
+      const group = t.getCellValue('Selection group') || [];
+      const neededBy = dueFor(group);
       const mode = t.getCellValue('Default mode');
       const trade = t.getCellValue('Default trade');
       const palette = t.getCellValue('Palette category');
@@ -105,6 +123,7 @@ if (!space) {
           // Left empty, the portal files it under its trade's section.
           'Section': section ? { name: section.name } : null,
           'Lead time (weeks)': lead,
+          'Selection group': group.length ? [{ id: group[0].id }] : null,
           'Needed by': neededBy,
           'Description': t.getCellValue('Description') || '',
           'Sort order': spaceOrder * 100 + ((t.getCellValue('Sort order') || 0) % 100),

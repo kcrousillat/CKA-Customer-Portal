@@ -23,6 +23,7 @@ const spacesT = base.getTable('Spaces');
 const planT = base.getTable('Room Plan');
 const templates = base.getTable('Item Templates');
 const selections = base.getTable('Selections');
+const groupsT = base.getTable('Selection groups');
 
 // Stop well short of the ~30s ceiling: the writes after the loop - the Room
 // Plan links, the untick, the log - still have to land.
@@ -34,6 +35,9 @@ const ROOMS_PER_RUN = 60;
 let log = [];
 let roomsMade = 0;
 let rowsMade = 0;
+// Rows whose group allowance plus lead time runs past the construction start.
+// Collected as we go and reported at the end - see the note by dueFor.
+let tight = 0;
 
 const tradeValue = (cell) => {
   if (Array.isArray(cell)) return cell.length ? [{ id: cell[0].id }] : null;
@@ -41,7 +45,7 @@ const tradeValue = (cell) => {
 };
 
 const project = await projects.selectRecordAsync(cfg.projectId, {
-  fields: ['Project name', 'Construction start'],
+  fields: ['Project name', 'Construction start', 'Contract executed'],
 });
 
 if (!project) {
@@ -49,6 +53,43 @@ if (!project) {
 } else {
   const startValue = project.getCellValue('Construction start');
   const start = startValue ? new Date(startValue) : null;
+
+  // Needed by is the contract execution date plus the selection group's
+  // allowance, not construction start minus a lead time. That is how the
+  // owner selections sheet has always worked: everything in group 1 is due
+  // 30 days after contract, group 2 at 60, and so on. Counting back from a
+  // construction date gave each item its own private deadline and left the
+  // owner with 160 unrelated dates instead of five.
+  //
+  // Lead time stays on the row, but only as a cross-check: it is what the
+  // trade needs after the choice is made, so group days + lead tells us
+  // whether a selection can still land before construction wants it.
+  const contractValue = project.getCellValue('Contract executed');
+  const contract = contractValue ? new Date(contractValue) : null;
+  if (!contract) {
+    log.push('No contract execution date on this project, so selection due dates are left blank. Set it and tick Recompute dates.');
+  }
+
+  const groupQuery = await groupsT.selectRecordsAsync({
+    fields: ['Group', 'Days from contract execution'],
+  });
+  const daysByGroupId = {};
+  for (const g of groupQuery.records) {
+    daysByGroupId[g.id] = g.getCellValue('Days from contract execution');
+  }
+
+  // Dates are written here and never revisited, so a change to a group's
+  // allowance only reaches a job when someone ticks Recompute dates on it.
+  const dueFor = (groupLink) => {
+    if (!contract) return null;
+    const link = groupLink || [];
+    if (!link.length) return null;
+    const days = daysByGroupId[link[0].id];
+    if (days === null || days === undefined) return null;
+    const d = new Date(contract.getTime());
+    d.setDate(d.getDate() + days);
+    return d.toISOString().slice(0, 10);
+  };
 
   const planQuery = await planT.selectRecordsAsync({
     fields: ['Room name', 'Project', 'Space type', 'How many', 'Rooms built'],
@@ -82,7 +123,7 @@ if (!project) {
   const templateQuery = await templates.selectRecordsAsync({
     fields: ['Item name', 'Space Type', 'Default trade', 'Default lead time (weeks)',
              'Default mode', 'Description', 'Sort order', 'Active', 'Optional',
-             'Palette category', 'Section'],
+             'Palette category', 'Section', 'Selection group'],
   });
 
   if (!lines.length) {
@@ -140,12 +181,9 @@ if (!project) {
       const spaceOrder = nextSort;
       const rows = applicable.map((t) => {
         const lead = t.getCellValue('Default lead time (weeks)') || 0;
-        let neededBy = null;
-        if (start) {
-          const d = new Date(start.getTime());
-          d.setDate(d.getDate() - lead * 7);
-          neededBy = d.toISOString().slice(0, 10);
-        }
+        const group = t.getCellValue('Selection group') || [];
+        const neededBy = dueFor(group);
+        if (neededBy && start && new Date(neededBy).getTime() + lead * 7 * 86400000 > start.getTime()) tight++;
         const mode = t.getCellValue('Default mode');
         const palette = t.getCellValue('Palette category');
         const section = t.getCellValue('Section');
@@ -165,6 +203,7 @@ if (!project) {
             'Palette category': palette ? { name: palette.name } : null,
             'Section': section ? { name: section.name } : null,
             'Lead time (weeks)': lead,
+            'Selection group': group.length ? [{ id: group[0].id }] : null,
             'Needed by': neededBy,
             'Description': t.getCellValue('Description') || '',
             'Sort order': spaceOrder * 100 + ((t.getCellValue('Sort order') || 0) % 100),
@@ -209,12 +248,8 @@ if (!project) {
         (t) => (t.getCellValue('Item name') || '') === 'Room paint')[0];
       const lead = pattern ? (pattern.getCellValue('Default lead time (weeks)') || 2) : 2;
       const desc = pattern ? (pattern.getCellValue('Description') || '') : '';
-      let neededBy = null;
-      if (start) {
-        const d = new Date(start.getTime());
-        d.setDate(d.getDate() - lead * 7);
-        neededBy = d.toISOString().slice(0, 10);
-      }
+      const paintGroup = pattern ? (pattern.getCellValue('Selection group') || []) : [];
+      const neededBy = dueFor(paintGroup);
 
       // Count what is already there so a second run appends rather than
       // collides, and so the lines stay in the order the rooms were built.
@@ -233,6 +268,7 @@ if (!project) {
           'Mode': { name: 'Owner specifies' },
           'Trade': { name: 'Paint' },
           'Lead time (weeks)': lead,
+          'Selection group': paintGroup.length ? [{ id: paintGroup[0].id }] : null,
           'Needed by': neededBy,
           'Description': desc || ('Wall color for ' + roomName + '.'),
           'Sort order': wholeOrder * 100 + 30 + existing + i,
@@ -245,6 +281,12 @@ if (!project) {
       }
       log.push('Added ' + paintRows.length + ' paint line(s) under Whole house.');
     }
+  }
+
+  if (tight) {
+    log.push(tight + ' selection(s) have a due date that, once the trade\'s lead time is added, '
+           + 'lands after the construction start. Either the group allowance is too long for this '
+           + 'job or the construction start is too close to contract.');
   }
 
   if (roomsMade) {

@@ -677,7 +677,7 @@ var STATUS = {
 function statusOf(row){ return STATUS[row.status] || STATUS["Not started"]; }
 
 var VIEW_NOTES = {
-  blocking: "Sorted by the date we need the decision, not by room. The date is the lead time counted back from when the trade is scheduled — an item at the top is holding up work, however small the decision looks.",
+  blocking: "Sorted by the date we need the decision, not by room. Selections come due in rounds counted from the day the contract was signed — everything in a round shares one date, so you are working to a handful of deadlines rather than one per item. An item at the top is holding up work, however small the decision looks.",
   room:     "Every open and approved selection grouped the way you walk the house. The number on each room is how many decisions it is waiting on you for.",
   trade:    "The same selections grouped by who installs them, with the number each trade is waiting on. Useful when you are talking to one vendor about several rooms at once.",
   record:   "Approved selections only, with who approved each one and when. This is the record that goes in your turnover package.",
@@ -933,8 +933,11 @@ function panelMarkup(row){
   if (row.desc) out += '<p class="desc">' + esc(row.desc) + '</p>';
   out += '<p class="facts">' +
     (row.trade ? '<span><b>Trade</b> ' + esc(row.trade) + '</span>' : "") +
-    (row.lead ? '<span><b>Lead time</b> ' + row.lead + ' weeks</span>' : "") +
+    (row.group ? '<span><b>Selection round</b> ' + esc(row.group) + '</span>' : "") +
     '<span><b>Needed by</b> ' + fmt(row.needed) + '</span>' +
+    // Lead time is not the deadline any more, so it is labelled for what it
+    // actually is: how long the thing takes to arrive once it is ordered.
+    (row.lead ? '<span><b>Time to deliver</b> ' + row.lead + ' weeks</span>' : "") +
     '<span><b>Decision</b> ' + (row.mode === "curated" ? "Choose from CKA options" : "You specify") + '</span>' +
     '</p>';
 
