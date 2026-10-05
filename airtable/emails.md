@@ -102,3 +102,39 @@ and an `ARRAYJOIN` formula to flatten it.
 
 All six are marked DO NOT EDIT. Change the addresses on the Project, and the
 portal key to revoke access - `Portal link` follows it.
+
+## "Approved by on", 5 Oct
+
+The first real Outlook confirmation arrived reading:
+
+    Approved by on
+
+Both halves empty. `Approved by` and `Approved on` are written by the Worker's
+approve route (`worker/src/index.js`), and that route only exists for a curated
+line — the owner picks one of CKA's options and the Worker stamps their name and
+the time. An **Owner specifies** line has no such button: the owner types what
+they want, hits Send to CKA, and somebody at CKA sets Approved in the grid.
+Nothing fills the fields.
+
+That had been a rare case. After the appliances moved to owner input it became
+the normal one, and the two blanks sat in the middle of the email whose whole
+job is to be the record an owner would point at in a disagreement.
+
+Fixed with a script step ahead of the email (`stamp-approval.js`) that fills both
+fields when they are empty — `Approved by` as "CKA Construction Group", which is
+accurate rather than evasive, since the owner chose it and CKA confirmed it is
+buildable and priced.
+
+Two details worth keeping:
+
+- The step **writes the fields back to the record**, not just into the email.
+  The portal's record view and the turnover package read the same two fields and
+  were equally blank.
+- The email reads the values from the **script's outputs**, not from the record.
+  An automation's trigger values are a snapshot taken when it fired, so an email
+  step reading the record after the script wrote to it would still print the old
+  blanks. This was nearly a silent half-fix.
+
+The opening line changed from "a selection you have approved" to "a selection
+that is now approved", because on an owner-specifies line the owner chose it and
+CKA approved it — telling them they approved it is not what happened.
