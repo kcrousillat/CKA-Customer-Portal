@@ -35,9 +35,6 @@ const ROOMS_PER_RUN = 60;
 let log = [];
 let roomsMade = 0;
 let rowsMade = 0;
-// Rows whose group allowance plus lead time runs past the construction start.
-// Collected as we go and reported at the end - see the note by dueFor.
-let tight = 0;
 
 const tradeValue = (cell) => {
   if (Array.isArray(cell)) return cell.length ? [{ id: cell[0].id }] : null;
@@ -45,7 +42,7 @@ const tradeValue = (cell) => {
 };
 
 const project = await projects.selectRecordAsync(cfg.projectId, {
-  fields: ['Project name', 'Construction start', 'Contract executed'],
+  fields: ['Project name', 'Construction start'],
 });
 
 if (!project) {
@@ -54,39 +51,35 @@ if (!project) {
   const startValue = project.getCellValue('Construction start');
   const start = startValue ? new Date(startValue) : null;
 
-  // Needed by is the contract execution date plus the selection group's
-  // allowance, not construction start minus a lead time. That is how the
-  // owner selections sheet has always worked: everything in group 1 is due
-  // 30 days after contract, group 2 at 60, and so on. Counting back from a
-  // construction date gave each item its own private deadline and left the
-  // owner with 160 unrelated dates instead of five.
+  // Needed by is the construction start plus the selection group's allowance,
+  // not construction start MINUS a lead time. Selections come due in rounds
+  // over the first months of the build: group 1 at 30 days, group 2 at 60,
+  // and so on. Counting back by lead time gave every item its own private
+  // deadline and left the owner with 283 unrelated dates instead of five.
   //
-  // Lead time stays on the row, but only as a cross-check: it is what the
-  // trade needs after the choice is made, so group days + lead tells us
-  // whether a selection can still land before construction wants it.
-  const contractValue = project.getCellValue('Contract executed');
-  const contract = contractValue ? new Date(contractValue) : null;
-  if (!contract) {
-    log.push('No contract execution date on this project, so selection due dates are left blank. Set it and tick Recompute dates.');
+  // Lead time stays on the row as information only - how long the item takes
+  // to arrive once ordered. It sets no date.
+  if (!start) {
+    log.push('No construction start on this project, so selection due dates are left blank. Set it and tick Recompute dates.');
   }
 
   const groupQuery = await groupsT.selectRecordsAsync({
-    fields: ['Group', 'Days from contract execution'],
+    fields: ['Group', 'Days from construction start'],
   });
   const daysByGroupId = {};
   for (const g of groupQuery.records) {
-    daysByGroupId[g.id] = g.getCellValue('Days from contract execution');
+    daysByGroupId[g.id] = g.getCellValue('Days from construction start');
   }
 
   // Dates are written here and never revisited, so a change to a group's
   // allowance only reaches a job when someone ticks Recompute dates on it.
   const dueFor = (groupLink) => {
-    if (!contract) return null;
+    if (!start) return null;
     const link = groupLink || [];
     if (!link.length) return null;
     const days = daysByGroupId[link[0].id];
     if (days === null || days === undefined) return null;
-    const d = new Date(contract.getTime());
+    const d = new Date(start.getTime());
     d.setDate(d.getDate() + days);
     return d.toISOString().slice(0, 10);
   };
@@ -183,7 +176,6 @@ if (!project) {
         const lead = t.getCellValue('Default lead time (weeks)') || 0;
         const group = t.getCellValue('Selection group') || [];
         const neededBy = dueFor(group);
-        if (neededBy && start && new Date(neededBy).getTime() + lead * 7 * 86400000 > start.getTime()) tight++;
         const mode = t.getCellValue('Default mode');
         const palette = t.getCellValue('Palette category');
         const section = t.getCellValue('Section');
@@ -281,12 +273,6 @@ if (!project) {
       }
       log.push('Added ' + paintRows.length + ' paint line(s) under Whole house.');
     }
-  }
-
-  if (tight) {
-    log.push(tight + ' selection(s) have a due date that, once the trade\'s lead time is added, '
-           + 'lands after the construction start. Either the group allowance is too long for this '
-           + 'job or the construction start is too close to contract.');
   }
 
   if (roomsMade) {

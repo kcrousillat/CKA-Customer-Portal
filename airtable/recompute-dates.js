@@ -5,20 +5,21 @@
  *
  * Rewrites every selection's "Needed by" on this project as
  *
- *     Contract executed  +  the selection group's "Days from contract execution"
+ *     Construction start  +  the selection group's "Days from construction start"
  *
  * which is how the owner selections sheet has always worked: group 1 is due 30
- * days after contract, group 2 at 60, and so on. The earlier version counted
- * back from the construction start minus each item's lead time, which gave an
- * owner 160 private deadlines instead of five dates to work to, and made every
- * long-lead item read as overdue the moment the construction date moved.
+ * days after the job breaks ground, group 2 at 60, and so on - the owner has the
+ * first months of the build to make the decisions, in rounds. The original
+ * version counted BACK from the construction start by each item's lead time,
+ * which gave an owner 283 private deadlines instead of five dates to work to,
+ * and made every long-lead item read as overdue the moment the start moved.
  *
  * It exists because Needed by is stored, not calculated. Nothing recomputes
  * itself. That is deliberate - a job part way through should not have its dates
  * shift under the owner because someone edited the library - but it means two
  * things only reach a live job when this is ticked:
  *
- *   - a changed contract execution date
+ *   - a changed construction start
  *   - a changed allowance on a Selection group (30 days to 20, say)
  *
  * Only Needed by is touched. Status, the owner's answers, approvals and the
@@ -34,11 +35,13 @@
  * anybody editing 283 cells by hand. After the first tick there is nothing left
  * to heal, and a new library item added later heals itself the same way.
  *
- * Lead time is no longer what sets the date. It is still worth keeping,
- * because group days + lead time is what says whether a selection can
- * physically land before the trade needs it - so the run reports any row where
- * that sum runs past the construction start rather than silently promising a
- * date the job cannot keep.
+ * Lead time no longer sets anything. It stays on the row as information - how
+ * long the item takes to arrive once it is ordered - and the portal shows it
+ * as "Time to deliver". There is no collision check against it any more: with
+ * every date now falling after the construction start, a check for dates that
+ * land after the construction start would fire on all 283 rows and mean
+ * nothing. Catching a decision that arrives too late for its trade needs the
+ * trade's own schedule, which this base does not hold.
  */
 const cfg = input.config();
 const projects = base.getTable('Projects');
@@ -53,28 +56,24 @@ const startedAt = Date.now();
 let log = [];
 
 const project = await projects.selectRecordAsync(cfg.projectId, {
-  fields: ['Project name', 'Construction start', 'Contract executed'],
+  fields: ['Project name', 'Construction start'],
 });
 
 if (!project) {
   log.push('Project not found: ' + cfg.projectId);
 } else {
-  const contractValue = project.getCellValue('Contract executed');
   const startValue = project.getCellValue('Construction start');
 
-  if (!contractValue) {
-    log.push('No contract execution date on this project, so there is nothing to count forward from. Set it and tick again.');
+  if (!startValue) {
+    log.push('No construction start on this project, so there is nothing to count forward from. Set it and tick again.');
   } else {
-    const contract = new Date(contractValue);
-    const start = startValue ? new Date(startValue) : null;
+    const start = new Date(startValue);
 
     const daysByGroupId = {};
-    const nameByGroupId = {};
     for (const g of (await groupsT.selectRecordsAsync({
-      fields: ['Group', 'Days from contract execution'],
+      fields: ['Group', 'Days from construction start'],
     })).records) {
-      daysByGroupId[g.id] = g.getCellValue('Days from contract execution');
-      nameByGroupId[g.id] = g.getCellValue('Group');
+      daysByGroupId[g.id] = g.getCellValue('Days from construction start');
     }
 
     const groupByTemplateId = {};
@@ -86,8 +85,7 @@ if (!project) {
     }
 
     const query = await selections.selectRecordsAsync({
-      fields: ['Item', 'Project', 'Item Template', 'Selection group',
-               'Lead time (weeks)', 'Needed by'],
+      fields: ['Item', 'Project', 'Item Template', 'Selection group', 'Needed by'],
     });
 
     const mine = query.records.filter((r) =>
@@ -97,7 +95,6 @@ if (!project) {
     const updates = [];
     let ungrouped = 0;
     let healed = 0;
-    let tight = [];
 
     for (const r of mine) {
       let link = r.getCellValue('Selection group') || [];
@@ -118,15 +115,9 @@ if (!project) {
       }
 
       const days = daysByGroupId[link[0].id];
-      const d = new Date(contract.getTime());
+      const d = new Date(start.getTime());
       d.setDate(d.getDate() + days);
       const wanted = d.toISOString().slice(0, 10);
-
-      const lead = r.getCellValue('Lead time (weeks)') || 0;
-      if (start && d.getTime() + lead * 7 * 86400000 > start.getTime()) {
-        tight.push((r.getCellValue('Item') || 'A selection')
-          + ' (group ' + nameByGroupId[link[0].id] + ', ' + lead + 'wk lead)');
-      }
 
       // Only write the rows that actually move. A no-op update still costs a
       // call against the time budget and still shows as a change in history.
@@ -146,7 +137,7 @@ if (!project) {
     }
 
     log.push(
-      'Contract executed ' + String(contractValue).slice(0, 10) + '. ' +
+      'Construction start ' + String(startValue).slice(0, 10) + '. ' +
       mine.length + ' selection(s) on this job, ' + done + ' date(s) changed' +
       (updates.length === 0 ? ' - every date already matched.' : '.')
     );
@@ -156,14 +147,6 @@ if (!project) {
     if (ungrouped) {
       log.push(ungrouped + ' selection(s) have no selection group, so they have no due date. '
         + 'Set a group on the library item and rebuild, or set it on the row itself.');
-    }
-    if (tight.length) {
-      log.push(tight.length + ' selection(s) are due too late for their lead time to clear the '
-        + 'construction start: ' + tight.slice(0, 5).join('; ')
-        + (tight.length > 5 ? '; and ' + (tight.length - 5) + ' more.' : '.'));
-    }
-    if (!startValue) {
-      log.push('No construction start set, so nothing was checked against it.');
     }
     if (more) {
       log.push('Stopped early to stay inside the time limit, ' +

@@ -52,30 +52,29 @@ if (!space) {
   const typeId = spaceType[0].id;
   const projectId = projectLink[0].id;
 
-  // The contract execution date anchors every due date: a selection is due
-  // its group's allowance of days after contract, the way the owner
-  // selections sheet has always worked. Lead time rides along on the row as a
-  // cross-check against the construction start, not as the date itself.
+  // The construction start anchors every due date: a selection is due its
+  // group's allowance of days after the job breaks ground. Lead time rides
+  // along on the row as information only - it sets no date.
   const project = await projects.selectRecordAsync(projectId, {
-    fields: ['Construction start', 'Contract executed'],
+    fields: ['Construction start'],
   });
-  const contractValue = project ? project.getCellValue('Contract executed') : null;
-  const contract = contractValue ? new Date(contractValue) : null;
+  const startValue = project ? project.getCellValue('Construction start') : null;
+  const start = startValue ? new Date(startValue) : null;
 
   const groupsT = base.getTable('Selection groups');
   const daysByGroupId = {};
   for (const g of (await groupsT.selectRecordsAsync({
-    fields: ['Group', 'Days from contract execution'],
+    fields: ['Group', 'Days from construction start'],
   })).records) {
-    daysByGroupId[g.id] = g.getCellValue('Days from contract execution');
+    daysByGroupId[g.id] = g.getCellValue('Days from construction start');
   }
   const dueFor = (groupLink) => {
-    if (!contract) return null;
+    if (!start) return null;
     const link = groupLink || [];
     if (!link.length) return null;
     const days = daysByGroupId[link[0].id];
     if (days === null || days === undefined) return null;
-    const d = new Date(contract.getTime());
+    const d = new Date(start.getTime());
     d.setDate(d.getDate() + days);
     return d.toISOString().slice(0, 10);
   };
