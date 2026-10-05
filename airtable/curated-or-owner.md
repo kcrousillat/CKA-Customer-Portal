@@ -187,3 +187,38 @@ current Construction start, same arithmetic as the build.
 Script kept at `airtable/recompute-dates.js`. It earns its place beyond this
 one reset: every schedule slip needs it, and it is the seam the Material Log
 feed will eventually write through.
+
+## Appliances went all-owner, 5 Oct
+
+Kevin spotted that "Undercounter appliances" had input boxes while the kitchen
+appliances beside it did not. The split turned out to be arbitrary — 9 of the 22
+appliance templates were `CKA presents options` and 13 were `Owner specifies`,
+with Range curated but Cooktop an input, Dishwasher curated but Wall ovens an
+input. Nobody had decided that; it accumulated.
+
+Worse, the curated ones failed the catalog test anyway: every appliance category
+in Palettes had exactly **one** row. One range, one dishwasher, one refrigerator.
+A card showing a single option is not a choice, it is a suggestion with the
+alternatives hidden. Outdoor-kitchen `Vent hood` was curated with no palette
+category at all, so it rendered an empty space.
+
+All 22 are now `Owner specifies`. The reasoning is the catalog test plus how
+appliances are actually bought: an owner picks a model at a showroom or through
+their dealer, from a range far wider than anything CKA would carry. The existing
+single palette rows stay in Airtable as reference; they just stop being presented
+as a decision.
+
+The 16 live Hahitti rows that were still curated were switched in the same pass.
+The library does not backfill built rooms, so a library change alone would have
+left that job showing the old behaviour — which is also why `Dryer` read as
+curated on Hahitti after the template was changed to owner-input on 24 Sep.
+
+### Owner boxes
+
+Appliances now carry explicit boxes rather than the four defaults:
+
+    Manufacturer or brand, Model number, Finish, Size or width
+
+The defaults end in "Color name or number / Sheen or finish", which is right for
+paint and wrong for a dishwasher. `Owner boxes` is read live by the Worker, so
+this reached the built rooms without a rebuild.
