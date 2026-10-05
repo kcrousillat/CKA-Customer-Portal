@@ -1,50 +1,75 @@
 /**
- * Airtable automation step: "Owner email - approved", before the email.
+ * Airtable automation step: "Owner email - approved", ahead of the email.
  *
- * Fills Approved by / Approved on when they are empty, and hands the email
- * step the values to print.
+ * Builds the credit block the email prints, and fills Approved on when the
+ * portal did not.
  *
- * Why it is needed: those two fields are written by the portal's approve
- * button, which only exists on a curated line - the owner picks one of CKA's
- * options and the Worker stamps their name and the time. On an "Owner
- * specifies" line there is no such button. The owner types what they want,
- * hits Send to CKA, and somebody at CKA sets the status to Approved in the
- * grid. Nothing fills the fields, so the confirmation email read
- * "Approved by on" - in the one email whose job is to be the record the owner
- * would point at in a disagreement.
+ * There are two ways a line reaches Approved, and they credit different people:
  *
- * Most of the library is owner-specifies now, so this was about to be the
- * normal case rather than an edge one.
+ *   Curated line   - CKA presented options, the owner picked one and typed
+ *                    their name. The Worker stamps Approved by / Approved on.
+ *                    The owner approved it, so the email says so.
  *
- * It writes the values back to the record as well as returning them, because
- * the portal's record view and the turnover package read the same two fields
- * and were equally blank. The email cannot simply read the record after the
- * write: an automation's trigger values are a snapshot taken when it fired, so
- * the email step would still print the old blanks. Hence the outputs.
+ *   Owner-specifies - the owner typed what they want and signed the Send to
+ *                    CKA panel, which stamps Submitted by / Submitted on. CKA
+ *                    then sets Approved in the grid. The owner made the
+ *                    selection; CKA only confirmed it is buildable and priced.
+ *                    The email has to say that, in that order - it is the
+ *                    owner's decision and the record should read like it.
+ *
+ * The first version of this printed "Approved by CKA Construction Group" on an
+ * owner-specifies line, which took the owner's decision and put CKA's name on
+ * it. Most of the library is owner-specifies now, so that was about to be the
+ * normal case.
+ *
+ * Why the email reads the outputs rather than the record: an automation's
+ * trigger values are a snapshot taken when it fired, so an email step reading
+ * the record after this step wrote to it would still print the old values.
  */
 const cfg = input.config();
 const selections = base.getTable('Selections');
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
                 'July', 'August', 'September', 'October', 'November', 'December'];
-const pretty = (d) => MONTHS[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+const pretty = (v) => {
+  if (!v) return '';
+  const d = new Date(v);
+  if (isNaN(d.getTime())) return '';
+  return MONTHS[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+};
 
 const r = await selections.selectRecordAsync(cfg.recordId, {
-  fields: ['Approved by', 'Approved on'],
+  fields: ['Approved by', 'Approved on', 'Submitted by', 'Submitted on'],
 });
 
-let by = r ? (r.getCellValue('Approved by') || '') : '';
-let onValue = r ? r.getCellValue('Approved on') : null;
+const submittedBy = r ? (r.getCellValue('Submitted by') || '') : '';
+const submittedOn = r ? r.getCellValue('Submitted on') : null;
+let approvedBy = r ? (r.getCellValue('Approved by') || '') : '';
+let approvedOn = r ? r.getCellValue('Approved on') : null;
 
 const fields = {};
-// Named rather than left blank. CKA did approve it - the owner chose it and
-// CKA confirmed it is buildable and priced - so saying so is accurate, and an
-// owner reading "Approved by CKA Construction Group" learns something true.
-if (!by) { by = 'CKA Construction Group'; fields['Approved by'] = by; }
-if (!onValue) { onValue = new Date().toISOString(); fields['Approved on'] = onValue; }
+if (!approvedOn) { approvedOn = new Date().toISOString(); fields['Approved on'] = approvedOn; }
+// Only on the owner-specifies path, and only into a blank. CKA did the
+// approving there, and the record - which the portal and the turnover package
+// both read - should not leave it anonymous. The email leads with the owner
+// regardless; this is the grid's own answer to "who approved it".
+if (!approvedBy && submittedBy) {
+  approvedBy = 'CKA Construction Group';
+  fields['Approved by'] = approvedBy;
+}
 if (Object.keys(fields).length) {
   await selections.updateRecordAsync(cfg.recordId, fields);
 }
 
-output.set('approvedBy', by);
-output.set('approvedOn', pretty(new Date(onValue)));
+let credit;
+if (submittedBy) {
+  credit = 'Selected by ' + submittedBy +
+           (submittedOn ? ' on ' + pretty(submittedOn) : '') +
+           '\nConfirmed by CKA on ' + pretty(approvedOn);
+} else if (approvedBy) {
+  credit = 'Approved by ' + approvedBy + ' on ' + pretty(approvedOn);
+} else {
+  credit = 'Approved on ' + pretty(approvedOn);
+}
+
+output.set('credit', credit);

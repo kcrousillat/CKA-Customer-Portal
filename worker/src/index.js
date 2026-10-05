@@ -476,7 +476,10 @@ async function approve(env, { record }, body) {
 
 async function submit(env, { project, record }, body) {
   assertOpen(record);
-  const name = cleanName(body.name || (project.fields["Owner 1 name"] || "Owner"));
+  // Asked for, not assumed. This used to fall back to the project's Owner 1,
+  // so a two-owner job credited the wrong person half the time - and on an
+  // owner-specifies line this name IS the record of whose selection it is.
+  const name = cleanName(body.name, "send this to CKA");
   const supplier = text(body.supplier, 200);
   const model = text(body.model, 300);
   if (!supplier || !model) throw httpError(400, "Supplier and product are both needed.");
@@ -766,9 +769,9 @@ async function linkedRecords(env, table, project) {
 function quote(s) { return `"${String(s).replace(/"/g, '\\"')}"`; }
 function num(v, d) { return typeof v === "number" ? v : d; }
 function text(v, max) { return String(v == null ? "" : v).trim().slice(0, max); }
-function cleanName(v) {
+function cleanName(v, verb) {
   const name = text(v, 120);
-  if (name.length < 3) throw httpError(400, "Type your full name to approve.");
+  if (name.length < 3) throw httpError(400, "Type your full name to " + (verb || "approve") + ".");
   return name;
 }
 function requireKey(key) {

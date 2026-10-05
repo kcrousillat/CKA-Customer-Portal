@@ -1063,11 +1063,22 @@ function panelMarkup(row){
     'placeholder="A second choice, or a question for us">' +
     esc(pick(d.notes, e.notes)) + '</textarea></span>' +
     photoStrip(row) + '</div>';
-  out += '<div class="panel-actions">' +
+  /* The same signature the curated path asks for. It used to stamp Owner 1
+     whoever actually clicked, which made "Submitted by" a guess and wrong half
+     the time on a two-owner job - and this is the selection the owner owns, so
+     it is the one name that has to be right. */
+  out += '<div class="sign"><h3>Send this to CKA</h3>' +
+    '<p>Typing your name records this as your selection. You get a confirmation ' +
+    'email straight away; whoever types their name is the owner of record for it.</p>' +
+    '<div class="sign-row"><span class="grow">' +
+      '<label for="sname-' + row.id + '">Type your full name</label>' +
+      '<input id="sname-' + row.id + '" type="text" autocomplete="name" value="' + esc(d.name || "") + '" data-name="' + row.id + '">' +
+    '</span>' +
     '<button class="btn btn-primary" type="button" data-submit="' + row.id + '"' +
       (readyToSubmit(row, d, e) ? "" : " disabled") +
       '>Send to CKA</button>' +
-    '<span class="note" style="margin:0">CKA confirms it is buildable and priced, then it is released for order.</span>' +
+    '</div>' +
+    '<p class="note" style="margin:.6rem 0 0">CKA confirms it is buildable and priced, then it is released for order.</p>' +
     '</div>';
   return out + errSlot(row) + '</div>';
 }
@@ -1355,6 +1366,7 @@ function boxesFor(row){
 /* Enough filled in to send: the first box always, and the second when there is
    one. On paint that is manufacturer and product, which is what it always was. */
 function readyToSubmit(row, d, e){
+  if ((d.name || "").trim().length < 3) return false;
   var boxes = boxesFor(row);
   return boxes.slice(0, 2).every(function(b){
     return String(pick(d[b.key], e[b.key])).trim();
@@ -1627,7 +1639,7 @@ document.addEventListener("click", function(ev){
       color:    pick(dr.color, e.color),
       finish:   pick(dr.finish, e.finish),
       notes:    pick(dr.notes, e.notes),
-      name:     (state.data.project.owners || [])[0] || "Owner"
+      name:     (dr.name || "").trim()
     });
   }
   if (t.hasAttribute("data-change")) {
@@ -1647,8 +1659,12 @@ document.addEventListener("input", function(ev){
     var id = el.getAttribute("data-name");
     draft(id).name = el.value;
     var nrow = state.data.selections.filter(function(r){ return r.id === id; })[0];
+    /* Both panels carry a name box now - a curated line approves, an
+       owner-specifies line submits - and only one of them is on screen. */
     var btn = document.querySelector('[data-approve="' + id + '"]');
     if (btn) btn.disabled = !approvable(nrow, draft(id));
+    var sb = document.querySelector('[data-submit="' + id + '"]');
+    if (sb) sb.disabled = !readyToSubmit(nrow, draft(id), (nrow && nrow.ownerEntry) || {});
     return;
   }
   if (el.hasAttribute("data-inspo-caption")) {

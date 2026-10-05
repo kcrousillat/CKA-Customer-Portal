@@ -138,3 +138,53 @@ Two details worth keeping:
 The opening line changed from "a selection you have approved" to "a selection
 that is now approved", because on an owner-specifies line the owner chose it and
 CKA approved it — telling them they approved it is not what happened.
+
+## The owner owns the selection, 5 Oct
+
+Kevin, on reading the first real confirmation:
+
+> the owner does not take ownership for selection. email says CKA approved but
+> selection was made by owner. We just confirmed it.
+
+He is right, and it went deeper than the wording.
+
+### The portal was not asking who was selecting
+
+The curated path asks the owner to type their name and stamps `Approved by`.
+The owner-specifies path never asked. `Send to CKA` posted:
+
+    name: (state.data.project.owners || [])[0] || "Owner"
+
+— the project's Owner 1, whoever actually clicked. On a two-owner job it
+credited the wrong person half the time, and the Worker's own fallback did the
+same thing a second time. The test row proves it: Kevin submitted it and
+`Submitted by` reads "Rami Hahitti".
+
+Owner-specifies is now most of the library, so this was the normal path, and the
+name it gets wrong is the one that says whose decision this was.
+
+Fixed: the submit panel carries the same signature box as the approve panel,
+`Send to CKA` stays disabled until it is filled, and the Worker requires it
+rather than inventing one.
+
+### Three emails, not two
+
+There was no email at the moment the owner acted — the first thing they heard
+back was CKA's approval. So the record began with CKA.
+
+**Owner email - selection received** (new) fires on Owner selected: names who
+signed it, repeats back what they entered, says plainly that nothing is ordered
+yet. It also catches a typo in minutes rather than at approval.
+
+### The approval credits the decision, not the confirmation
+
+The approved email now prints a credit block built by `stamp-approval.js`:
+
+| Line reached Approved by | Email says |
+| --- | --- |
+| Owner typed what they wanted, CKA set Approved | Selected by *owner* on *date* / Confirmed by CKA on *date* |
+| Owner picked a CKA option and signed for it | Approved by *owner* on *date* |
+
+and opens "Your selection has been confirmed by CKA and is approved" rather than
+"a selection you have approved". The owner decided; CKA checked it. That is the
+true order and it is the order the record should read in.
