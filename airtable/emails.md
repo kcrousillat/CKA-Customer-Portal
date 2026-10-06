@@ -218,3 +218,41 @@ Worth noting if the digest wins: it is a scheduled automation reading rows that
 changed that day, not three triggers — so the three current ones would be turned
 off rather than edited, and the per-row triggers kept in case a client does want
 them.
+
+## Subject lines, 6 Oct
+
+Subjects were `Approved - Vent hood`. No job, and "Vent hood" alone does not say
+which one — the library has a kitchen vent hood and an outdoor-kitchen vent hood,
+and once CKA is running several jobs at once the subject has to survive a
+crowded inbox on its own.
+
+Every notification subject is now:
+
+    <Job> - <Status> - <Item> (<Room>)
+
+e.g. `Hahitti Residence - Approved - Built-in refrigerator (Kitchen)`
+
+Job name first so a mail rule or a sort groups by job; status next, because it
+is what decides whether the mail needs action; item and room last, because that
+is the part someone reads once they have decided to open it.
+
+Applied to all four: the three owner emails and the internal "Tell CKA when the
+owner acts" alert. The body of each now opens with a `Job:` line too, since a
+forwarded email loses the subject's context.
+
+### Two formula fields carry it
+
+`Project` and `Space` are **link** fields, and a link field renders as nothing in
+an automation template — the same trap that cost a round on the Notify CKA
+lookup. So:
+
+| Field | Formula | Gives |
+| --- | --- | --- |
+| `Job name` (`fld9qMfqfuRZvXNj0`) | `ARRAYJOIN({Project}, ", ")` | `Hahitti Residence` |
+| `Item and room` (`fldfmraoR4BUf5y9A`) | `IF(ARRAYJOIN({Space},"")="", {Item}, {Item} & " (" & ARRAYJOIN({Space}, ", ") & ")")` | `Built-in refrigerator (Kitchen)` |
+
+`Item and room` falls back to the bare item for a Whole house line with no room,
+rather than printing an empty `()`.
+
+Both were read back on real records before being wired into the subjects —
+a formula that silently returns blank would have emptied every subject line.
