@@ -256,3 +256,75 @@ rather than printing an empty `()`.
 
 Both were read back on real records before being wired into the subjects —
 a formula that silently returns blank would have emptied every subject line.
+
+## Settled: one digest at 6am, 8 Oct
+
+Kevin, after talking it through with the team:
+
+> if someone's sitting down and handling all the selections at one time, and do
+> 15, 20 emails ... we're going to overload our emails, and things are going to
+> get lost. They did think one daily delivery at 6 a.m. would probably be the
+> best idea.
+
+Built as **Daily selections digest - 6am** (`wflBYJqnGrn1VlfPP`), cron at 06:00
+America/New_York.
+
+Per job, per morning:
+
+- one email to the owners listing everything that moved in the last 24 hours
+- one to that job's Notify CKA list, same rows, written for the person who has
+  to action them
+
+A job where nothing moved sends **nothing**. A digest that arrives every day
+saying "no changes" teaches people to delete it unread, and then they delete the
+one that mattered.
+
+### Shape
+
+A script cannot send through Outlook, so it builds and a loop sends:
+
+| Node | Does |
+| --- | --- |
+| `digestBuild` (customScript) | reads the window, groups by job and audience, outputs an array of `{to, subject, body}` |
+| `digestSend` (repeatingGroup) | one Outlook send per element |
+
+The loop body reads the current element with
+`readProperty(pickBranchData(digestSend.selectedNextNodes), "to")` — a plain
+`$ref` into the loop key returns the whole branch array, not the current item.
+
+### The window needs a marker
+
+Only two statuses stamp a date of their own (`Submitted on`, `Approved on`), and
+Released for order stamps nothing — so there was no way to ask "what moved
+yesterday". Added `Status changed` (`fldbId3lo0XJhQS7f`), a lastModifiedTime
+scoped to **Status alone**, so editing a note or adding a photo does not make a
+row look like news.
+
+The window is **25 hours**, not 24: a row that moved at 05:59 would otherwise
+fall between two digests and never be reported. The cost of the overlap is that
+a row can appear in two digests, which is harmless; the cost of a gap is a
+selection nobody is told about.
+
+### Tested before it was wired up
+
+`worker/test/digest.test.mjs` runs the script against a stubbed base: rows
+outside the window, statuses that should not be reported, a job with no
+recipients, a job with a CKA list but no owner email, and an orphan row with no
+project. It fails the build rather than sending nothing at 6am and nobody
+noticing for a day.
+
+The first run of the harness reported 4 emails where I expected 3 — the fixture
+was wrong, not the script. Worth recording: the test caught me, not the code.
+
+### Still to do
+
+The four per-row automations are now redundant and have to be switched **off**
+by hand (the API cannot toggle them):
+
+- Tell CKA when the owner acts
+- Owner email - selection received
+- Owner email - approved
+- Owner email - released for order
+
+They are left in place rather than deleted, in case a client ever wants a
+receipt per item.
