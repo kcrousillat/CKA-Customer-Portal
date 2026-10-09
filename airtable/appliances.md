@@ -194,3 +194,18 @@ the trade is not how an owner thinks about the item.
 
 Two rules keep it from hiding things: a section holding anything past due opens by itself, and a
 room with only one heading never collapses at all.
+
+## Range is Optional on purpose, 9 Oct
+
+`Range` is ticked Optional in the library, so it builds as **Not applicable** and
+is invisible to the owner until someone turns it on. That looks like a mistake —
+a kitchen with no range line — and it is not.
+
+Kevin: "it can be a range or a cooktop, different type of appliance."
+
+A house gets one or the other, not both: a range is a single unit, or a cooktop
+with separate wall ovens. Generating both on every job would put a decision in
+front of the owner that does not exist on their house. So both are Optional, and
+whoever sets the job up turns on the one that applies.
+
+Do not "fix" this.
