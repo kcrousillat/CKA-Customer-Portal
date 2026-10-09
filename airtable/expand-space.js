@@ -54,7 +54,8 @@ if (!space) {
 
   // The construction start anchors every due date: a selection is due its
   // group's allowance of days after the job breaks ground. Lead time rides
-  // along on the row as information only - it sets no date.
+  // along on the row as CKA's own planning figure - it sets no date and the
+  // portal does not show it.
   const project = await projects.selectRecordAsync(projectId, {
     fields: ['Construction start'],
   });

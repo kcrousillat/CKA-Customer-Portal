@@ -60,9 +60,16 @@ and writes what it did into `Setup log`. Other jobs are untouched.
 
 ## Lead time
 
-`Lead time (weeks)` stays on every row and sets nothing. It is how long the item
-takes to arrive once ordered, which is what the portal now labels **Time to
-deliver**.
+`Lead time (weeks)` stays on every row, sets nothing, and **is not shown to the
+owner**. It was briefly on the card as *Time to deliver*; that came off in
+October 2026. One number cannot stand for a whole line item — two faucets from
+the same maker can be a month apart, and the figure in the library is whatever
+was true on the last job. An owner who reads it plans around it, which makes it
+a promise nobody made. The Worker no longer sends it in the API payload at all,
+so it is CKA's planning number and only CKA's.
+
+The only timing an owner sees is **Needed by**, which the group model makes
+defensible: it is a date CKA chose, not an estimate borrowed from a vendor.
 
 There is deliberately no warning that compares it against the construction
 start. Every due date now falls *after* the start, so such a check would fire on

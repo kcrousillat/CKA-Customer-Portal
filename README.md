@@ -16,7 +16,7 @@ Airtable  ──►  Cloudflare Worker  ──►  selections-portal.html
 | Table | Holds |
 |---|---|
 | Space Types | 13 room types — bath, kitchen, bar, elevator, pool, whole house… |
-| Item Templates | The library: 98 items, each with a default trade, lead time, mode and owner-facing description |
+| Item Templates | The library: 98 items, each with a default trade, selection group, mode and owner-facing description |
 | Projects | One row per job, including the **Portal key** that addresses the owner's link |
 | Spaces | The actual rooms on a job |
 | Selections | The live decision rows |
@@ -78,7 +78,7 @@ Options with no photo fall back to a color tile from the **Swatch color** field,
 
 ## What the owner can do
 
-Four views of the same rows — *Holding up the job* (lead time sorted, the one that matters),
+Four views of the same rows — *Holding up the job* (needed-by date sorted, the one that matters),
 *By room*, *By trade*, *Approved record* — plus two printable documents: a working copy
 (everything, by trade, by blocking date) and a record copy (approved only, by room, with samples
 and approval stamps).

@@ -612,7 +612,7 @@ img{max-width:100%}
     <thead>
       <tr>
         <th style="width:20%">Item</th><th style="width:13%">Space</th><th style="width:11%">Status</th>
-        <th style="width:9%">Needed by</th><th style="width:6%">Lead</th><th>Selection of record</th>
+        <th style="width:11%">Needed by</th><th>Selection of record</th>
       </tr>
     </thead>
     <tbody id="doc-working-body"></tbody>
@@ -667,7 +667,7 @@ var PREVIEW = {
   spaces: [{ id:"sp1", name:"Kitchen", order:1 }, { id:"sp2", name:"Primary bath", order:2 }],
   selections: [
     { id:"s1", item:"Cabinet door style & finish", space:"sp1", spaceName:"Kitchen", trade:"Millwork",
-      lead:12, needed:"2026-11-13", status:"Options presented", mode:"curated",
+      needed:"2026-11-13", status:"Options presented", mode:"curated",
       desc:"Door style and finish for the perimeter cabinetry.", order:1, options:[
         { id:"o1", name:"Rift white oak, natural", supplier:"Wood-Mode", model:"Slab door",
           finish:"Natural matte", swatch:"#C3A175", photos:[], order:1 },
@@ -675,7 +675,7 @@ var PREVIEW = {
           finish:"Alabaster", swatch:"#EDE9E0", photos:[], order:2 }
       ], ownerEntry:{}, ownerPhotos:[] },
     { id:"s2", item:"Vanity top", space:"sp2", spaceName:"Primary bath", trade:"Stone",
-      lead:6, needed:"2027-01-15", status:"Not started", mode:"open",
+      needed:"2027-01-15", status:"Not started", mode:"open",
       desc:"Double vanity top with an integral or undermount basin.", order:2,
       options:[], ownerEntry:{}, ownerPhotos:[] }
   ],
@@ -917,7 +917,7 @@ function dueMarkup(row){
 function rowMarkup(row){
   var st = statusOf(row);
   var open = state.open === row.id;
-  var sub = [row.spaceName, row.trade, row.lead ? row.lead + "-week lead" : null].filter(Boolean).join(" · ");
+  var sub = [row.spaceName, row.trade].filter(Boolean).join(" · ");
   return '<li class="row u-' + urgency(row) + (open ? " is-open" : "") + '" data-row="' + row.id + '">' +
     '<button class="row-btn" type="button" data-toggle="' + row.id + '" aria-expanded="' + open + '">' +
       '<span class="row-title"><span class="n">' + esc(row.item) + '</span>' +
@@ -953,9 +953,11 @@ function panelMarkup(row){
     (row.trade ? '<span><b>Trade</b> ' + esc(row.trade) + '</span>' : "") +
     (row.group ? '<span><b>Selection round</b> ' + esc(row.group) + '</span>' : "") +
     '<span><b>Needed by</b> ' + fmt(row.needed) + '</span>' +
-    // Lead time is not the deadline any more, so it is labelled for what it
-    // actually is: how long the thing takes to arrive once it is ordered.
-    (row.lead ? '<span><b>Time to deliver</b> ' + row.lead + ' weeks</span>' : "") +
+    // No lead time here. One number cannot stand for a whole item - two
+    // faucets from the same maker can be four weeks apart, and an owner who
+    // reads "6 weeks" and plans around it has been told something we cannot
+    // promise. The needed-by date is the only timing commitment, and it is
+    // the one above.
     '<span><b>Decision</b> ' + (row.mode === "curated" ? "Choose from CKA options" : "You specify") + '</span>' +
     '</p>';
 
@@ -1554,9 +1556,9 @@ function renderDocs(){
   document.getElementById("doc-working-body").innerHTML = trades.map(function(t){
     var rows = live.filter(function(r){ return (r.trade || "Unassigned") === t; })
       .sort(function(a,b){ return daysOut(a) - daysOut(b); });
-    return '<tr class="gh"><td colspan="6">' + esc(t) + '</td></tr>' + rows.map(function(r){
+    return '<tr class="gh"><td colspan="5">' + esc(t) + '</td></tr>' + rows.map(function(r){
       return '<tr><td>' + esc(r.item) + '</td><td>' + esc(r.spaceName) + '</td><td>' + esc(r.status) + '</td>' +
-        '<td class="mono">' + fmt(r.needed) + '</td><td class="mono">' + (r.lead || "—") + ' wk</td>' +
+        '<td class="mono">' + fmt(r.needed) + '</td>' +
         '<td>' + esc(recordLine(r)) + '</td></tr>';
     }).join("");
   }).join("");

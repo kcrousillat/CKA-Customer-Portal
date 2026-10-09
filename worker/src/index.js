@@ -328,7 +328,10 @@ async function getProject(env, key) {
           section: (r.fields["Section"] || "").trim() ||
                    sections.byTrade[tradeName(r.fields["Trade"], sections.tradeById)] ||
                    "Other",
-          lead: num(r.fields["Lead time (weeks)"], 0),
+          // No lead time in the payload. "Lead time (weeks)" is still on the
+          // row for CKA's own ordering, but it is a single number standing in
+          // for an item that may be sourced a dozen ways, so it is not sent
+          // to the owner and nothing in the portal renders it.
           // The group a selection belongs to - "Group 2" - and the date that
           // group falls due on this job. The date is what the portal sorts and
           // warns on; the group is what makes five dates read as five rounds

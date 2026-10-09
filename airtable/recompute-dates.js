@@ -35,9 +35,10 @@
  * anybody editing 283 cells by hand. After the first tick there is nothing left
  * to heal, and a new library item added later heals itself the same way.
  *
- * Lead time no longer sets anything. It stays on the row as information - how
- * long the item takes to arrive once it is ordered - and the portal shows it
- * as "Time to deliver". There is no collision check against it any more: with
+ * Lead time no longer sets anything, and since October 2026 the owner never
+ * sees it: one number cannot speak for a whole line item, so it is CKA's
+ * planning figure and stays off the portal. There is no collision check
+ * against it any more either: with
  * every date now falling after the construction start, a check for dates that
  * land after the construction start would fire on all 283 rows and mean
  * nothing. Catching a decision that arrives too late for its trade needs the

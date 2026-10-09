@@ -57,8 +57,9 @@ if (!project) {
   // and so on. Counting back by lead time gave every item its own private
   // deadline and left the owner with 283 unrelated dates instead of five.
   //
-  // Lead time stays on the row as information only - how long the item takes
-  // to arrive once ordered. It sets no date.
+  // Lead time is still copied onto the row, but it sets no date and the
+  // portal does not show it - it is CKA's planning figure, not a promise to
+  // the owner.
   if (!start) {
     log.push('No construction start on this project, so selection due dates are left blank. Set it and tick Recompute dates.');
   }
