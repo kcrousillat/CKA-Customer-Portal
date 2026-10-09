@@ -270,21 +270,26 @@ img{max-width:100%}
 
 .opts{
   list-style:none; margin:0 0 18px; padding:0; display:grid; gap:10px;
-  /* Capped, not 1fr: a single option used to stretch the full width of the
-     panel, which turned its photo into a letterbox strip. */
-  grid-template-columns:repeat(auto-fit,minmax(340px,520px)); justify-content:start;
+  /* Two per row. Eleven pool colours stacked one above another is a long
+     scroll for what is really a swatch board - side by side you compare them
+     instead of scrolling past them. minmax(0,1fr) rather than 1fr so a long
+     model number cannot push a column wider than its half. */
+  grid-template-columns:repeat(2,minmax(0,1fr));
 }
 .opt{display:block; cursor:pointer}
 .opt input{position:absolute; opacity:0; width:0; height:0}
 .opt-card{
   border:1px solid var(--rule-strong); border-radius:5px; background:var(--surface);
-  overflow:hidden; height:100%; display:flex; flex-direction:row; align-items:stretch;
+  /* Stacked, because half a panel is too narrow to put a 220px tile beside the
+     text. The photo leads and the details sit under it, which is how a swatch
+     board reads anyway. */
+  overflow:hidden; height:100%; display:flex; flex-direction:column; align-items:stretch;
 }
 .opt input:focus-visible + .opt-card{outline:2px solid var(--accent); outline-offset:2px}
 .opt input:checked + .opt-card{border-color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent)}
 .swatch{
-  order:2; flex:0 0 220px; width:220px; align-self:center;
-  margin:10px 10px 10px 0; border-radius:4px; overflow:hidden;
+  order:0; flex:0 0 auto; align-self:stretch;
+  margin:10px 10px 0; border-radius:4px; overflow:hidden;
   position:relative; background:var(--surface-3); line-height:0;
 }
 /* No photo to size the tile, so these two need a height of their own. */
@@ -292,7 +297,7 @@ img{max-width:100%}
 .swatch.is-empty{height:86px}
 /* contain, not cover: an appliance photo cropped to fit a box is a photo of
    the wrong appliance. Letterboxing against the tile is the lesser evil. */
-.swatch img{max-width:100%; max-height:220px; width:auto; height:auto; display:block; margin:0 auto}
+.swatch img{max-width:100%; max-height:160px; width:auto; height:auto; display:block; margin:0 auto}
 .swatch.is-empty{
   display:flex; align-items:center; justify-content:center; text-align:center;
   padding:6px; background:var(--surface-2); border:1px dashed var(--rule);
@@ -538,11 +543,12 @@ img{max-width:100%}
 }
 /* Narrow phones: a smaller tile, same square. Must stay after the base
    .swatch rule above — same specificity, so the later one wins. */
-@media (max-width:420px){
-  /* A phone card is about 358px wide, so a 220px tile would leave the model
-     number nowhere to go. The tile gives way here, not the text. */
-  .swatch{flex-basis:140px; width:140px; margin:8px 8px 8px 0}
-  .swatch img{max-height:140px}
+@media (max-width:560px){
+  /* Two columns on a phone would be two thumbnails nobody can judge a colour
+     from. One per row below this, full width. */
+  .opts{grid-template-columns:1fr}
+  .swatch{margin:8px 8px 0}
+  .swatch img{max-height:150px}
   .opt-body{padding:9px 10px}
 }
 </style>
