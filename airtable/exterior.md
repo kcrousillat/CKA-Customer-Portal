@@ -55,6 +55,22 @@ damp rating**, and that **salt air eats plated finishes**, so solid brass and
 copper weather rather than peel. Neither is a manufacturer claim; both are why
 the decision is not the same one as indoors.
 
+## Six items moved from Whole house, 9 Oct
+
+| Item | Trade | Group |
+| --- | --- | --- |
+| Landscape lighting | Lighting | 2 |
+| Exterior door hardware | Hardware | 3 |
+| Roof tile profile & color | Roofing | 1 |
+| Stucco texture | Stucco | 4 |
+| Exterior paint | Paint | 4 |
+| Driveway & motor court paving | Landscape / hardscape | 4 |
+
+The library move affects **jobs built afterwards only**. A job already built
+keeps those rows under its Whole house room until someone moves them, because
+the selection's `Space` link was set when the room was built and nothing
+revisits it.
+
 ## Known overlap, not yet resolved
 
 `Address and path lighting` and `Landscape lighting` (Whole house, Group 2) can
