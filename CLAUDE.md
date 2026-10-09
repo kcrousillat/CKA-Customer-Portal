@@ -49,13 +49,17 @@ to send back if it doesn't.
 
 ## Deploys happen on Kevin's laptop, and only there
 
-The project lives on the **laptop** — that is where it was set up and where the Desktop script and
-Node are installed. His desktop machine has neither, so a command sent while he is sitting at it
-fails with a confusing path error, as `cd $HOME\CKA-Customer-Portal` did on 9 Oct.
+The project was set up on the **laptop** and lives there. Ask for it by name: any step he has to
+run starts with "this one needs your laptop" *before* the command, not after. If he is not at it,
+say what is waiting and let him come back — the work is already pushed, so nothing is lost.
 
-So: **lead with the machine.** Any step he has to run starts with "this one needs your laptop"
-before the command, not after it. If he is not at the laptop, say what is waiting and let him come
-back to it — the work is already pushed, nothing is lost by waiting.
+**The project is not under `$HOME`.** His Desktop is redirected into OneDrive, so the folder is
+
+    C:\Users\Kevin\OneDrive - CKA Construction Group\Desktop\CKA-Customer-Portal-<branch>\
+
+`cd $HOME\CKA-Customer-Portal` fails on every machine he owns, which is exactly what happened on
+9 Oct. Never construct that path by hand — the script finds the folder itself by searching the
+Desktop for `wrangler.toml`, which is the whole reason it does that.
 
 There is also **no git clone on any of his machines.** He deploys with the Desktop script, which
 downloads the current branch from `raw.githubusercontent.com` and runs `wrangler deploy` itself:
