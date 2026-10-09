@@ -82,7 +82,8 @@ if (!space) {
   const query = await templates.selectRecordsAsync({
     fields: ['Item name', 'Space Type', 'Default trade', 'Default lead time (weeks)',
              'Default mode', 'Description', 'Sort order', 'Active', 'Optional',
-             'Palette category', 'Section', 'Selection group'],
+             'Palette category', 'Section', 'Selection group',
+             'Default catalog brands', 'Default catalog lines'],
   });
 
   const applicable = query.records.filter((t) => {
@@ -103,6 +104,11 @@ if (!space) {
       const mode = t.getCellValue('Default mode');
       const trade = t.getCellValue('Default trade');
       const palette = t.getCellValue('Palette category');
+      // Which slice of the catalog this item offers. Carried onto the row so
+      // "pool finish means Florida Stucco's Florida Gem line" is set once in
+      // the library instead of being rebuilt on every job.
+      const catalogBrands = (t.getCellValue('Default catalog brands') || []).map((x) => ({ name: x.name }));
+      const catalogLines = (t.getCellValue('Default catalog lines') || []).map((x) => ({ name: x.name }));
       const section = t.getCellValue('Section');
 
       return {
@@ -119,6 +125,8 @@ if (!space) {
           'Mode': { name: mode ? mode.name : 'CKA presents options' },
           'Trade': tradeValue(trade),
           'Palette category': palette ? { name: palette.name } : null,
+          'Catalog brands': catalogBrands.length ? catalogBrands : null,
+          'Catalog lines': catalogLines.length ? catalogLines : null,
           // Left empty, the portal files it under its trade's section.
           'Section': section ? { name: section.name } : null,
           'Lead time (weeks)': lead,

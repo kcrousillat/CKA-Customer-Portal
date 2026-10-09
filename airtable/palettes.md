@@ -276,10 +276,56 @@ Diamond Brite catalog. They are a different product line from the card, so
 marking them would be guessing. They currently show no badge at all, which reads
 as "not priced" rather than "included" — the safe default, but worth filling in.
 
-### One thing still loose
+## Product lines, so the catalog is picked not rebuilt — 9 Oct
 
-`Catalog brands` lives on **Selections**, not on Item Templates, so there is no
-way to say in the library "Pool finish defaults to Florida Stucco". Ticking
-Load catalog options on a pool finish row today pulls all 45 rows across both
-manufacturers, and someone deletes down to the recommendation. Either that stays
-a manual step, or Catalog brands needs to exist on the template too.
+Kevin, on the eleven options I had hand-built onto Hahitti:
+
+> Cant we just select the ones we want to show, instead of you building new.
+> Seems like temporary fix but on next job would have to build again. We can
+> have an additional name such as type ... That way i can just say show client
+> florida stucco plaster line
+
+He was right. Hand-building options onto one job is work that gets redone on
+every house. The fix is to make the catalog selectable.
+
+### Product line
+
+Palettes now has **`Product line`** (`fld2yqoAdfj5ZJHAF`). The data was already
+there — `Model` held it — but Model is free text and means a model number on an
+appliance, so it could not be filtered on. All 45 pool finishes were tagged from
+what was already recorded, nothing invented:
+
+| Line | Rows | |
+| --- | --- | --- |
+| Florida Gem | 11 | Florida Stucco colour quartz — the card |
+| Pearl | 6 | Florida Stucco natural pebble |
+| Petite Pearl | 11 | Florida Stucco smaller pebble |
+| Diamond Brite | 11 | quartz plaster |
+| Watercolors | 6 | Diamond Brite tinted range |
+
+Names are the manufacturer's. A rep and an invoice both use "Florida Gem", so
+the base does too.
+
+### Picking a slice
+
+| Field | Where | Does |
+| --- | --- | --- |
+| `Catalog brands` | Selections | narrows the load to a manufacturer |
+| `Catalog lines` (`fldSfz51qNHUSYawe`) | Selections | narrows it to a range within that manufacturer |
+| `Default catalog brands` (`fldzFMDeHwaXOiZ3q`) | Item Templates | what new rows inherit |
+| `Default catalog lines` (`fldmvAaaYew6yqzOT`) | Item Templates | what new rows inherit |
+
+Brand alone was never enough: "Florida Stucco" is 26 pool finishes across three
+ranges at three price points. "Florida Stucco, Florida Gem" is the eleven
+colours on the card.
+
+**Pool finish** now carries Florida Stucco / Florida Gem in the library, so every
+job built from here gets a pool finish row already pointed at the right slice.
+Ticking Load catalog options is the whole job — no deleting down.
+
+### A shadowed variable, caught before it shipped
+
+In `build-rooms.js` the new catalog-lines variable was first called `lines`,
+which is also the name of the Room Plan array in the enclosing scope. Nothing
+inside that callback read the outer one, so it would have worked — until
+somebody added a line that did. Renamed to `catalogBrands` / `catalogLines`.

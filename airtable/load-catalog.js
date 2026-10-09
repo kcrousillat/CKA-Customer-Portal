@@ -24,11 +24,12 @@ let added = 0;
 let message = '';
 
 const sel = await selections.selectRecordAsync(cfg.selectionId, {
-  fields: ['Item', 'Palette category', 'Catalog brands', 'Options', 'Internal notes'],
+  fields: ['Item', 'Palette category', 'Catalog brands', 'Catalog lines', 'Options', 'Internal notes'],
 });
 
 const category = sel ? sel.getCellValue('Palette category') : null;
 const brandCell = sel ? (sel.getCellValue('Catalog brands') || []) : [];
+const lineCell = sel ? (sel.getCellValue('Catalog lines') || []) : [];
 const existingLinks = sel ? (sel.getCellValue('Options') || []) : [];
 
 if (!sel) {
@@ -40,6 +41,10 @@ if (!sel) {
   // Only the brands named on the selection, or all of them when none are. An
   // appliance package mixes brands, so "all" is usually what you want.
   const wantBrands = brandCell.map((b) => b.name);
+  // Brand alone is usually too wide. "Florida Stucco" is 26 pool finishes
+  // across three ranges at three price points; "Florida Stucco, Florida Gem"
+  // is the eleven colours on the card the client is actually being shown.
+  const wantLines = lineCell.map((l) => l.name);
 
   /**
    * Brand and Hinge are single-selects in both tables, and the scripting API
@@ -72,16 +77,23 @@ if (!sel) {
   const catalog = await palettes.selectRecordsAsync({
     fields: ['Name', 'Brand', 'Category', 'Supplier', 'Model', 'Finish', 'Code',
              'Photo', 'Note', 'Product link', 'Swatch color', 'Sort order',
-             'Active', 'Finish options', 'MSRP', 'Hinge', 'Rough-in notes', 'Tier'],
+             'Active', 'Finish options', 'MSRP', 'Hinge', 'Rough-in notes', 'Tier',
+             'Product line'],
   });
 
   const matching = catalog.records.filter((p) => {
     if (!p.getCellValue('Active')) return false;
     const cat = p.getCellValue('Category');
     if (!cat || cat.name !== category.name) return false;
-    if (!wantBrands.length) return true;
-    const brand = p.getCellValue('Brand');
-    return brand && wantBrands.indexOf(brand.name) !== -1;
+    if (wantBrands.length) {
+      const brand = p.getCellValue('Brand');
+      if (!brand || wantBrands.indexOf(brand.name) === -1) return false;
+    }
+    if (wantLines.length) {
+      const line = p.getCellValue('Product line');
+      if (!line || wantLines.indexOf(line.name) === -1) return false;
+    }
+    return true;
   });
 
   // Already-loaded rows are matched by name. That is what a person sees, and
@@ -94,6 +106,7 @@ if (!sel) {
   if (!matching.length) {
     message = 'Nothing in the catalog matches "' + category.name + '"' +
               (wantBrands.length ? ' for ' + wantBrands.join(', ') : '') +
+              (wantLines.length ? ' in ' + wantLines.join(', ') : '') +
               ' yet. Add rows to Palettes and tick again.';
   } else if (!fresh.length) {
     message = 'All ' + matching.length + ' catalog row(s) for "' + category.name +
@@ -146,7 +159,8 @@ if (!sel) {
     message = 'Loaded ' + added + ' option(s) into ' + (sel.getCellValue('Item') || 'this selection') +
               ' from the "' + category.name + '" catalog' +
               (wantBrands.length ? ', limited to ' + wantBrands.join(', ') : '') +
-              '. Delete down to the two or three you are recommending.';
+              (wantLines.length ? ' (' + wantLines.join(', ') + ')' : '') +
+              '.';
 
     // Rough-in notes are for the MEP rough and the cabinet shop, never the
     // owner, so they land in Internal notes rather than on the option.
