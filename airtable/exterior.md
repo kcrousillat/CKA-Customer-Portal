@@ -55,21 +55,35 @@ damp rating**, and that **salt air eats plated finishes**, so solid brass and
 copper weather rather than peel. Neither is a manufacturer claim; both are why
 the decision is not the same one as indoors.
 
-## Six items moved from Whole house, 9 Oct
+## Fourteen items moved from Whole house, 9 Oct
 
 | Item | Trade | Group |
 | --- | --- | --- |
-| Landscape lighting | Lighting | 2 |
+| Window & door package — manufacturer | Glazing | 1 |
+| Window & door frame color | Glazing | 1 |
+| Glass tint | Glazing | 1 |
+| Window grids | Glazing | 1 |
+| Sliding glass door hardware | Glazing | 1 |
+| Front entry door | Millwork | 1 |
 | Exterior door hardware | Hardware | 3 |
 | Roof tile profile & color | Roofing | 1 |
 | Stucco texture | Stucco | 4 |
 | Exterior paint | Paint | 4 |
 | Driveway & motor court paving | Landscape / hardscape | 4 |
+| Generator | Electrical | 1 |
+| Deck paving | Landscape / hardscape | 3 |
+| Landscape lighting | Lighting | 2 |
+
+The five glazing lines were the clearest case: they already carried a Section
+called **Exterior Doors & Windows**, so the base was calling them exterior and
+only the room was out of step.
+
+With the three new lighting items, Exterior holds 17.
 
 The library move affects **jobs built afterwards only**. A job already built
 keeps those rows under its Whole house room until someone moves them, because
 the selection's `Space` link was set when the room was built and nothing
-revisits it.
+revisits it. See the migration below.
 
 ## Known overlap, not yet resolved
 
@@ -84,6 +98,51 @@ space type only affects jobs built afterwards, so Hahitti would keep those rows
 under Whole house while the next job got them under Exterior. That split is
 worse than the current untidiness until someone decides to do all of them at
 once.
+
+## Migrating Hahitti, 9 Oct
+
+Hahitti was already built, so its 14 rows sat under Whole house. One of them was
+not empty: **Driveway & motor court paving** was at *Owner selected* — German H
+Diaz had entered Concrete Pavers / Gray / standard / matte with the note "no
+second option. Has to be this one." So rebuilding the room was not an option;
+that row had to be carried, not regenerated.
+
+The order matters, and it is the opposite of the obvious one:
+
+1. Create the **Exterior** space with its Space Type and sort order but **no
+   Project link**.
+2. Repoint all 14 existing rows' `Space` to it, and renumber their `Sort order`
+   onto the new room's base.
+3. Create the 3 new lighting rows.
+4. **Then** add the Project link.
+
+Step 4 last is the whole trick. "Expand space into selections" fires when Space
+Type *and* Project are both filled, and would have generated a second copy of
+all 17 rows. By the time the Project link lands, the space already has 17
+selections — the automation's first check is exactly that, so it saw them and
+stopped. Verified: it ran, and the room still holds 17 rows, not 34.
+
+Nothing was deleted and nothing was retyped. German's row kept its status, its
+answers, its note and its submission stamp.
+
+### A sort-order collision, caught on the way
+
+Selection sort order is `roomOrder * 100 + (templateOrder % 100)`. The three new
+lighting items were numbered 210–212, which modulo 100 give 10–12 — the same
+slots as Exterior paint (110), Driveway (111) and Generator (112). Those
+templates had never shared a room before, so the clash had never mattered.
+Renumbered to 113–115.
+
+### Two stale automations, also caught
+
+`expand-space.js` and `build-rooms.js` had been rewritten in the repo for the
+group-based dates but **never pushed to Airtable**. The live scripts still
+computed construction start *minus* lead time and wrote no selection group.
+Creating the Exterior room would have generated 17 rows with wrong dates.
+
+Both were updated before the migration. The lesson is the one this repo keeps
+relearning: the repo is not the system of record for automations, Airtable is,
+and a file edited here changes nothing until it is pushed there.
 
 ## To put it on a job
 
