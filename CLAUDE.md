@@ -46,3 +46,22 @@ be verified, leave it empty and say so.
 Mark clearly what is a command to paste and what is expected output — pasted sample output has
 caused confusing errors twice. Keep explanations concrete: what to click, what it should say, what
 to send back if it doesn't.
+
+## Deploys happen on Kevin's laptop, and only there
+
+The project lives on the **laptop** — that is where it was set up and where the Desktop script and
+Node are installed. His desktop machine has neither, so a command sent while he is sitting at it
+fails with a confusing path error, as `cd $HOME\CKA-Customer-Portal` did on 9 Oct.
+
+So: **lead with the machine.** Any step he has to run starts with "this one needs your laptop"
+before the command, not after it. If he is not at the laptop, say what is waiting and let him come
+back to it — the work is already pushed, nothing is lost by waiting.
+
+There is also **no git clone on any of his machines.** He deploys with the Desktop script, which
+downloads the current branch from `raw.githubusercontent.com` and runs `wrangler deploy` itself:
+
+    powershell -ExecutionPolicy Bypass -File "$([Environment]::GetFolderPath('Desktop'))\update-cka-portal.ps1"
+
+That one line is the whole deploy. Never send him `git pull`, `cd worker`, or a bare
+`npx wrangler deploy` — those assume a clone he does not have. Keep it to a single line too: a
+multi-line paste makes Windows Terminal throw a scary "unexpected execution of commands" warning.
