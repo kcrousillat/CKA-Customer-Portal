@@ -395,7 +395,16 @@ async function getProject(env, key) {
               photos: attachments(o.fields["Photo"]),
               order: num(o.fields["Sort order"], 999),
             }))
-            .sort((a, b) => a.order - b.order || a.name.localeCompare(b.name)),
+            // Standards first, upgrades last, and anything untiered in
+            // between. An owner scanning a colour board should meet everything
+            // their allowance covers before they meet anything that costs
+            // more - otherwise they fall for an upgrade on the way past.
+            // Untiered sits in the middle because no tier means nobody has
+            // priced it, which is neither "included" nor "extra". A list where
+            // nothing is tiered therefore keeps exactly the order it had.
+            .sort((a, b) => tierRank(a.tier) - tierRank(b.tier) ||
+                            a.order - b.order ||
+                            a.name.localeCompare(b.name)),
         };
       })
       .sort((a, b) => a.order - b.order),
@@ -775,6 +784,11 @@ async function linkedRecords(env, table, project) {
 function quote(s) { return `"${String(s).replace(/"/g, '\\"')}"`; }
 function num(v, d) { return typeof v === "number" ? v : d; }
 function text(v, max) { return String(v == null ? "" : v).trim().slice(0, max); }
+const TIER_ORDER = { standard: 0, upgrade: 2 };
+function tierRank(tier) {
+  const t = String(tier || "").toLowerCase();
+  return t in TIER_ORDER ? TIER_ORDER[t] : 1;
+}
 function cleanName(v, verb) {
   const name = text(v, 120);
   if (name.length < 3) throw httpError(400, "Type your full name to " + (verb || "approve") + ".");
