@@ -59,6 +59,7 @@ if (!sel) {
   };
   const brandChoices = choicesOf(options, 'Brand');
   const hingeChoices = choicesOf(options, 'Hinge');
+  const tierChoices = choicesOf(options, 'Tier');
   const unknownChoices = new Set();
 
   const pick = (cell, known, label) => {
@@ -71,7 +72,7 @@ if (!sel) {
   const catalog = await palettes.selectRecordsAsync({
     fields: ['Name', 'Brand', 'Category', 'Supplier', 'Model', 'Finish', 'Code',
              'Photo', 'Note', 'Product link', 'Swatch color', 'Sort order',
-             'Active', 'Finish options', 'MSRP', 'Hinge', 'Rough-in notes'],
+             'Active', 'Finish options', 'MSRP', 'Hinge', 'Rough-in notes', 'Tier'],
   });
 
   const matching = catalog.records.filter((p) => {
@@ -101,6 +102,7 @@ if (!sel) {
     const rows = fresh.map((p, i) => {
       const brand = p.getCellValue('Brand');
       const hinge = p.getCellValue('Hinge');
+      const tier = p.getCellValue('Tier');
       const photo = p.getCellValue('Photo') || [];
       const msrp = p.getCellValue('MSRP');
 
@@ -118,6 +120,10 @@ if (!sel) {
           // separate question. Carrying it here is what puts it in front of
           // the owner before it is ordered.
           'Hinge': pick(hinge, hingeChoices, 'Hinge'),
+          // Whether this colour is in the allowance. It travels with the
+          // product for the same reason the hinge does: the owner has to see
+          // it while they are choosing, not after.
+          'Tier': pick(tier, tierChoices, 'Tier'),
           'Color code': p.getCellValue('Code') || '',
           'Note': p.getCellValue('Note') || '',
           'Product link': p.getCellValue('Product link') || '',

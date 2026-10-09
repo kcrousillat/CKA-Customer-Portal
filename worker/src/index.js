@@ -385,6 +385,12 @@ async function getProject(env, key) {
               // model number, so it is fixed at order. The owner has to see it
               // before they approve, not at delivery.
               hinge: (o.fields["Hinge"] && o.fields["Hinge"].name) || o.fields["Hinge"] || "",
+              // Standard = in the allowance, Upgrade = costs more. An owner who
+              // picks a colour and only then learns it is extra has been set up
+              // to be disappointed, so it is on the card rather than in a later
+              // conversation. Empty renders nothing, which is the honest state
+              // for anything nobody has priced.
+              tier: (o.fields["Tier"] && o.fields["Tier"].name) || o.fields["Tier"] || "",
               msrp: SHOW_MSRP && typeof o.fields["MSRP"] === "number" ? o.fields["MSRP"] : null,
               photos: attachments(o.fields["Photo"]),
               order: num(o.fields["Sort order"], 999),

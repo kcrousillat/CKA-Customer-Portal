@@ -233,3 +233,53 @@ rep before an ES job reaches the glass decision, or that selection will stay On 
 Nothing in the automation is window-specific. Add rows with a new Brand and a Category, set the
 Brand on the manufacturer option, set the Palette category on the selections that wait on it, and
 the same machinery works — appliance panel finishes, plumbing trim, garage doors, roof tile.
+
+## Standard vs upgrade, 9 Oct
+
+Kevin, on the Florida Stucco card: the circled colors are standard, the rest are
+upgrades, and Florida Stucco is the default — "that's mainly the company that we
+use, and this is their kind of entry level, which most people get these
+finishes, and sometimes they upgrade."
+
+A `Tier` single-select (Standard / Upgrade) now sits on **Palettes** and on
+**Options**, and the catalog loader carries it across the same way it carries
+Hinge.
+
+### Why the owner sees it
+
+A client who picks a color and *then* learns it costs extra has been set up to
+be disappointed. Putting it on the card means the money conversation happens
+while they are choosing, not after they have fallen for something.
+
+Empty renders nothing. That is deliberate: for anything nobody has priced, the
+portal says nothing rather than implying the price is settled.
+
+### Florida Stucco color quartz, from the card
+
+| Standard | Upgrade |
+| --- | --- |
+| White Gem | Capri |
+| Bone Gem | Hawaiian |
+| Sky Blue | Emerald Sea |
+| Blue Gem | French Silver |
+| Aqua Gem | Lagoon |
+| Aqua Clear | |
+
+All eleven were already in Palettes with their chips — nothing was retyped off
+the card, which is the rule for manufacturer data.
+
+### Not yet tiered
+
+The other **34** Pool finish rows have no tier: Florida Stucco's pebble ranges
+(Florida Pearl, Shoreline, Petite, Granite, Slate and the rest) and the whole
+Diamond Brite catalog. They are a different product line from the card, so
+marking them would be guessing. They currently show no badge at all, which reads
+as "not priced" rather than "included" — the safe default, but worth filling in.
+
+### One thing still loose
+
+`Catalog brands` lives on **Selections**, not on Item Templates, so there is no
+way to say in the library "Pool finish defaults to Florida Stucco". Ticking
+Load catalog options on a pool finish row today pulls all 45 rows across both
+manufacturers, and someone deletes down to the recommendation. Either that stays
+a manual step, or Catalog brands needs to exist on the template too.

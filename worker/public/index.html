@@ -347,6 +347,15 @@ img{max-width:100%}
 .fin input:focus-visible + span{outline:2px solid var(--accent); outline-offset:2px}
 .fin input:checked + span{background:var(--accent); border-color:var(--accent); color:var(--accent-ink); font-weight:600}
 .od.variants{color:var(--accent)}
+/* Standard reads calm, Upgrade reads as "ask first" without shouting. Both are
+   facts about money, so they sit apart from the product details above them. */
+.od.tier{
+  align-self:flex-start; font-family:var(--data); font-size:10.5px;
+  letter-spacing:.04em; text-transform:uppercase; font-weight:600;
+  padding:1px 6px; border-radius:3px; border:1px solid currentColor;
+}
+.od.tier-standard{color:var(--ok, #2f6f4f)}
+.od.tier-upgrade{color:var(--warn)}
 .od.msrp{color:var(--ink-2); font-variant-numeric:tabular-nums}
 .od.hinge{color:var(--accent); font-weight:600}
 .msrp-note,.hinge-note{
@@ -988,6 +997,8 @@ function panelMarkup(row){
         ((o.finishChoices && o.finishChoices.length)
           ? '<span class="od variants">' + o.finishChoices.length + ' finishes</span>' : "") +
         (o.hinge ? '<span class="od hinge">Hinged ' + esc(o.hinge.toLowerCase()) + '</span>' : "") +
+        (o.tier ? '<span class="od tier tier-' + (o.tier.toLowerCase() === "standard" ? "standard" : "upgrade") +
+                  '">' + esc(o.tier) + '</span>' : "") +
         /* Arrives null while the Worker's SHOW_MSRP is off, so this and the
            note below simply do not render. Left in place deliberately: the
            decision was "not yet", not "never". */
@@ -1004,6 +1015,14 @@ function panelMarkup(row){
       out += '<p class="hinge-note">Where a door is hinged is part of the model we order, ' +
         'so it is fixed once the order goes in \u2014 it cannot be swapped on site. ' +
         'If a door should open the other way, tell us before you approve.</p>';
+    }
+
+    /* Said once under the list rather than on every card. An owner scanning
+       colours needs to know what the labels mean before they fall for one. */
+    if (row.options.some(function(o){ return !!o.tier; })) {
+      out += '<p class="hinge-note">Standard colors are included in your allowance. ' +
+        'An upgrade costs more than the allowance \u2014 pick one and we will price it ' +
+        'for you before anything is approved, so you see the number before you commit.</p>';
     }
 
     if (row.options.some(function(o){ return !!o.msrp; })) {
