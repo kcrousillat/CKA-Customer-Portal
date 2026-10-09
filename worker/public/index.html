@@ -354,8 +354,11 @@ img{max-width:100%}
   letter-spacing:.04em; text-transform:uppercase; font-weight:600;
   padding:1px 6px; border-radius:3px; border:1px solid currentColor;
 }
-.od.tier-standard{color:var(--ok, #2f6f4f)}
-.od.tier-upgrade{color:var(--warn)}
+/* Scoped to .opt-body so these beat `.opt-body .od`, which sets the muted
+   grey and would otherwise win on equal specificity by coming later. Uses the
+   existing --good / --warn tokens, which already have dark-mode variants. */
+.opt-body .od.tier-standard{color:var(--good)}
+.opt-body .od.tier-upgrade{color:var(--warn)}
 .od.msrp{color:var(--ink-2); font-variant-numeric:tabular-nums}
 .od.hinge{color:var(--accent); font-weight:600}
 .msrp-note,.hinge-note{
