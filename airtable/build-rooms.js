@@ -42,7 +42,7 @@ const tradeValue = (cell) => {
 };
 
 const project = await projects.selectRecordAsync(cfg.projectId, {
-  fields: ['Project name', 'Construction start'],
+  fields: ['Project name', 'Construction start', 'Roof type'],
 });
 
 if (!project) {
@@ -63,6 +63,27 @@ if (!project) {
   if (!start) {
     log.push('No construction start on this project, so selection due dates are left blank. Set it and tick Recompute dates.');
   }
+
+  const roofCell = project.getCellValue('Roof type');
+  const roofType = roofCell ? roofCell.name : null;
+
+  // Some items make no sense on some roofs. A flat-roof job has no tile profile
+  // to pick, and asking the owner to choose one is how a portal loses its
+  // credibility. The library item carries the roof types it applies to; the job
+  // carries the roof it has; a row that does not match is created hidden rather
+  // than not created at all, so turning it back on later is one cell.
+  //
+  // Blank on either side means no filtering. A library item with no roof types
+  // applies to every job (which is almost everything - a faucet does not care
+  // what is overhead), and a job with no Roof type set behaves exactly as it did
+  // before this field existed.
+  const roofSkips = (t) => {
+    if (!roofType) return false;
+    const only = t.getCellValue('Only for roof types') || [];
+    if (!only.length) return false;
+    return !only.some((x) => x.name === roofType);
+  };
+  const hiddenAtBirth = (t) => !!t.getCellValue('Optional') || roofSkips(t);
 
   const groupQuery = await groupsT.selectRecordsAsync({
     fields: ['Group', 'Days from construction start'],
@@ -118,7 +139,8 @@ if (!project) {
     fields: ['Item name', 'Space Type', 'Default trade', 'Default lead time (weeks)',
              'Default mode', 'Description', 'Sort order', 'Active', 'Optional',
              'Palette category', 'Section', 'Selection group',
-             'Default catalog brands', 'Default catalog lines'],
+             'Default catalog brands', 'Default catalog lines',
+             'Only for roof types'],
   });
 
   if (!lines.length) {
@@ -183,6 +205,10 @@ if (!project) {
         // Which slice of the catalog this item offers. Carried onto the row so
         // "pool finish means Florida Stucco's Florida Gem line" is set once in
         // the library instead of being rebuilt on every job.
+        //
+        // Named catalogLines, not lines: `lines` is the Room Plan array in the
+        // enclosing scope, and a different thing wearing the same name inside
+        // this callback is how a quiet bug gets in.
         const catalogBrands = (t.getCellValue('Default catalog brands') || []).map((x) => ({ name: x.name }));
         const catalogLines = (t.getCellValue('Default catalog lines') || []).map((x) => ({ name: x.name }));
         const section = t.getCellValue('Section');
@@ -195,8 +221,9 @@ if (!project) {
             // An Optional item still generates, so nobody has to remember it
             // exists, but it arrives hidden. Someone sets it to Not started
             // on the jobs that have one. That is one click to add a prep sink,
-            // against having to notice a missing row on every other job.
-            'Status': { name: t.getCellValue('Optional') ? 'Not applicable' : 'Not started' },
+            // against having to notice a missing row on every other job. An
+            // item that does not suit this job's roof arrives the same way.
+            'Status': { name: hiddenAtBirth(t) ? 'Not applicable' : 'Not started' },
             'Mode': { name: mode ? mode.name : 'CKA presents options' },
             'Trade': tradeValue(t.getCellValue('Default trade')),
             'Palette category': palette ? { name: palette.name } : null,

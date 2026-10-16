@@ -149,3 +149,49 @@ and a file edited here changes nothing until it is pushed there.
 Exterior is a room like any other: add a Room Plan line with How many = 1, then
 tick Build rooms. The build only adds, so it is safe on a job already underway —
 Hahitti picks up the three new lines and nothing else changes.
+
+## Balcony railing
+
+Added 16 Oct 2026. Library item `Balcony railing`, Exterior space type, trade
+**Metals / railings**, Group 2, Owner specifies, sort order 116.
+
+One decision for the whole house rather than one per balcony: the owner picks a
+material, an infill and a finish color, and the quantity comes off the
+elevations. Owner boxes are *Fabricator or manufacturer, Material, Infill style,
+Finish color*.
+
+Sort order 116 was free and does not collide: Exterior runs 101-115 plus 124 and
+126, and the portal's row order is `room order x 100 + (template order mod 100)`,
+so only the last two digits have to be unique within a room type.
+
+Hahitti already had its Exterior room built, and the library never backfills a
+room that exists, so the row was created directly on that job (sort 2516, due
+25 Dec 2026 with the rest of Group 2). Every job built from here gets it from the
+library.
+
+## Roof type, and not asking a flat roof for a tile color
+
+Two fields, added 16 Oct 2026:
+
+- **Projects → `Roof type`** (Tile / Flat / Metal / Shingle / Mixed). Set it
+  before ticking Build rooms.
+- **Item Templates → `Only for roof types`**. Blank on almost everything, which
+  means "applies to every job". Filled in only where an item makes no sense on
+  some roofs.
+
+`Roof tile profile & color` is now limited to **Tile** and **Mixed**. Mixed keeps
+it, because a house with some tile still needs the color.
+
+The room build (`build-rooms.js`) and the single-room build (`expand-space.js`)
+both create a non-matching row as **Not applicable** rather than skipping it.
+That is the same mechanism `Optional` already used, and it is deliberate: the row
+exists, so turning it back on when a roof changes is one cell rather than a
+rebuild. `Not applicable` is not in the Worker's `OWNER_VISIBLE_STATUSES`, so the
+owner never sees it and no deploy was needed to hide it.
+
+Blank on either side means no filtering, so every job that existed before these
+fields behaves exactly as it did.
+
+Hahitti is flat-roofed. Its `Roof type` reads Flat and the existing tile row was
+set to Not applicable by hand, with the reason in Internal notes. The row had no
+owner entry, so nothing was lost.

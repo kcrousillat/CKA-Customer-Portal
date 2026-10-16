@@ -57,8 +57,29 @@ if (!space) {
   // along on the row as CKA's own planning figure - it sets no date and the
   // portal does not show it.
   const project = await projects.selectRecordAsync(projectId, {
-    fields: ['Construction start'],
+    fields: ['Construction start', 'Roof type'],
   });
+  const roofCell = project ? project.getCellValue('Roof type') : null;
+  const roofType = roofCell ? roofCell.name : null;
+
+  // Some items make no sense on some roofs. A flat-roof job has no tile profile
+  // to pick, and asking the owner to choose one is how a portal loses its
+  // credibility. The library item carries the roof types it applies to; the job
+  // carries the roof it has; a row that does not match is created hidden rather
+  // than not created at all, so turning it back on later is one cell.
+  //
+  // Blank on either side means no filtering. A library item with no roof types
+  // applies to every job (which is almost everything - a faucet does not care
+  // what is overhead), and a job with no Roof type set behaves exactly as it did
+  // before this field existed.
+  const roofSkips = (t) => {
+    if (!roofType) return false;
+    const only = t.getCellValue('Only for roof types') || [];
+    if (!only.length) return false;
+    return !only.some((x) => x.name === roofType);
+  };
+  const hiddenAtBirth = (t) => !!t.getCellValue('Optional') || roofSkips(t);
+
   const startValue = project ? project.getCellValue('Construction start') : null;
   const start = startValue ? new Date(startValue) : null;
 
@@ -84,7 +105,8 @@ if (!space) {
     fields: ['Item name', 'Space Type', 'Default trade', 'Default lead time (weeks)',
              'Default mode', 'Description', 'Sort order', 'Active', 'Optional',
              'Palette category', 'Section', 'Selection group',
-             'Default catalog brands', 'Default catalog lines'],
+             'Default catalog brands', 'Default catalog lines',
+             'Only for roof types'],
   });
 
   const applicable = query.records.filter((t) => {
@@ -121,8 +143,9 @@ if (!space) {
           // An Optional item still generates, so nobody has to remember it
           // exists, but it arrives hidden. Someone sets it to Not started
           // on the jobs that have one. That is one click to add a prep sink,
-          // against having to notice a missing row on every other job.
-          'Status': { name: t.getCellValue('Optional') ? 'Not applicable' : 'Not started' },
+          // against having to notice a missing row on every other job. An
+          // item that does not suit this job's roof arrives the same way.
+          'Status': { name: hiddenAtBirth(t) ? 'Not applicable' : 'Not started' },
           'Mode': { name: mode ? mode.name : 'CKA presents options' },
           'Trade': tradeValue(trade),
           'Palette category': palette ? { name: palette.name } : null,
