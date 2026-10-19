@@ -222,3 +222,38 @@ Appliances now carry explicit boxes rather than the four defaults:
 The defaults end in "Color name or number / Sheen or finish", which is right for
 paint and wrong for a dishwasher. `Owner boxes` is read live by the Worker, so
 this reached the built rooms without a rebuild.
+
+## Kitchen cabinetry, 19 Oct 2026
+
+Two changes, both in the library so every future job inherits them.
+
+**Cabinet hardware is now owner-specifies.** It was the odd one out in the
+kitchen: CKA presents options for pulls and knobs, while the cabinets, the
+countertop, the sink and the faucet were all owner-specifies. Owners arrive with
+a hardware collection in mind far more often than not, and a curated row made
+them ask for something that was never on the board. Owner boxes:
+
+    Manufacturer, Collection or model, Finish, Sizes (drawers / doors)
+
+Sizes is a box of its own because most kitchens use two - longer pulls on
+drawers, shorter pulls or knobs on doors - and an owner who gives one number has
+not actually answered. The description says we will lay it out from the cabinet
+drawings if they would rather not count.
+
+**The island is no longer a selection of its own.** `Island cabinet finish` was
+a second kitchen row whose own description read "Delete this line if it matches",
+which is the shape of a question nobody wanted to be asked. It is now a fifth
+owner box on `Cabinet door style & finish`:
+
+    Door style or profile, Material, Color or finish, Sheen, Island if different
+
+One decision, with room for the island to differ rather than a row demanding it.
+The old item is set **Active = false** rather than deleted, so jobs that already
+carry the row still read correctly; its description says why and warns against
+re-activating it without removing the island box.
+
+Hahitti had all three rows at Not started with nothing entered. Its hardware row
+was switched to owner-specifies, its island row set to Not applicable with the
+reason in Internal notes, and both cabinet descriptions rewritten on the row -
+`Description` is stored per row, unlike `Owner boxes`, which the Worker reads
+live from the library and which therefore needed no per-row write.
