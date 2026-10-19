@@ -13,6 +13,31 @@ only a change to the portal page or the Worker needs the updater:
 Three green numbered steps, then "All done." It downloads the current portal
 and Worker from GitHub before deploying, so a stale local copy cannot go live.
 
+## Guenther Residence - built 19 Oct 2026
+
+Second live job. Project `rectLzD9Y06jIX2wL`, code 2604, 2553 SE 10th Ct,
+Pompano Beach. Owner Dan Guenther, PM Nicolas Gomez, flat roof. Notify CKA is
+nicolas@ckaconstruction.com. **Owner email is deliberately blank** until Kevin
+has walked the portal.
+
+Construction start 15 Nov 2026 is an **estimate**. When the real date is known,
+change it and tick Recompute dates.
+
+22 rooms, 246 selections. Rooms were renamed after the build: Bedroom 2-4
+(Bedroom 4 is a second primary with one closet), Primary / Bedroom 2 / 3 / 4
+bath, Powder, Cabana bath (no shower), Laundry 1 (first floor) and Laundry 2
+(inside the primary suite, washer and dryer only - its cabinet, counter,
+backsplash, sink and faucet lines are Not applicable). The paint lines under
+Whole house were renamed to match.
+
+Switched on: range, freezer column, microwave; tub and freestanding tub filler
+in the Primary bath and Bedroom 4 bath (both with two sinks and two faucets);
+Flooring - 2nd floor. Still to check against the contract budget and scope of
+work.
+
+The first Build rooms run took about 20 seconds, right at the script's time
+budget. It finished, but a bigger house may need a second tick.
+
 ## The demo job - deleted 19 Oct 2026
 
 **DEMO - Practice job is gone.** Kevin asked for it to be removed once Hahitti
