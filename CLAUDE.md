@@ -69,3 +69,36 @@ downloads the current branch from `raw.githubusercontent.com` and runs `wrangler
 That one line is the whole deploy. Never send him `git pull`, `cd worker`, or a bare
 `npx wrangler deploy` — those assume a clone he does not have. Keep it to a single line too: a
 multi-line paste makes Windows Terminal throw a scary "unexpected execution of commands" warning.
+
+## One job at a time, and say which one
+
+The base holds every job at once. There is no sandbox and no per-job copy, so a
+write aimed at the wrong project hits a real client's rows.
+
+**Every instruction about a job should name the job.** When one does not, and
+more than one job exists, ask which rather than inferring it from what was
+discussed earlier - the earlier thing is exactly what makes the inference wrong.
+Filter every read and write by that project's record ID.
+
+Keep clear which of the two a change belongs to, because it decides how far it
+reaches:
+
+- **Library** (Item Templates, Space Types, Palettes, Selection groups, Trades,
+  Sections) - shared by every job, affects every job built from now on, and
+  never backfills a job already built.
+- **Job** (the Project row and its Spaces, Selections, Room Plan lines) - that
+  job only.
+
+"Make backsplashes owner-entered" is a library change. "This roof is flat" is a
+job change. Most mix-ups between two jobs are really this distinction going
+unnoticed.
+
+A fresh session per job is encouraged - see HANDOFF.md - but it separates the
+conversation, not the data.
+
+## The deploy script reads one hard-coded branch
+
+`tools/update-cka-portal.ps1` downloads from `claude/exciting-heisenberg-pqq69a`
+by name. Work pushed to any other branch is committed, pushed, reported as done,
+and never reaches the Worker. Stay on that branch unless the script is changed
+to match.
