@@ -35,6 +35,16 @@ in the Primary bath and Bedroom 4 bath (both with two sinks and two faucets);
 Flooring - 2nd floor. Still to check against the contract budget and scope of
 work.
 
+Checked against Exhibit A (scope) and Exhibit B (estimate) the same day.
+Set Not applicable, each with the contract reason in Internal notes: window
+treatments (by Owner), closet systems, garage epoxy and storage, generator,
+pool equipment and automation, and pantry shelving (no pantry). Added four
+job-only Exterior lines that the library does not have: Stone veneer, Exterior
+wood cladding (T&G cypress), Balcony tile, Side gates. Stucco is shown as a
+single "Smooth" option for the owner to confirm. The range is gas. Paint stays
+one line per room, at Kevin's call, even though the contract says three
+interior colors.
+
 The first Build rooms run took about 20 seconds, right at the script's time
 budget. It finished, but a bigger house may need a second tick.
 
