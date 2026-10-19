@@ -49,7 +49,8 @@ Three fields make this work, and two of them are plumbing:
   email action's To box takes a string and a lookup arrives as a list.
 
 A job with `Notify CKA` empty is excluded by the trigger, so it never fires and
-never shows a failed run. DEMO stays quiet until someone fills it in.
+never shows a failed run. That is what kept the demo job quiet while it existed,
+and it is what keeps any future practice job quiet too.
 
 ## The three owner emails - built, deliberately OFF
 

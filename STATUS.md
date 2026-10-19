@@ -13,34 +13,37 @@ only a change to the portal page or the Worker needs the updater:
 Three green numbered steps, then "All done." It downloads the current portal
 and Worker from GitHub before deploying, so a stale local copy cannot go live.
 
-## The demo job
+## The demo job - deleted 19 Oct 2026
 
-**DEMO - Practice job** is built and waiting. Eighteen rooms, 203 selections,
-13 paint lines. Status **Example**, so it is unmistakably not a client.
-Nothing in it gets ordered from; delete the Project row whenever it has served
-its purpose and its rooms and selections go with it.
+**DEMO - Practice job is gone.** Kevin asked for it to be removed once Hahitti
+was the live job and the demo had served its purpose. Deleted in this order,
+children first:
 
-Construction start is 1 Mar 2027 on purpose - far enough out that the
-needed-by dates land in the future, so the portal does not open with
-everything red.
+| Table | Rows |
+|---|---|
+| Options | 59 |
+| Selections | 208 |
+| Spaces | 16 |
+| Room Plan | 16 |
+| Projects | 1 |
 
-Portal key `<portal key - see the Projects table>`. It is a throwaway, and it should stay one:
-`ALLOWED_ORIGIN` on the Worker is still `*`, so the pre-client hardening is not
-done and nothing real belongs behind this key yet.
+**Airtable does not cascade.** An earlier version of this section said deleting
+the Project row would take its rooms and selections with it. That is wrong -
+deleting a parent only empties the link cell on the children, which would have
+left 208 selections and 59 options with no project, invisible in every
+project-filtered view and still counted everywhere else. Delete the leaves
+first, parent last, and check for orphans afterwards.
 
-    https://cka-selections-api.kevin-7c1.workers.dev/?p=<portal key - see the Projects table>
+Afterwards: Hahitti's 287 selections intact, no selection with an empty Project,
+no option with an empty Selection.
 
-The house it describes: kitchen, bar, 3 baths, powder, laundry, 3 bedrooms,
-primary bedroom (with its second closet switched on), stair, outdoor kitchen,
-pool, garage, two floor levels. No elevator. Change any count on the Room Plan and tick
-**Build rooms** again - it only ever adds, so nothing already there is
-disturbed.
+Deleted rows sit in Airtable's trash for a period if any of this needs undoing.
 
-Still to do on it if you want the full picture: open **Project setup ->
-Optional items** and switch on the tubs, prep sink, pot filler and second
-dishwasher this imaginary house has - and the second closets, if a bedroom
-other than the primary has one. They are generated but hidden until
-somebody says so.
+If a practice job is ever wanted again, build it the way any job is built: a
+Project row, **Load starter plan**, type the room counts, **Build rooms**.
+Set Status to **Example** so the portal labels it, give it a construction start
+far enough out that the dates land in the future, and leave the owner emails
+blank.
 
 ## Project setup, step by step
 
