@@ -242,12 +242,15 @@ drawings if they would rather not count.
 
 **The island is no longer a selection of its own.** `Island cabinet finish` was
 a second kitchen row whose own description read "Delete this line if it matches",
-which is the shape of a question nobody wanted to be asked. It is now a fifth
+which is the shape of a question nobody wanted to be asked. It is now the fourth
 owner box on `Cabinet door style & finish`:
 
-    Door style or profile, Material, Color or finish, Sheen, Island if different
+    Door style or profile, Material, Color and sheen, Island if different
 
 One decision, with room for the island to differ rather than a row demanding it.
+
+This was written as five boxes first, which silently did nothing - see the
+four-box ceiling below. Color and sheen were merged to make room.
 The old item is set **Active = false** rather than deleted, so jobs that already
 carry the row still read correctly; its description says why and warns against
 re-activating it without removing the island box.
@@ -257,3 +260,47 @@ was switched to owner-specifies, its island row set to Not applicable with the
 reason in Internal notes, and both cabinet descriptions rewritten on the row -
 `Description` is stored per row, unlike `Owner boxes`, which the Worker reads
 live from the library and which therefore needed no per-row write.
+
+## Backsplashes are owner-specifies, 19 Oct 2026
+
+All three of them - Kitchen, Bar, and the one shared by Laundry and Pantry - were
+CKA-presents-options and are now owner-specifies, with boxes:
+
+    Manufacturer or supplier, Product name or series, Color and finish, Tile or slab / how high
+
+The Bar one drops the height, because its own description already fixes it at
+full height behind the run.
+
+The real decision in a backsplash is not the tile, it is **tile or a slab of the
+countertop stone**, and that has to be settled *with* the counter - a slab
+backsplash is cut from the same stone and there may not be enough of it later.
+That is why the last box asks for it rather than leaving it to a note.
+
+Grout is deliberately not a box. It is chosen against the physical sample once it
+arrives, and the description now says CKA will bring options rather than asking
+an owner to pick a grout color off a screen.
+
+Hahitti's four rows (Kitchen, Club room, Pantry, Laundry) were all Not started
+with nothing entered, so each was switched in place.
+
+## The four-box ceiling
+
+`Owner boxes` can name at most **four** boxes. The portal's `boxesFor()` clamps
+to `BOX_KEYS = ["supplier", "model", "color", "finish"]`, and the Worker stores
+the answers in exactly those four fields: `Owner supplier`, `Owner model`,
+`Owner color`, `Owner finish`.
+
+**A fifth label is silently dropped.** No error, no warning - the box simply does
+not render, and anyone reading the library row believes they asked a question
+that was never put. This cost one round on the cabinet item above.
+
+So: four labels, and no commas inside a label - the list is comma-separated, so
+"Sizes (drawers / doors)" is one box but "Sizes, drawers and doors" is two.
+
+All 98 library items with boxes were checked on 19 Oct 2026; the cabinet item was
+the only one over the line.
+
+If something genuinely needs a fifth answer, it needs a field to land in: a new
+`Owner ...` column on Selections, a fifth key in `BOX_KEYS`, and a deploy. The
+free-text **note** box on every selection is the cheaper answer for anything that
+is occasional rather than structural.
