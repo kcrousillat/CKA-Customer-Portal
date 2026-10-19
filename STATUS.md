@@ -45,6 +45,16 @@ single "Smooth" option for the owner to confirm. The range is gas. Paint stays
 one line per room, at Kevin's call, even though the contract says three
 interior colors.
 
+Lighting set from the plans (Kevin, 19 Oct 2026). New job-only room Entry
+foyer (sort 2, no Space Type so the expand automation leaves it alone) with
+one light; every later room and its selections moved down one place to make
+room. New lines: stair light, floodlights x4. Quantities: exterior sconces 3,
+kitchen pendants 3, vanity lights Primary 2 / Bedroom 4 bath 2 / Cabana 1 /
+Powder 1. Bedroom 2 and 3 bath lights and address/path lighting are off. Each
+bedroom has one "Ceiling fan or light" line for the single centre J-box, and
+its separate Ceiling fan line is off. Soffit lighting stays visible as an
+optional add, since the plans show none.
+
 The first Build rooms run took about 20 seconds, right at the script's time
 budget. It finished, but a bigger house may need a second tick.
 
