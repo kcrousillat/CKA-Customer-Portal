@@ -17,8 +17,10 @@ and Worker from GitHub before deploying, so a stale local copy cannot go live.
 
 Second live job. Project `rectLzD9Y06jIX2wL`, code 2604, 2553 SE 10th Ct,
 Pompano Beach. Owner Dan Guenther, PM Nicolas Gomez, flat roof. Notify CKA is
-nicolas@ckaconstruction.com. **Owner email is deliberately blank** until Kevin
-has walked the portal.
+nicolas@ckaconstruction.com. **Live since 20 Oct 2026**: Owner 1 email is
+guentherlaw01@hotmail.com, so the owner emails now send for this job. The
+stucco line was moved to Not started first so the "options are ready" email
+did not fire on the spot; its Smooth option still shows and can be approved.
 
 Construction start 15 Nov 2026 is an **estimate**. When the real date is known,
 change it and tick Recompute dates.
