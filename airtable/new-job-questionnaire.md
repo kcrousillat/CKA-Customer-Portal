@@ -115,6 +115,11 @@ Once the answers come back:
 4. **Build rooms** creates every room and every selection, each with its due
    date already set from the construction start and its selection round.
 5. The **optional items** from Part 3 are switched on.
+5b. Any item with a **catalog** behind it (today that is the pool finish, which
+   is set to Florida Stucco's Florida Gem line) has its colours loaded. The room
+   build now ticks this itself - it used to be a manual step, and on the second
+   job nobody remembered, so the owner opened the pool finish and read "CKA is
+   putting options together" about a palette that had been ready for weeks.
 6. You get the **portal link** and walk it yourself as if you were the owner.
 7. Only then do the **owner emails** go in. That is what makes it live.
 

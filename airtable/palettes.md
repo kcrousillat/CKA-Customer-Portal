@@ -329,3 +329,25 @@ In `build-rooms.js` the new catalog-lines variable was first called `lines`,
 which is also the name of the Room Plan array in the enclosing scope. Nothing
 inside that callback read the outer one, so it would have worked — until
 somebody added a line that did. Renamed to `catalogBrands` / `catalogLines`.
+
+## The load step is no longer manual - 20 Oct 2026
+
+A selection carries `Catalog brands`, `Catalog lines` and `Palette category` from
+its library item, and the loader turns those into option cards. Until today the
+loader only ran when a human ticked **Load catalog options** on the row.
+
+Nobody ticked it on Guenther. Every setting was right - Florida Stucco, Florida
+Gem, Pool finish - and the owner still opened the pool finish to a holding
+message about options being put together, for a palette that had been sitting
+ready since the Hahitti work. Hahitti only looked correct because the box got
+ticked by hand while we were building it.
+
+The room build and the single-room build now create a qualifying row with the
+box **already ticked**, which fires the loader's own automation. The loading
+logic is not duplicated - the one script that knows how to load a catalog is
+still the only one that does it, and it unticks the box when it finishes.
+
+Qualifying means the row has both a palette category and at least one catalog
+brand. Today exactly one item per job qualifies, so this is one extra automation
+run per job. If a dozen items ever carry catalogs, revisit it - a dozen runs
+firing at once during a build is a different proposition.

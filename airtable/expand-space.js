@@ -151,6 +151,19 @@ if (!space) {
           'Palette category': palette ? { name: palette.name } : null,
           'Catalog brands': catalogBrands.length ? catalogBrands : null,
           'Catalog lines': catalogLines.length ? catalogLines : null,
+          // Tick the catalog load on the way in, rather than leaving it for
+          // someone to remember. A row that carries a palette category and a
+          // brand has everything the loader needs, so the only thing standing
+          // between it and a board of colours was a human ticking a box - and
+          // on Guenther nobody did, so the owner opened the pool finish and
+          // read "CKA is putting options together" about a palette that had
+          // been sitting ready in the library for weeks.
+          //
+          // Creating the row with the box already ticked fires the loader's
+          // own automation, so the colours come from the one script that
+          // knows how to load them. Nothing is duplicated here. The loader
+          // unticks the box when it finishes.
+          'Load catalog options': !!(palette && catalogBrands.length),
           // Left empty, the portal files it under its trade's section.
           'Section': section ? { name: section.name } : null,
           'Lead time (weeks)': lead,
