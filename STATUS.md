@@ -13,6 +13,25 @@ only a change to the portal page or the Worker needs the updater:
 Three green numbered steps, then "All done." It downloads the current portal
 and Worker from GitHub before deploying, so a stale local copy cannot go live.
 
+## Owner emails BCC the job's CKA list - WAITING ON KEVIN TO APPLY (20 Oct 2026)
+
+All four owner emails (selection received, options ready, approved, released
+for order) now BCC the job's Notify CKA list. Three of them used to CC it,
+which showed the owner the internal addresses; "options ready" sent no copy at
+all. This applies to every job.
+
+The changes are saved as drafts only. Each of the four needs **Update** clicked
+at the top of the automation in Airtable before it goes live - until then the
+old behaviour (CC on three, nothing on the fourth) is what actually sends:
+
+    https://airtable.com/appfRsDMRMX4sGSPK/wflMVOAH4DmGlgpqb   selection received
+    https://airtable.com/appfRsDMRMX4sGSPK/wflp0cQcnBofEKh9U   options are ready
+    https://airtable.com/appfRsDMRMX4sGSPK/wflQme88fCaa22yZ3   approved
+    https://airtable.com/appfRsDMRMX4sGSPK/wfliMvyayfWdO7gY7   released for order
+
+Check with get_automation includeDeployedVersion: the deployed version should
+show "bcc" and no "cc".
+
 ## Guenther Residence - built 19 Oct 2026
 
 Second live job. Project `rectLzD9Y06jIX2wL`, code 2604, 2553 SE 10th Ct,
