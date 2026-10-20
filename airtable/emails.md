@@ -366,3 +366,42 @@ emailing, best first:
 
 Whatever the method, check `list_automation_runs` afterwards. It is the only
 honest answer to "did that send", and it is cheap.
+
+## "Options are ready" moved into the digest - 20 Oct 2026
+
+Kevin's call after the misfire above: turn the standalone automation off now, and
+fold the notification into the 6am digest so the promise is still kept.
+
+**Owner email - options are ready (`wflp0cQcnBofEKh9U`) is OFF.** Kevin switched
+it off on 20 Oct 2026. It is not deleted, so its wording survives if we ever want
+an immediate send again - but nothing should turn it back on while the digest
+covers the same ground, or owners get told twice.
+
+**The digest now reports four statuses**, Options presented first:
+
+| Status | Owner heading | CKA heading |
+|---|---|---|
+| Options presented | Ready for you to look at | Presented to the owner - waiting on them |
+| Owner selected | You sent these to us | Waiting on you to review |
+| Approved | We confirmed these | Approved - ready to release for order |
+| Released for order | These are now on order | Released for order |
+
+Two things had to change beyond the list:
+
+- The owner digest used to sign off **"Nothing here needs a reply."** That is
+  false the moment presented options are in it, and a digest that asks for a
+  decision while claiming it needs no reply is worse than no digest. It now says
+  the items are waiting on them, and why the date matters.
+- The **subject** becomes "Options ready for you" rather than "Your selections
+  update" whenever something is waiting, so it is answerable from the inbox list.
+
+The decision date now shows on presented rows as well as submitted ones - those
+are the two statuses where somebody still owes a decision.
+
+`worker/test/digest.test.mjs` covers it: 28 checks, including that a digest
+*without* presented options still signs off as needing no reply, which is the
+regression that would otherwise go unnoticed.
+
+**Still slightly untrue:** the portal tells an owner "You will get an email when
+they are here", and that email now arrives at 6am the next morning rather than on
+the spot. Worth rewording the portal text on the next deploy.

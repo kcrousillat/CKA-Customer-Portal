@@ -22,6 +22,10 @@ const projectRows = [
     "Notify CKA": "", "Portal link": "https://portal.example/?p=demo" },
   { id: "p3", "Project name": "Quiet job", "Owner emails": "",
     "Notify CKA": "kevin@ckaconstruction.com", "Portal link": "x" },
+  // Its own job, so the presented-options assertions cannot disturb Hahitti's
+  // counts and Hahitti stays a regression guard for a digest with none.
+  { id: "p4", "Project name": "Presented job", "Owner emails": "dan@example.com",
+    "Notify CKA": "nicolas@ckaconstruction.com", "Portal link": "https://portal.example/?p=p4" },
 ];
 
 const S = (n) => ({ name: n });
@@ -50,6 +54,10 @@ const selectionRows = [
   // job with CKA list but no owner email -> CKA email only
   { id: "s8", Item: "Toilet", "Item and room": "Toilet (Powder)", Status: S("Owner selected"),
     "Status changed": ago(2), Project: [{ id: "p3" }], "Owner supplier": "Toto" },
+  // Newly presented: no supplier or model yet, because the owner has not picked.
+  { id: "s9", Item: "Pool finish", "Item and room": "Pool finish (Pool)",
+    Status: S("Options presented"), "Status changed": ago(4), Project: [{ id: "p4" }],
+    "Owner supplier": "", "Owner model": "", "Needed by": "2027-03-15" },
 ];
 
 globalThis.base = {
@@ -65,7 +73,7 @@ const ok = (cond, label) => { console.log((cond ? "PASS  " : "FAIL  ") + label);
 
 const emails = out.emails;
 ok(Array.isArray(emails), "emails is an array");
-ok(emails.length === 3, "3 emails: Hahitti owner+CKA, Quiet job CKA - got " + emails.length);
+ok(emails.length === 5, "5 emails: Hahitti owner+CKA, Quiet job CKA, Presented job owner+CKA - got " + emails.length);
 
 const hOwner = emails.find((e) => e.to === "rami@example.com");
 ok(!!hOwner, "owner email built for Hahitti");
@@ -88,6 +96,28 @@ ok(!emails.some((e) => e.body.includes("Orphan")), "orphan row with no project e
 const quiet = emails.find((e) => e.subject.startsWith("Quiet job"));
 ok(!!quiet && quiet.to === "kevin@ckaconstruction.com", "job with no owner email still alerts CKA");
 ok(emails.filter((e) => e.subject.startsWith("Quiet job")).length === 1, "and sends only the CKA one");
+
+/* ---- options presented, folded in on 20 Oct 2026 ----
+   This block used to be its own immediate email per row. The things that must
+   stay true: it appears, it is asked for rather than merely reported, and a
+   digest WITHOUT it is still signed off as needing no reply. */
+const pOwner = emails.find((e) => e.to === "dan@example.com");
+ok(!!pOwner, "owner email built for a job with newly presented options");
+ok(pOwner.subject === "Presented job - Options ready for you - 1 selection",
+   "subject says options are ready rather than 'update': " + pOwner.subject);
+ok(pOwner.body.includes("Ready for you to look at (1)"), "owner heading for presented options");
+ok(pOwner.body.includes("Pool finish (Pool)"), "the presented item is listed");
+ok(pOwner.body.includes("due March 15, 2027"), "presented rows carry the decision date");
+ok(!pOwner.body.includes("Nothing here needs a reply"),
+   "a digest that asks for a decision must not say nothing needs a reply");
+ok(pOwner.body.includes("waiting on you"), "it says plainly that they are waiting on the owner");
+ok(hOwner.body.includes("Nothing here needs a reply"),
+   "a digest with no presented options still signs off as needing no reply");
+
+const pCka = emails.find((e) => e.to === "nicolas@ckaconstruction.com");
+ok(!!pCka, "CKA email built for the presented job");
+ok(pCka.body.includes("Presented to the owner - waiting on them"),
+   "CKA heading says who it is waiting on");
 
 ok(emails.every((e) => e.to && e.subject && e.body), "every email has to/subject/body");
 

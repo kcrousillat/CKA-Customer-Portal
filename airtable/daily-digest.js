@@ -12,7 +12,9 @@
  * selections, which was heading for roughly 850 owner emails over the job.
  *
  * So: at 6am, one email to the owners listing everything that moved on their
- * job in the last 24 hours, and one to that job's CKA list. A job where
+ * job in the last 24 hours, and one to that job's CKA list. That includes
+ * options CKA has newly presented, which until 20 Oct 2026 sent their own
+ * immediate email per row. A job where
  * nothing moved gets nothing - a digest that arrives daily saying "no changes"
  * trains people to delete it unread, and then they delete the one that matters.
  *
@@ -31,16 +33,27 @@ const selections = base.getTable('Selections');
 const WINDOW_HOURS = 25;
 const cutoff = Date.now() - WINDOW_HOURS * 3600 * 1000;
 
-// Only the three that mean something happened. A row going to On hold or
+// Only the four that mean something happened. A row going to On hold or
 // Not applicable is housekeeping, and the owner did not ask for it.
-const REPORT = ['Owner selected', 'Approved', 'Released for order'];
+//
+// Options presented joined this list on 20 Oct 2026. It used to have its own
+// immediate email, which was the right instinct - telling someone their options
+// are waiting is useless twelve hours late - and the wrong mechanism, because
+// presenting options is exactly the work that happens in bursts. Someone sits
+// down with a palette and flips a trade's worth of rows, and the owner gets a
+// dozen emails in four minutes. It is listed first because it is where the
+// process starts, and it is the one block in the owner's digest that asks
+// something of them.
+const REPORT = ['Options presented', 'Owner selected', 'Approved', 'Released for order'];
 
 const OWNER_HEADING = {
+  'Options presented': 'Ready for you to look at',
   'Owner selected': 'You sent these to us',
   'Approved': 'We confirmed these',
   'Released for order': 'These are now on order',
 };
 const CKA_HEADING = {
+  'Options presented': 'Presented to the owner - waiting on them',
   'Owner selected': 'Waiting on you to review',
   'Approved': 'Approved - ready to release for order',
   'Released for order': 'Released for order',
@@ -103,7 +116,11 @@ const block = (rows, headings, showWho) => {
     for (const x of mine) {
       out += '  - ' + x.item + (x.what ? ': ' + x.what : '');
       if (showWho && x.by) out += ' [' + x.by + ']';
-      if (status === 'Owner selected' && x.needed) out += ' - due ' + x.needed;
+      // The date matters most on the two statuses where somebody still owes a
+      // decision: the owner on a presented item, CKA on a submitted one.
+      if ((status === 'Options presented' || status === 'Owner selected') && x.needed) {
+        out += ' - due ' + x.needed;
+      }
       out += '\n';
     }
   }
@@ -117,13 +134,25 @@ for (const id of Object.keys(jobs)) {
   const n = job.rows.length;
   const count = n + ' selection' + (n === 1 ? '' : 's');
 
+  // An owner digest carrying presented options is asking for something, and
+  // must not sign off by saying nothing needs a reply. Everything else in the
+  // digest is a record of what already happened.
+  const waiting = job.rows.filter((x) => x.status === 'Options presented').length;
+
   if (job.owner) {
     emails.push({
       to: job.owner,
-      subject: job.name + ' - Your selections update - ' + count,
+      subject: waiting
+        ? job.name + ' - Options ready for you - ' + count
+        : job.name + ' - Your selections update - ' + count,
       body: 'Here is where your selections got to yesterday.\n\nJob: ' + job.name + '\n' +
             block(job.rows, OWNER_HEADING, false) +
-            '\nNothing here needs a reply. If any of it is not what you meant, ' +
+            (waiting
+              ? '\nThe items under "Ready for you to look at" are waiting on you. ' +
+                'Open the page, have a look, and pick the one you want - the date ' +
+                'beside each is when we need the decision so we can order.\n\n'
+              : '\nNothing here needs a reply. ') +
+            'If any of it is not what you meant, ' +
             'use Request a change on the page, or reply to this email - anything ' +
             'not yet on order costs nothing to change.\n\n' +
             'Your selections page:\n' + job.link + '\n\n' +
