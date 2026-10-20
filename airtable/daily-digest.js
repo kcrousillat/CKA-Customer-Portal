@@ -156,7 +156,7 @@ for (const id of Object.keys(jobs)) {
             'use Request a change on the page, or reply to this email - anything ' +
             'not yet on order costs nothing to change.\n\n' +
             'Your selections page:\n' + job.link + '\n\n' +
-            'CKA Construction Group\nselections@ckaconstruction.com',
+            'CKA Construction Group\ncontact@ckaconstruction.com',
     });
   }
 

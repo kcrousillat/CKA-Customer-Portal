@@ -599,7 +599,7 @@ img{max-width:100%}
 
   <div class="wrap foot no-print">
     <div class="demo" id="foot-note" hidden></div>
-    Questions on any item: <a href="mailto:selections@ckaconstruction.com">selections@ckaconstruction.com</a><br>
+    Questions on any item: <a href="mailto:contact@ckaconstruction.com">contact@ckaconstruction.com</a><br>
     Approvals are confirmed by email to both owners and to CKA. An approved selection is released for order.
   </div>
 </main>
@@ -764,7 +764,7 @@ function showLoadError(err){
   document.getElementById("list").innerHTML =
     '<p class="state"><b>This link did not open a project.</b>' +
     'The link may have been changed or the project closed. Email ' +
-    '<a href="mailto:selections@ckaconstruction.com">selections@ckaconstruction.com</a> and we will send a new one.' +
+    '<a href="mailto:contact@ckaconstruction.com">contact@ckaconstruction.com</a> and we will send a new one.' +
     '<span class="err">' + esc(err.message || String(err)) + '</span></p>';
 }
 
@@ -993,7 +993,13 @@ function panelMarkup(row){
 
   if (row.mode === "curated") {
     if (!row.options.length) {
-      out += '<p class="note">CKA is putting options together for this item. You will get an email when they are here.</p>';
+      /* Says when, not just that. The notification used to be an immediate
+         email per item; since 20 Oct 2026 it rides the 6am digest, so promising
+         one "when they are here" would be a few hours optimistic. An owner who
+         is told the wrong thing about a small promise stops believing the
+         large ones. */
+      out += '<p class="note">CKA is putting options together for this item. ' +
+        'They will appear here, and you will see them in your next morning summary.</p>';
       return out + '</div>';
     }
     out += '<ul class="opts">' + row.options.map(function(o){

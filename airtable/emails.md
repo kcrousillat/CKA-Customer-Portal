@@ -405,3 +405,30 @@ regression that would otherwise go unnoticed.
 **Still slightly untrue:** the portal tells an owner "You will get an email when
 they are here", and that email now arrives at 6am the next morning rather than on
 the spot. Worth rewording the portal text on the next deploy.
+
+## The from/sign-off address - 20 Oct 2026
+
+`selections@ckaconstruction.com` **never existed**. Every owner email signed off
+with it, and the portal offered it twice as the address to write to for a lost
+link or a question about an item. Anyone who replied to one, or wrote to the
+address on the page, was writing into nothing - and would have had no bounce to
+tell them so if their mail client did not generate one.
+
+Changed to `contact@ckaconstruction.com` everywhere it appeared:
+
+| Where | What it was |
+|---|---|
+| Owner email - selection received | sign-off |
+| Owner email - approved | sign-off |
+| Owner email - released for order | sign-off |
+| Owner email - options are ready (off) | sign-off |
+| Daily selections digest - 6am | owner sign-off |
+| Portal footer | "Questions on any item:" mailto |
+| Portal, lost-key panel | "email us and we will send a new one" mailto |
+
+The internal "Tell CKA when the owner acts" never used it - it sends from
+Airtable's own address and signs off with a link to the record.
+
+Worth a standing check: the portal also tells an owner at the point of ordering
+to **call rather than email**, and gives no phone number. That is a separate gap
+and still open.
