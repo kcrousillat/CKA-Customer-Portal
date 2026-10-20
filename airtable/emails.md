@@ -329,3 +329,40 @@ by hand (the API cannot toggle them):
 
 They are left in place rather than deleted, in case a client ever wants a
 receipt per item.
+
+## An owner email that should not have sent - 20 Oct 2026
+
+Guenther's pool finish was moved to **Options presented** to record that CKA had
+presented the eleven Florida Gem colours. Kevin toggled the "Owner email -
+options are ready" automation off first so the move would not notify the owner.
+It notified him anyway: run `wfxyTpRH8BcHaAl15` at 14:35:17, success. The run log
+had been empty before the flip, so there is no ambiguity about what fired.
+
+Dan Guenther received "Your options are ready - Pool finish". The content was
+true and the CKA list was BCC'd, so no client was misled - but it went without
+his consent to it going, which is the part that matters.
+
+**The blind spot.** The API exposes `deploymentStatus`, which says whether an
+automation's *configuration* is published. It does not say whether the on/off
+switch is on. So from here there is no way to confirm that a guard someone says
+they have set is actually set. That was stated before the flip and the flip
+happened anyway, on the strength of someone reading a screen.
+
+**What to do instead.** Three ways to move a row into an emailing status without
+emailing, best first:
+
+1. **Clear the job's owner email on the Project row, make the change, put it
+   back.** This was rejected as unsafe earlier on the theory that restoring the
+   address makes the row newly satisfy "status = Options presented AND owner
+   email not empty" and fires on entry. That theory is untested. It is worth
+   testing deliberately on a job with a CKA address in Owner 1 email, because if
+   restoring does not fire, this is the only method that needs no UI toggle and
+   no trust in an unverifiable switch.
+2. **Have the person watching the screen make the status change themselves**,
+   immediately after toggling. They can see the switch; this session cannot.
+3. **Do not fill in the owner email until the job has been walked.** This is the
+   Hahitti method and the only one that has never failed. Everything above is a
+   workaround for a job that is already live.
+
+Whatever the method, check `list_automation_runs` afterwards. It is the only
+honest answer to "did that send", and it is cheap.
