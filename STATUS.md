@@ -2,6 +2,28 @@
 
 Kept here rather than in chat so it survives. Updated 13 Sep 2026.
 
+## Leads dashboard - built 19 Nov 2026, waiting on two steps
+
+A staff page at `https://cka-selections-api.kevin-7c1.workers.dev/leads`, served
+by the same Worker, reading and writing the **CKA Live Leads** base
+(`appZ7bbXZLcbwN6p1`). It exists so people without an Airtable seat (Pattricia,
+German) can triage leads, move them along and log calls.
+
+- Who gets in: the **Staff access** table in that base. One row per person,
+  with a private link. Untick Active to cut someone off. Natalie is
+  deliberately not on it.
+- What it writes: Stage, Assigned To, Lead Source, Project Type, Estimated
+  Value and Next Follow-Up on a lead, and new rows in Follow-Up Log. Nothing
+  else, and only dropdown values that already exist.
+- Stage decides open/closed (Kevin, 19 Nov). Status is not touched.
+- Estimated Value 500 is the website form's "$500K-$1M" band (Kevin, 19 Nov).
+  The value 1 is shown as "not stated" until someone confirms what it means.
+- The page source is `worker/src/leads.html`. It is copied into `index.js` by
+  `node tools/embed-leads.mjs`, because the updater downloads only `index.js`.
+
+Waiting on Kevin, laptop: (1) give the portal's Airtable token access to the
+CKA Live Leads base, (2) run the updater.
+
 ## Nothing is waiting on a deploy
 
 The updater has been run and the live Worker was read back to confirm it:
